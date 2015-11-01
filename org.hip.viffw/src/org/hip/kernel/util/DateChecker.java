@@ -54,8 +54,4 @@ public interface DateChecker {
      * @return java.util.Calendar */
     java.util.Calendar getStartDate();
 
-    /** Reads the Data from the context and forms a checked date out of them.
-     *
-     * @param param org.hip.kernel.servlet.Context */
-    void readFormDateFields(org.hip.kernel.servlet.Context inContext);
 }

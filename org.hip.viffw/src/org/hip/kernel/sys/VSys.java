@@ -31,7 +31,6 @@ import java.util.ResourceBundle;
 
 import org.hip.kernel.bom.HomeManager;
 import org.hip.kernel.bom.impl.HomeManagerImpl;
-import org.hip.kernel.servlet.impl.ServletContainer;
 
 /** This is a wrapper around java.lang.System.
  *
@@ -80,8 +79,6 @@ public class VSys extends VObject { // NOPMD by lbenno
     public final static String dftCountry = dftLocale.getCountry(); // NOPMD by lbenno
 
     private static boolean doTracing = true;
-    private static String cLogPath;
-
     // Private
     private static Properties cSysProperties;
 
@@ -134,61 +131,6 @@ public class VSys extends VObject { // NOPMD by lbenno
         return Assert.assertTrue(VSys.assertLevel, inCaller, inCallerMethod, inCondition);
     }
 
-    /** Returns the path where the messages are logged.
-     *
-     * @return java.lang.String */
-    @Deprecated
-    public static String getLogPath() {
-        if (cLogPath == null) { // NOPMD by lbenno
-            try {
-                cLogPath = getVSysProperties().getProperty(VSysConstants.LOGFILE_PATH);
-                if (cLogPath == null) { // NOPMD by lbenno
-                    cLogPath = "";
-                }
-                else {
-                    cLogPath += File.separator;
-                    File lLogDir = new File(cLogPath);
-                    if (!lLogDir.exists()) {
-                        final String lProperty = ServletContainer.getInstance().getBasePath();
-                        if (lProperty == null) {
-                            if (log_mkdir(lLogDir)) {
-                                cLogPath = lLogDir.getCanonicalPath() + File.separator;
-                            }
-                        }
-                        else {
-                            lLogDir = new File(lProperty + File.separator + cLogPath);
-
-                            cLogPath = "";
-                            // maybe the directory exists yet
-                            if (lLogDir.exists()) {
-                                cLogPath = lLogDir.getCanonicalPath() + File.separator;
-                            }
-                            else {
-                                // if not, create it
-                                if (log_mkdir(lLogDir)) {
-                                    cLogPath = lLogDir.getCanonicalPath() + File.separator;
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (final IOException ex) {
-                // default place of system log is current directory
-                cLogPath = "";
-            }
-        }
-        return cLogPath;
-    }
-
-    private static boolean log_mkdir(final File inLogDir) { // NOPMD by lbenno
-        if (inLogDir.mkdir()) {
-            if (inLogDir.exists()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /** Returns the application specific properties. The application's properties file has to reside in
      * $APPLICATION_CONTEXT/WEB-INF/conf/
      *
@@ -200,8 +142,7 @@ public class VSys extends VObject { // NOPMD by lbenno
             final File lFile = new File(lDir, cSysName + SYS_FILE_EXT);
             if (lFile.exists()) {
                 cSysProperties.load(new FileInputStream(lFile));
-            }
-            else {
+            } else {
                 final InputStream lStream = VSys.class.getResourceAsStream("/" + cSysName + SYS_FILE_EXT);
                 if (lStream != null) {
                     cSysProperties.load(lStream);
@@ -332,8 +273,8 @@ public class VSys extends VObject { // NOPMD by lbenno
         }
     }
 
-    /** Convenience method: Returns the file object of the path specified in the application's property file. If the file
-     * system object doesn't exist, <code>null</code> is returned.
+    /** Convenience method: Returns the file object of the path specified in the application's property file. If the
+     * file system object doesn't exist, <code>null</code> is returned.
      *
      * @param inPropertyName String
      * @return File The File specified by the property name or null. */

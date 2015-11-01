@@ -13,17 +13,13 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author: Benno Luthiger */
 @RunWith(Suite.class)
 @SuiteClasses({
-    org.hip.kernel.bitmap.test.AllTests.class,
-    org.hip.kernel.bom.directory.test.AllTests.class,
-    org.hip.kernel.bom.impl.test.AllTests.class,
-    org.hip.kernel.bom.model.impl.test.AllTests.class,
-    org.hip.kernel.code.test.AllTests.class,
-    org.hip.kernel.exc.test.AllTests.class,
-    org.hip.kernel.servlet.test.AllTests.class,
-    org.hip.kernel.stext.test.AllTests.class,
-    org.hip.kernel.sys.test.AllTests.class,
-    org.hip.kernel.util.test.AllTests.class,
-    org.hip.kernel.workflow.test.AllTests.class })
+        org.hip.kernel.bom.directory.test.AllTests.class,
+        org.hip.kernel.bom.impl.test.AllTests.class,
+        org.hip.kernel.bom.model.impl.test.AllTests.class,
+        org.hip.kernel.exc.test.AllTests.class,
+        org.hip.kernel.stext.test.AllTests.class,
+        org.hip.kernel.sys.test.AllTests.class,
+        org.hip.kernel.util.test.AllTests.class })
 public class AllTests {
 
     @BeforeClass
