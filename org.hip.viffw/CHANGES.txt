@@ -1,0 +1,10 @@
+$Id: CHANGES.txt,v 1.37 2009/01/02 15:42:52 aktion-hip Exp $
+
+VIF framework: CHANGES
+----------------------
+
+Release 1.3.0:
+==============
+- Added proper sematic versioning to all exportet packages.
+- Improved code quality using PMD.
+- Replaced all occurrences of Vector by ArrayList.
