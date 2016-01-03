@@ -29,9 +29,8 @@ public class PlaceholderHomeTest {
     public void testDo() {
         String lExpected = "";
         if (data.isDBMySQL()) {
-            lExpected = "SELECT tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.DTMUTATION FROM tblTest LEFT JOIN (SELECT tblTestMember.SNAME, tblTestMember.SPASSWORD, tblTestMember.SFIRSTNAME, tblTestMember.DTMUTATION, tblTestMember.TESTMEMBERID FROM tblTestMember WHERE tblTestMember.SNAME = 'Foo') AS Admins ON tblTest.SNAME = Admins.SNAME WHERE tblTest.TESTID = 69";
-        }
-        else if (data.isDBOracle()) {
+            lExpected = "SELECT tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.DTMUTATION FROM tblTest LEFT JOIN (SELECT tblTestMember.TESTMEMBERID, tblTestMember.SFIRSTNAME, tblTestMember.DTMUTATION, tblTestMember.SNAME, tblTestMember.SPASSWORD FROM tblTestMember WHERE tblTestMember.SNAME = 'Foo') AS Admins ON tblTest.SNAME = Admins.SNAME WHERE tblTest.TESTID = 69";
+        } else if (data.isDBOracle()) {
             lExpected = "";
         }
         try {

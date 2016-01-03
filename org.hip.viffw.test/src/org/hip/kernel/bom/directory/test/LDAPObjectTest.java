@@ -23,11 +23,11 @@ public class LDAPObjectTest {
     private final static String SERIALIZED = NL +
             "<Member>" + NL +
             "    <propertySet>" + NL +
-            "        <Name>First</Name>" + NL +
-            "        <ID>first</ID>" + NL +
-            "        <UserID>111</UserID>" + NL +
             "        <Firstname>First's sn</Firstname>" + NL +
             "        <Mail>first@my.org</Mail>" + NL +
+            "        <UserID>111</UserID>" + NL +
+            "        <ID>first</ID>" + NL +
+            "        <Name>First</Name>" + NL +
             "    </propertySet>" + NL +
             "</Member>";
 

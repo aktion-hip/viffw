@@ -44,9 +44,9 @@ public class SetOperatorHomeImplTest {
 
     @Test
     public void testSelect() {
-        final String lExpected = "(SELECT tblTestMember.SNAME, tblTestMember.SPASSWORD, tblTestMember.SFIRSTNAME, tblTestMember.DTMUTATION, tblTestMember.TESTMEMBERID FROM tblTestMember WHERE tblTestMember.SNAME = 'NameOfFirstSelect')\n"
+        final String lExpected = "(SELECT tblTestMember.TESTMEMBERID, tblTestMember.SFIRSTNAME, tblTestMember.DTMUTATION, tblTestMember.SNAME, tblTestMember.SPASSWORD FROM tblTestMember WHERE tblTestMember.SNAME = 'NameOfFirstSelect')\n"
                 +
-                " UNION (SELECT tblTest.FDOUBLE, tblTest.SSTREET, tblTest.FAMOUNT, tblTest.SPASSWORD, tblTest.SFAX, tblTest.SCITY, tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.SLANGUAGE, tblTest.SPLZ, tblTest.SMAIL, tblTest.DTMUTATION, tblTest.STEL, tblTest.BSEX FROM tblTest WHERE tblTest.SNAME = 'NameOfSecondSelect')";
+                " UNION (SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE tblTest.SNAME = 'NameOfSecondSelect')";
         final TestDomainObjectHomeImpl lHome = (TestDomainObjectHomeImpl) VSys.homeManager
                 .getHome("org.hip.kernel.bom.impl.test.TestDomainObjectHomeImpl");
         final Test2DomainObjectHomeImpl lHome2 = data.getSimpleHome();
