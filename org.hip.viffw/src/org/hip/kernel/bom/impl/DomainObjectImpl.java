@@ -151,8 +151,7 @@ abstract public class DomainObjectImpl extends AbstractSemanticObject implements
 
         if (getKey() == null) {
             return ((DomainObject) inObject).getKey() == null;
-        }
-        else {
+        } else {
             return getKey().equals(((DomainObject) inObject).getKey());
         }
     }
@@ -202,8 +201,7 @@ abstract public class DomainObjectImpl extends AbstractSemanticObject implements
     public KeyObject getKey(final boolean inInitial) {
         if (inInitial || MODE_CHANGE.equals(mode)) {
             return initialKey;
-        }
-        else {
+        } else {
             return getKey();
         }
     }
@@ -278,8 +276,8 @@ abstract public class DomainObjectImpl extends AbstractSemanticObject implements
         return getPropertySet().getChangedProperties2().size() != 0;
     }
 
-    /** DomainObjects do not allow a dynamic add. Only those properties are supported which are defined in the definition
-     * string.
+    /** DomainObjects do not allow a dynamic add. Only those properties are supported which are defined in the
+     * definition string.
      *
      * @return boolean */
     @Override
@@ -303,22 +301,18 @@ abstract public class DomainObjectImpl extends AbstractSemanticObject implements
                 if (lProperty == null) {
                     // we assume a calculated/modified column and, therefore, a numerical value.
                     this.set(lColumnName, inResult.getLong(i));
-                }
-                else {
+                } else {
                     try {
                         lName = (String) lProperty.get(PropertyDefDef.propertyName);
                         lType = ((String) lProperty.get(PropertyDefDef.valueType)).intern();
 
                         if (lType == TypeDef.String) {
                             this.set(lName, inResult.getString(i));
-                        }
-                        else if (lType == TypeDef.LongVarchar) {
+                        } else if (lType == TypeDef.LongVarchar) {
                             this.set(lName, inResult.getAsciiStream(i));
-                        }
-                        else if (lType == TypeDef.Date) {
+                        } else if (lType == TypeDef.Date) {
                             this.set(lName, inResult.getDate(i));
-                        }
-                        else if (lType == TypeDef.Timestamp) {
+                        } else if (lType == TypeDef.Timestamp) {
                             Timestamp lValue = null;
                             try {
                                 lValue = inResult.getTimestamp(i);
@@ -326,24 +320,18 @@ abstract public class DomainObjectImpl extends AbstractSemanticObject implements
                                 // intentionally left empty (because of MySQL zeroDateTimeBehavior)
                             }
                             this.set(lName, lValue);
-                        }
-                        else if (lType == TypeDef.Integer) {
+                        } else if (lType == TypeDef.Integer) {
                             this.set(lName, Integer.valueOf(inResult.getInt(i)));
-                        }
-                        else if (lType == TypeDef.Long) {
+                        } else if (lType == TypeDef.Long) {
                             this.set(lName, Long.valueOf(inResult.getLong(i)));
-                        }
-                        else if (lType == TypeDef.BigInteger) {
+                        } else if (lType == TypeDef.BigInteger) {
                             final java.math.BigDecimal lValue = inResult.getBigDecimal(i);
                             this.set(lName, lValue == null ? null : lValue.toBigInteger());
-                        }
-                        else if (lType == TypeDef.BigDecimal) {
+                        } else if (lType == TypeDef.BigDecimal) {
                             this.set(lName, inResult.getBigDecimal(i));
-                        }
-                        else if (lType == TypeDef.Number) {
+                        } else if (lType == TypeDef.Number) {
                             this.set(lName, inResult.getBigDecimal(i));
-                        }
-                        else if (lType == TypeDef.Binary) {
+                        } else if (lType == TypeDef.Binary) {
                             this.set(lName, inResult.getBlob(i));
                         }
                     } catch (final GettingException | SettingException | SQLException exc) {
@@ -394,8 +382,7 @@ abstract public class DomainObjectImpl extends AbstractSemanticObject implements
     public String toString() { // NOPMD by lbenno
         if (getKey() == null) {
             return Debug.classBOMMarkupString(getHome().getObjectClassName(), getPropertySet());
-        }
-        else {
+        } else {
             return Debug.classBOMMarkupString(getHome().getObjectClassName(), getKey());
         }
     }
@@ -418,19 +405,13 @@ abstract public class DomainObjectImpl extends AbstractSemanticObject implements
     @Override
     public Long insert(final boolean inCommit) throws SQLException, VException {
         Collection<Long> lAutoKeys = Collections.emptyList();
-        InsertStatement lStatement = null;
         Long outKey = Long.valueOf(0L);
-        try {
-            lStatement = new InsertStatement(getHome());
-            lStatement.setInserts(this.createInsertString());
-            lAutoKeys = lStatement.executeInsert();
+        try (InsertStatement statement = new InsertStatement(getHome())) {
+            statement.setInserts(this.createInsertString());
+            lAutoKeys = statement.executeInsert();
             if (inCommit) {
-                lStatement.commit();
+                statement.commit();
                 reinitialize();
-            }
-        } finally {
-            if (lStatement != null) {
-                lStatement.close();
             }
         }
         if (!lAutoKeys.isEmpty()) {
@@ -467,19 +448,13 @@ abstract public class DomainObjectImpl extends AbstractSemanticObject implements
      * @exception java.sql.SQLException */
     @Override
     public void update(final boolean inCommit) throws SQLException {
-        UpdateStatement lStatement = null;
         if (this.isChanged()) {
-            try {
-                lStatement = new UpdateStatement();
-                lStatement.setUpdates(this.createUpdateString());
-                lStatement.executeUpdate();
+            try (UpdateStatement statement = new UpdateStatement()) {
+                statement.setUpdates(this.createUpdateString());
+                statement.executeUpdate();
                 if (inCommit) {
-                    lStatement.commit();
+                    statement.commit();
                     reinitialize();
-                }
-            } finally {
-                if (lStatement != null) {
-                    lStatement.close();
                 }
             }
         }
@@ -501,17 +476,11 @@ abstract public class DomainObjectImpl extends AbstractSemanticObject implements
     @Override
     public void delete(final boolean inCommit) throws SQLException {
 
-        UpdateStatement lStatement = null;
-        try {
-            lStatement = new UpdateStatement();
-            lStatement.setUpdates(this.createDeleteString());
-            lStatement.executeUpdate();
+        try (UpdateStatement statement = new UpdateStatement()) {
+            statement.setUpdates(this.createDeleteString());
+            statement.executeUpdate();
             if (inCommit) {
-                lStatement.commit();
-            }
-        } finally {
-            if (lStatement != null) {
-                lStatement.close();
+                statement.commit();
             }
         }
     }

@@ -67,16 +67,15 @@ public class LDAPQueryResultTest {
 
     @Test
     public void testDoAsXML() throws NamingException, VException, SQLException {
-        final String lExpected =
-                "<Member>" + NL +
-                        "    <propertySet>" + NL +
-                        "        <Name>First</Name>" + NL +
-                        "        <ID>first</ID>" + NL +
-                        "        <UserID>111</UserID>" + NL +
-                        "        <Firstname>First's sn</Firstname>" + NL +
-                        "        <Mail>first@my.org</Mail>" + NL +
-                        "    </propertySet>" + NL +
-                        "</Member>";
+        final String lExpected = "<Member>" + NL +
+                "    <propertySet>" + NL +
+                "        <Firstname>First's sn</Firstname>" + NL +
+                "        <Mail>first@my.org</Mail>" + NL +
+                "        <UserID>111</UserID>" + NL +
+                "        <ID>first</ID>" + NL +
+                "        <Name>First</Name>" + NL +
+                "    </propertySet>" + NL +
+                "</Member>";
 
         final DirContextWrapper lContext = new TestDirContext();
         final LDAPQueryResult lResult = new LDAPQueryResult(new TestLDAPObjectHome(),

@@ -1,10 +1,11 @@
 package org.hip.kernel.bom.model.impl.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Set;
 
 import org.hip.kernel.bom.PropertySet;
 import org.hip.kernel.bom.model.JoinedObjectDef;
@@ -19,126 +20,123 @@ import org.junit.Test;
 
 /** @author: Benno Luthiger */
 public class JoinedObjectDefGeneratorTest {
-    private final static String XML_OBJECT_DEF1 =
-            "<?xml version='1.0' encoding='ISO-8859-1'?>	\n"
-                    +
-                    "<joinedObjectDef objectName='TestJoin1' parent='org.hip.kernel.bom.ReadOnlyDomainObject' version='1.0'>	\n"
-                    +
-                    "	<columnDefs>	\n"
-                    +
-                    "		<columnDef columnName='MemberID' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
-                    +
-                    "		<columnDef columnName='Name' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
-                    +
-                    "		<columnDef columnName='FirstName' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
-                    +
-                    "		<columnDef columnName='Mutation' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
-                    +
-                    "	</columnDefs>	\n"
-                    +
-                    "	<joinDef joinType='EQUI_JOIN'>	\n"
-                    +
-                    "		<objectDesc objectClassName='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
-                    +
-                    "		<objectDesc objectClassName='org.hip.kernel.bom.impl.test.LinkGroupMemberImpl'/>	\n"
-                    +
-                    "		<joinCondition>	\n"
-                    +
-                    "			<columnDef columnName='MemberID' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
-                    +
-                    "			<columnDef columnName='MemberID' domainObject='org.hip.kernel.bom.impl.test.LinkGroupMemberImpl'/>	\n"
-                    +
-                    "		</joinCondition>	\n" +
-                    "	</joinDef>	\n" +
-                    "</joinedObjectDef>";
+    private final static String XML_OBJECT_DEF1 = "<?xml version='1.0' encoding='ISO-8859-1'?>	\n"
+            +
+            "<joinedObjectDef objectName='TestJoin1' parent='org.hip.kernel.bom.ReadOnlyDomainObject' version='1.0'>	\n"
+            +
+            "	<columnDefs>	\n"
+            +
+            "		<columnDef columnName='MemberID' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
+            +
+            "		<columnDef columnName='Name' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
+            +
+            "		<columnDef columnName='FirstName' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
+            +
+            "		<columnDef columnName='Mutation' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
+            +
+            "	</columnDefs>	\n"
+            +
+            "	<joinDef joinType='EQUI_JOIN'>	\n"
+            +
+            "		<objectDesc objectClassName='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
+            +
+            "		<objectDesc objectClassName='org.hip.kernel.bom.impl.test.LinkGroupMemberImpl'/>	\n"
+            +
+            "		<joinCondition>	\n"
+            +
+            "			<columnDef columnName='MemberID' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
+            +
+            "			<columnDef columnName='MemberID' domainObject='org.hip.kernel.bom.impl.test.LinkGroupMemberImpl'/>	\n"
+            +
+            "		</joinCondition>	\n" +
+            "	</joinDef>	\n" +
+            "</joinedObjectDef>";
 
-    private final static String XML_OBJECT_DEF2 =
-            "<?xml version='1.0' encoding='ISO-8859-1'?>	\n"
-                    +
-                    "<joinedObjectDef objectName='TestJoin2' parent='org.hip.kernel.bom.ReadOnlyDomainObject' version='1.0'>	\n"
-                    +
-                    "	<columnDefs>	\n"
-                    +
-                    "		<columnDef columnName='MemberID' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
-                    +
-                    "		<columnDef columnName='Name' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
-                    +
-                    "		<columnDef columnName='DecimalID' domainObject='org.hip.kernel.bom.impl.test.QuestionImpl'/>	\n"
-                    +
-                    "		<columnDef columnName='Question' domainObject='org.hip.kernel.bom.impl.test.QuestionImpl'/>	\n"
-                    +
-                    "	</columnDefs>	\n"
-                    +
-                    "	<joinDef joinType='EQUI_JOIN'>	\n"
-                    +
-                    "		<objectDesc objectClassName='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
-                    +
-                    "		<joinCondition>	\n"
-                    +
-                    "			<columnDef columnName='MemberID' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
-                    +
-                    "			<columnDef columnName='MemberID' domainObject='org.hip.kernel.bom.impl.test.LinkQuestionMemberImpl'/>	\n"
-                    +
-                    "		</joinCondition>	\n"
-                    +
-                    "		<joinDef joinType='EQUI_JOIN'>	\n"
-                    +
-                    "			<objectDesc objectClassName='org.hip.kernel.bom.impl.test.LinkQuestionMemberImpl'/>	\n"
-                    +
-                    "			<objectDesc objectClassName='org.hip.kernel.bom.impl.test.QuestionImpl'/>	\n"
-                    +
-                    "			<joinCondition>	\n"
-                    +
-                    "				<columnDef columnName='QuestionID' domainObject='org.hip.kernel.bom.impl.test.LinkQuestionMemberImpl'/>	\n"
-                    +
-                    "				<columnDef columnName='QuestionID' domainObject='org.hip.kernel.bom.impl.test.QuestionImpl'/>	\n"
-                    +
-                    "			</joinCondition>	\n" +
-                    "		</joinDef>	\n" +
-                    "	</joinDef>	\n" +
-                    "</joinedObjectDef>";
+    private final static String XML_OBJECT_DEF2 = "<?xml version='1.0' encoding='ISO-8859-1'?>	\n"
+            +
+            "<joinedObjectDef objectName='TestJoin2' parent='org.hip.kernel.bom.ReadOnlyDomainObject' version='1.0'>	\n"
+            +
+            "	<columnDefs>	\n"
+            +
+            "		<columnDef columnName='MemberID' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
+            +
+            "		<columnDef columnName='Name' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
+            +
+            "		<columnDef columnName='DecimalID' domainObject='org.hip.kernel.bom.impl.test.QuestionImpl'/>	\n"
+            +
+            "		<columnDef columnName='Question' domainObject='org.hip.kernel.bom.impl.test.QuestionImpl'/>	\n"
+            +
+            "	</columnDefs>	\n"
+            +
+            "	<joinDef joinType='EQUI_JOIN'>	\n"
+            +
+            "		<objectDesc objectClassName='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
+            +
+            "		<joinCondition>	\n"
+            +
+            "			<columnDef columnName='MemberID' domainObject='org.hip.kernel.bom.impl.test.TestDomainObjectImpl'/>	\n"
+            +
+            "			<columnDef columnName='MemberID' domainObject='org.hip.kernel.bom.impl.test.LinkQuestionMemberImpl'/>	\n"
+            +
+            "		</joinCondition>	\n"
+            +
+            "		<joinDef joinType='EQUI_JOIN'>	\n"
+            +
+            "			<objectDesc objectClassName='org.hip.kernel.bom.impl.test.LinkQuestionMemberImpl'/>	\n"
+            +
+            "			<objectDesc objectClassName='org.hip.kernel.bom.impl.test.QuestionImpl'/>	\n"
+            +
+            "			<joinCondition>	\n"
+            +
+            "				<columnDef columnName='QuestionID' domainObject='org.hip.kernel.bom.impl.test.LinkQuestionMemberImpl'/>	\n"
+            +
+            "				<columnDef columnName='QuestionID' domainObject='org.hip.kernel.bom.impl.test.QuestionImpl'/>	\n"
+            +
+            "			</joinCondition>	\n" +
+            "		</joinDef>	\n" +
+            "	</joinDef>	\n" +
+            "</joinedObjectDef>";
 
-    private final static String XML_OBJECT_DEF3 =
-            "<?xml version='1.0' encoding='ISO-8859-1'?>	\n"
-                    +
-                    "<joinedObjectDef objectName='TestJoin3' parent='org.hip.kernel.bom.ReadOnlyDomainObject' version='1.0'>	\n"
-                    +
-                    "	<columnDefs>	\n"
-                    +
-                    "		<columnDef columnName='Name' domainObject='org.hip.kernel.bom.impl.test.TestGroupImpl'/>	\n"
-                    +
-                    "		<columnDef columnName='ID' alias='GroupID' domainObject='org.hip.kernel.bom.impl.test.TestGroupImpl'/>	\n"
-                    +
-                    "		<columnDef columnName='Description' domainObject='org.hip.kernel.bom.impl.test.TestGroupImpl'/>	\n"
-                    +
-                    "		<columnDef columnName='Registered' nestedObject='count' valueType='Number'/>	\n"
-                    +
-                    "		<hidden columnName='GroupID' domainObject='org.hip.kernel.bom.impl.test.TestParticipantImpl'/>	\n"
-                    +
-                    "	</columnDefs>	\n"
-                    +
-                    "	<joinDef joinType='EQUI_JOIN'>	\n"
-                    +
-                    "		<objectDesc objectClassName='org.hip.kernel.bom.impl.test.TestGroupImpl'/>	\n"
-                    +
-                    "		<objectNested name='count'>	\n"
-                    +
-                    "			<columnDef columnName='GroupID' domainObject='org.hip.kernel.bom.impl.test.TestParticipantImpl'/>	\n"
-                    +
-                    "			<columnDef columnName='MemberID' alias='Registered' modifier='COUNT' domainObject='org.hip.kernel.bom.impl.test.TestParticipantImpl'/>	\n"
-                    +
-                    "			<resultGrouping modifier='GROUP'>	\n"
-                    +
-                    "				<columnDef columnName='GroupID' domainObject='org.hip.kernel.bom.impl.test.TestParticipantImpl'/>	\n"
-                    +
-                    "			</resultGrouping>	\n" +
-                    "		</objectNested>	\n" +
-                    "		<joinCondition>	\n" +
-                    "			<columnDef columnName='ID' domainObject='org.hip.kernel.bom.impl.test.TestGroupImpl'/>	\n" +
-                    "			<columnDef columnName='GroupID' nestedObject='count'/>	\n" +
-                    "		</joinCondition>	\n" +
-                    "	</joinDef>	\n" +
-                    "</joinedObjectDef>";
+    private final static String XML_OBJECT_DEF3 = "<?xml version='1.0' encoding='ISO-8859-1'?>	\n"
+            +
+            "<joinedObjectDef objectName='TestJoin3' parent='org.hip.kernel.bom.ReadOnlyDomainObject' version='1.0'>	\n"
+            +
+            "	<columnDefs>	\n"
+            +
+            "		<columnDef columnName='Name' domainObject='org.hip.kernel.bom.impl.test.TestGroupImpl'/>	\n"
+            +
+            "		<columnDef columnName='ID' alias='GroupID' domainObject='org.hip.kernel.bom.impl.test.TestGroupImpl'/>	\n"
+            +
+            "		<columnDef columnName='Description' domainObject='org.hip.kernel.bom.impl.test.TestGroupImpl'/>	\n"
+            +
+            "		<columnDef columnName='Registered' nestedObject='count' valueType='Number'/>	\n"
+            +
+            "		<hidden columnName='GroupID' domainObject='org.hip.kernel.bom.impl.test.TestParticipantImpl'/>	\n"
+            +
+            "	</columnDefs>	\n"
+            +
+            "	<joinDef joinType='EQUI_JOIN'>	\n"
+            +
+            "		<objectDesc objectClassName='org.hip.kernel.bom.impl.test.TestGroupImpl'/>	\n"
+            +
+            "		<objectNested name='count'>	\n"
+            +
+            "			<columnDef columnName='GroupID' domainObject='org.hip.kernel.bom.impl.test.TestParticipantImpl'/>	\n"
+            +
+            "			<columnDef columnName='MemberID' alias='Registered' modifier='COUNT' domainObject='org.hip.kernel.bom.impl.test.TestParticipantImpl'/>	\n"
+            +
+            "			<resultGrouping modifier='GROUP'>	\n"
+            +
+            "				<columnDef columnName='GroupID' domainObject='org.hip.kernel.bom.impl.test.TestParticipantImpl'/>	\n"
+            +
+            "			</resultGrouping>	\n" +
+            "		</objectNested>	\n" +
+            "		<joinCondition>	\n" +
+            "			<columnDef columnName='ID' domainObject='org.hip.kernel.bom.impl.test.TestGroupImpl'/>	\n" +
+            "			<columnDef columnName='GroupID' nestedObject='count'/>	\n" +
+            "		</joinCondition>	\n" +
+            "	</joinDef>	\n" +
+            "</joinedObjectDef>";
 
     private void outMapping(final ObjectDef inObjectDef) {
         for (final String lTableName : inObjectDef.getTableNames2()) {
@@ -163,8 +161,7 @@ public class JoinedObjectDefGeneratorTest {
                     assertEquals("testGenerate 4", "MemberID", lKey);
                     VSys.out.println("\t\t" + lKey);
                 }
-            }
-            else {
+            } else {
                 VSys.out.println("\tprimaryKey=NO PRIMARY KEY DEFINED");
             }
         } catch (final org.hip.kernel.bom.GettingException exc) {
@@ -208,7 +205,7 @@ public class JoinedObjectDefGeneratorTest {
         return new String(outSQL);
     }
 
-    @SuppressWarnings({ "unchecked", "deprecation", "rawtypes" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void testGenerate() throws Exception {
         // first join
@@ -227,10 +224,9 @@ public class JoinedObjectDefGeneratorTest {
         outPropertySet((PropertySet) lSimpleObjectDef.get("propertyDefs"));
         outMapping(lSimpleObjectDef);
 
-        Iterator<String> lTableNames = lSimpleObjectDef.getTableNames2().iterator();
-        if (lTableNames.hasNext()) {
-            assertEquals("testGenerate 1.4", "tblTestMember", lTableNames.next());
-        }
+        Set<String> lTableNames = lSimpleObjectDef.getTableNames2();
+        assertEquals(1, lTableNames.size());
+        assertTrue(lTableNames.contains("tblTestMember"));
 
         // second join
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(XML_OBJECT_DEF2);
@@ -247,10 +243,10 @@ public class JoinedObjectDefGeneratorTest {
         outPropertySet((PropertySet) lSimpleObjectDef.get("propertyDefs"));
         outMapping(lSimpleObjectDef);
 
-        lTableNames = lSimpleObjectDef.getTableNames2().iterator();
-        if (lTableNames.hasNext()) {
-            assertEquals("testGenerate 2.4", "tblQuestion", lTableNames.next());
-        }
+        lTableNames = lSimpleObjectDef.getTableNames2();
+        assertEquals(2, lTableNames.size());
+        assertTrue(lTableNames.contains("tblTestMember"));
+        assertTrue(lTableNames.contains("tblQuestion"));
 
         // third join with nested tables
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(XML_OBJECT_DEF3);

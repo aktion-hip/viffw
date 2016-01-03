@@ -424,7 +424,7 @@ public class DomainObjectHomeImplTest {
     @Test
     public void testCreateSelectUnion() throws VException {
         final String lExpectedName = "Test_Name";
-        final String lExpected = "(SELECT tblTestMember.SNAME, tblTestMember.SPASSWORD, tblTestMember.SFIRSTNAME, tblTestMember.DTMUTATION, tblTestMember.TESTMEMBERID FROM tblTestMember WHERE tblTestMember.SNAME = 'Test_Name')";
+        final String lExpected = "(SELECT tblTestMember.TESTMEMBERID, tblTestMember.SFIRSTNAME, tblTestMember.DTMUTATION, tblTestMember.SNAME, tblTestMember.SPASSWORD FROM tblTestMember WHERE tblTestMember.SNAME = 'Test_Name')";
         final UnionHomeSub lUnionHome = new UnionHomeSub();
 
         final KeyObject lKey = new KeyObjectImpl();

@@ -47,7 +47,7 @@ public class DefaultDBAdapterSimpleTest {
 
     @Test
     public void testCreateInsertString() {
-        final String lExpected = "INSERT INTO tblTest( SFIRSTNAME, FDOUBLE, BSEX, FAMOUNT, SNAME, DTMUTATION ) VALUES ('Riese', 1.2345678899999998900938180668163113296031951904296875, 1, 33, 'Adam', TIMESTAMP('2002-02-01 10:00:00') )";
+        final String lExpected = "INSERT INTO tblTest( SFIRSTNAME, DTMUTATION, BSEX, FAMOUNT, SNAME, FDOUBLE ) VALUES ('Riese', TIMESTAMP('2002-02-01 10:00:00'), 1, 33, 'Adam', 1.2345678899999998900938180668163113296031951904296875 )";
         try {
             final DomainObject lObject = data.getSimpleHome().create();
             lObject.set(Test2DomainObjectHomeImpl.KEY_NAME, "Adam");
@@ -91,7 +91,7 @@ public class DefaultDBAdapterSimpleTest {
 
     @Test
     public void testCreateUpdateString() throws SQLException, VException {
-        final String lExpected = "UPDATE tblTest SET FAMOUNT = 33, SFIRSTNAME = 'Nova', DTMUTATION = TIMESTAMP('2002-02-01 10:00:00'), BSEX = 1 WHERE tblTest.TESTID = ";
+        final String lExpected = "UPDATE tblTest SET BSEX = 1, FAMOUNT = 33, SFIRSTNAME = 'Nova', DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') WHERE tblTest.TESTID = ";
 
         final Long lID = data.createTestEntry("Testing");
         final KeyObject lKey = new KeyObjectImpl();
@@ -116,7 +116,7 @@ public class DefaultDBAdapterSimpleTest {
 
     @Test
     public void testCreateUpdateString2() throws VException {
-        final String lExpectedIns = "INSERT INTO tblTestShort( SHORTID, TESTID ) VALUES (5, 77 )";
+        final String lExpectedIns = "INSERT INTO tblTestShort( TESTID, SHORTID ) VALUES (77, 5 )";
         String lExpectedUpd = "UPDATE tblTestShort SET SHORTID = 6 WHERE tblTestShort.TESTID = 77 AND tblTestShort.SHORTID = 5";
 
         final DomainObject lObject = new TestShort();
@@ -163,7 +163,7 @@ public class DefaultDBAdapterSimpleTest {
 
     @Test
     public void testCreatePreparedUpdateString() throws SQLException, VException {
-        final String lExpected = "UPDATE tblTest SET FAMOUNT = ?, SFIRSTNAME = ?, DTMUTATION = ?, BSEX = ? WHERE tblTest.TESTID = ?";
+        final String lExpected = "UPDATE tblTest SET BSEX = ?, FAMOUNT = ?, SFIRSTNAME = ?, DTMUTATION = ? WHERE tblTest.TESTID = ?";
 
         final Long lID = data.createTestEntry("Testing");
         final KeyObject lKey = new KeyObjectImpl();
@@ -256,7 +256,7 @@ public class DefaultDBAdapterSimpleTest {
 
     @Test
     public void testCreateSelectAllString() {
-        final String lExpected = "SELECT tblTest.FDOUBLE, tblTest.SSTREET, tblTest.FAMOUNT, tblTest.SPASSWORD, tblTest.SFAX, tblTest.SCITY, tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.SLANGUAGE, tblTest.SPLZ, tblTest.SMAIL, tblTest.DTMUTATION, tblTest.STEL, tblTest.BSEX FROM tblTest";
+        final String lExpected = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest";
         try {
             final DomainObjectHome lHome = data.getSimpleHome();
             final DomainObject lObject = lHome.create();
@@ -270,15 +270,15 @@ public class DefaultDBAdapterSimpleTest {
 
     @Test
     public void testCreateSelectString() throws Exception {
-        final String lExpected1 = "SELECT tblTest.FDOUBLE, tblTest.SSTREET, tblTest.FAMOUNT, tblTest.SPASSWORD, tblTest.SFAX, tblTest.SCITY, tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.SLANGUAGE, tblTest.SPLZ, tblTest.SMAIL, tblTest.DTMUTATION, tblTest.STEL, tblTest.BSEX FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00')";
-        final String lExpected2 = "SELECT tblTest.FDOUBLE, tblTest.SSTREET, tblTest.FAMOUNT, tblTest.SPASSWORD, tblTest.SFAX, tblTest.SCITY, tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.SLANGUAGE, tblTest.SPLZ, tblTest.SMAIL, tblTest.DTMUTATION, tblTest.STEL, tblTest.BSEX FROM tblTest WHERE (tblTest.SFIRSTNAME LIKE 'Test%' OR tblTest.SFIRSTNAME LIKE 'test%') AND tblTest.FAMOUNT > 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') ORDER BY tblTest.SFIRSTNAME, tblTest.FAMOUNT DESC";
-        final String lExpected3 = "SELECT tblTest.FDOUBLE, tblTest.SSTREET, tblTest.FAMOUNT, tblTest.SPASSWORD, tblTest.SFAX, tblTest.SCITY, tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.SLANGUAGE, tblTest.SPLZ, tblTest.SMAIL, tblTest.DTMUTATION, tblTest.STEL, tblTest.BSEX FROM tblTest ORDER BY tblTest.SFIRSTNAME, tblTest.FAMOUNT DESC";
-        final String lExpected4 = "SELECT tblTest.FDOUBLE, tblTest.SSTREET, tblTest.FAMOUNT, tblTest.SPASSWORD, tblTest.SFAX, tblTest.SCITY, tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.SLANGUAGE, tblTest.SPLZ, tblTest.SMAIL, tblTest.DTMUTATION, tblTest.STEL, tblTest.BSEX FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') AND UCASE(tblTest.SNAME) LIKE 'A%'";
-        final String lExpected5 = "SELECT tblTest.FDOUBLE, tblTest.SSTREET, tblTest.FAMOUNT, tblTest.SPASSWORD, tblTest.SFAX, tblTest.SCITY, tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.SLANGUAGE, tblTest.SPLZ, tblTest.SMAIL, tblTest.DTMUTATION, tblTest.STEL, tblTest.BSEX FROM tblTest WHERE (tblTest.SFIRSTNAME LIKE 'Test%' OR tblTest.SFIRSTNAME LIKE 'test%') AND tblTest.FAMOUNT > 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') HAVING tblTest.FAMOUNT <= 10";
-        final String lExpected6 = "SELECT tblTest.FDOUBLE, tblTest.SSTREET, tblTest.FAMOUNT, tblTest.SPASSWORD, tblTest.SFAX, tblTest.SCITY, tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.SLANGUAGE, tblTest.SPLZ, tblTest.SMAIL, tblTest.DTMUTATION, tblTest.STEL, tblTest.BSEX FROM tblTest WHERE (tblTest.SFIRSTNAME LIKE 'Test%' OR tblTest.SFIRSTNAME LIKE 'test%') AND tblTest.FAMOUNT > 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') GROUP BY tblTest.FAMOUNT HAVING tblTest.FAMOUNT <= 10";
-        final String lExpected7 = "SELECT tblTest.FDOUBLE, tblTest.SSTREET, tblTest.FAMOUNT, tblTest.SPASSWORD, tblTest.SFAX, tblTest.SCITY, tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.SLANGUAGE, tblTest.SPLZ, tblTest.SMAIL, tblTest.DTMUTATION, tblTest.STEL, tblTest.BSEX FROM tblTest GROUP BY tblTest.FAMOUNT";
-        final String lExpected8 = "SELECT tblTest.FDOUBLE, tblTest.SSTREET, tblTest.FAMOUNT, tblTest.SPASSWORD, tblTest.SFAX, tblTest.SCITY, tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.SLANGUAGE, tblTest.SPLZ, tblTest.SMAIL, tblTest.DTMUTATION, tblTest.STEL, tblTest.BSEX FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') LIMIT 10 OFFSET 60";
-        final String lExpected9 = "SELECT DISTINCT tblTest.FDOUBLE, tblTest.SSTREET, tblTest.FAMOUNT, tblTest.SPASSWORD, tblTest.SFAX, tblTest.SCITY, tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.SLANGUAGE, tblTest.SPLZ, tblTest.SMAIL, tblTest.DTMUTATION, tblTest.STEL, tblTest.BSEX FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00')";
+        final String lExpected1 = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00')";
+        final String lExpected2 = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE (tblTest.SFIRSTNAME LIKE 'Test%' OR tblTest.SFIRSTNAME LIKE 'test%') AND tblTest.FAMOUNT > 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') ORDER BY tblTest.SFIRSTNAME, tblTest.FAMOUNT DESC";
+        final String lExpected3 = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest ORDER BY tblTest.SFIRSTNAME, tblTest.FAMOUNT DESC";
+        final String lExpected4 = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') AND UCASE(tblTest.SNAME) LIKE 'A%'";
+        final String lExpected5 = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE (tblTest.SFIRSTNAME LIKE 'Test%' OR tblTest.SFIRSTNAME LIKE 'test%') AND tblTest.FAMOUNT > 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') HAVING tblTest.FAMOUNT <= 10";
+        final String lExpected6 = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE (tblTest.SFIRSTNAME LIKE 'Test%' OR tblTest.SFIRSTNAME LIKE 'test%') AND tblTest.FAMOUNT > 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') GROUP BY tblTest.FAMOUNT HAVING tblTest.FAMOUNT <= 10";
+        final String lExpected7 = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest GROUP BY tblTest.FAMOUNT";
+        final String lExpected8 = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') LIMIT 10 OFFSET 60";
+        final String lExpected9 = "SELECT DISTINCT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00')";
 
         final DomainObjectHome lHome = data.getSimpleHome();
         final DomainObject lObject = lHome.create();
@@ -325,7 +325,7 @@ public class DefaultDBAdapterSimpleTest {
 
     @Test
     public void testCreatePreparedSelectString() {
-        final String lExpected = "SELECT tblTest.FDOUBLE, tblTest.SSTREET, tblTest.FAMOUNT, tblTest.SPASSWORD, tblTest.SFAX, tblTest.SCITY, tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.SLANGUAGE, tblTest.SPLZ, tblTest.SMAIL, tblTest.DTMUTATION, tblTest.STEL, tblTest.BSEX FROM tblTest WHERE tblTest.SFIRSTNAME = ? AND tblTest.BSEX = ? AND tblTest.FAMOUNT = ? AND tblTest.DTMUTATION = ?";
+        final String lExpected = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE tblTest.SFIRSTNAME = ? AND tblTest.BSEX = ? AND tblTest.FAMOUNT = ? AND tblTest.DTMUTATION = ?";
         try {
             final DomainObjectHome lHome = data.getSimpleHome();
             final DomainObject lObject = lHome.create();
@@ -373,7 +373,7 @@ public class DefaultDBAdapterSimpleTest {
 
     @Test
     public void testCreatePreparedInserts() {
-        final String lExpected = "INSERT INTO tblTest( SFIRSTNAME, SSTREET, SFAX, SMAIL, SPLZ, STEL, FDOUBLE, SPASSWORD, TESTID, BSEX, FAMOUNT, SLANGUAGE, SCITY, SNAME, DTMUTATION ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+        final String lExpected = "INSERT INTO tblTest( SLANGUAGE, SFIRSTNAME, DTMUTATION, SPLZ, SCITY, BSEX, SSTREET, FAMOUNT, TESTID, SNAME, FDOUBLE, SFAX, STEL, SPASSWORD, SMAIL ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
         try {
             final DomainObjectHome lHome = data.getSimpleHome();
             final DomainObject lObject = lHome.create();
@@ -388,7 +388,7 @@ public class DefaultDBAdapterSimpleTest {
 
     @Test
     public void testCreatePreparedUpdates() {
-        final String lExpected = "UPDATE tblTest SET SFIRSTNAME = ?, SSTREET = ?, SFAX = ?, SMAIL = ?, SPLZ = ?, STEL = ?, FDOUBLE = ?, SPASSWORD = ?, BSEX = ?, FAMOUNT = ?, SLANGUAGE = ?, SCITY = ?, SNAME = ?, DTMUTATION = ? WHERE TESTID = ?";
+        final String lExpected = "UPDATE tblTest SET SLANGUAGE = ?, SFIRSTNAME = ?, DTMUTATION = ?, SPLZ = ?, SCITY = ?, BSEX = ?, SSTREET = ?, FAMOUNT = ?, SNAME = ?, FDOUBLE = ?, SFAX = ?, STEL = ?, SPASSWORD = ?, SMAIL = ? WHERE TESTID = ?";
         try {
             final DomainObjectHome lHome = data.getSimpleHome();
             final DomainObject lObject = lHome.create();

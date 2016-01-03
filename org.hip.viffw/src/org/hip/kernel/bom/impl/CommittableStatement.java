@@ -19,6 +19,7 @@
 
 package org.hip.kernel.bom.impl;
 
+import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -40,14 +41,15 @@ import org.slf4j.LoggerFactory;
  * the Connection can be released to the pool.
  *
  * @author Benno Luthiger */
-public abstract class CommittableStatement extends VObject { // NOPMD by lbenno
+public abstract class CommittableStatement extends VObject implements Closeable { // NOPMD by lbenno
     private static final Logger LOG = LoggerFactory.getLogger(CommittableStatement.class);
 
     // instance variable
     protected transient Connection connection;
 
-    /** Closes the Connection. This method is public because this class may fail and, therefore, the Connection has to be
-     * closed by the client in a finally clause. */
+    /** Closes the Connection. This method is public because this class may fail and, therefore, the Connection has to
+     * be closed by the client in a finally clause. */
+    @Override
     public void close() {
         try {
             if (connection != null) {

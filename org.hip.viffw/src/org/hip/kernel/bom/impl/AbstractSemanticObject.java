@@ -62,9 +62,10 @@ abstract public class AbstractSemanticObject extends VObject implements Semantic
                     if (lObjectToCompare.get(lName) != null) {
                         return false;
                     }
-                }
-                else {
-                    return lValue.equals(lObjectToCompare.get(lName));
+                } else {
+                    if (!lValue.equals(lObjectToCompare.get(lName))) {
+                        return false;
+                    }
                 }
             }
         } catch (final GettingException exc) {
@@ -154,12 +155,10 @@ abstract public class AbstractSemanticObject extends VObject implements Semantic
         if (lProperty == null) {
             if (isDynamicAddAllowed()) {
                 propertySet().add(new PropertyImpl(propertySet(), inName, inValue));
-            }
-            else {
+            } else {
                 throw new SettingException("Invalid name: " + inName);
             }
-        }
-        else {
+        } else {
             try {
                 lProperty.setValue(inValue);
             } catch (final VInvalidValueException exc) {
@@ -181,7 +180,7 @@ abstract public class AbstractSemanticObject extends VObject implements Semantic
             for (final String lName : getPropertyNames2()) {
                 lMessage.append("\t<name=\"").append(lName).append("\" value=\"")
                         .append(get(lName) == null ? "null" : get(lName).toString())
-                .append("\"/>\n");
+                        .append("\"/>\n");
             }
         } catch (final GettingException exc) { // NOPMD by lbenno
             // left blank intentionally
