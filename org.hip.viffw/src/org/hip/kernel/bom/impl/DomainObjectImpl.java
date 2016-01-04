@@ -422,9 +422,8 @@ abstract public class DomainObjectImpl extends AbstractSemanticObject implements
     }
 
     private void initKeyValue(final Long inValue) throws VException {
-        final String[] lNumericTypes = new String[] { TypeDef.Number, TypeDef.BigInteger, TypeDef.Integer };
-        final Collection<String> lAccepted = Arrays.asList(lNumericTypes);
-
+        final Collection<String> lAccepted = Arrays.asList(TypeDef.Number, TypeDef.BigInteger, TypeDef.Integer,
+                TypeDef.Long);
         final ObjectDef lObjectDef = getObjectDef();
         final KeyDef lKeyDef = lObjectDef.getPrimaryKeyDef();
         for (final String lKeyName : lKeyDef.getKeyNames2()) {
