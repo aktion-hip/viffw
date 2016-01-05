@@ -169,6 +169,26 @@ abstract public class DomainObjectImpl extends AbstractSemanticObject implements
         return home;
     }
 
+    /** Get a <code>KeyObject</code> initialized with the specified value. */
+    private KeyObject getKey(final Long keyValue) {
+        KeyObject outKey = null;
+
+        final KeyDef lKeyDef = getObjectDef().getPrimaryKeyDef();
+        if (lKeyDef == null) {
+            return outKey;
+        }
+
+        outKey = new KeyObjectImpl();
+        for (final String lKeyName : lKeyDef.getKeyNames2()) {
+            try {
+                outKey.setValue(lKeyName, keyValue);
+            } catch (final VInvalidNameException | VInvalidValueException exc) {
+                LOG.error("Error encountered while setting the key!", exc);
+            }
+        }
+        return outKey;
+    }
+
     /** This method returns an instance of a key object. Null will be returned if no key def could be found.
      *
      * @return org.hip.kernel.bom.KeyObject */
@@ -404,18 +424,20 @@ abstract public class DomainObjectImpl extends AbstractSemanticObject implements
      * @exception java.sql.SQLException */
     @Override
     public Long insert(final boolean inCommit) throws SQLException, VException {
-        Collection<Long> lAutoKeys = Collections.emptyList();
+        Collection<Long> autoKeys = Collections.emptyList();
         Long outKey = Long.valueOf(0L);
         try (InsertStatement statement = new InsertStatement(getHome())) {
             statement.setInserts(this.createInsertString());
-            lAutoKeys = statement.executeInsert();
+            autoKeys = statement.executeInsert();
+            if (!autoKeys.isEmpty()) {
+                outKey = autoKeys.iterator().next();
+            }
             if (inCommit) {
                 statement.commit();
-                reinitialize();
+                initialKey = getKey(outKey);
             }
         }
-        if (!lAutoKeys.isEmpty()) {
-            outKey = lAutoKeys.iterator().next();
+        if (!autoKeys.isEmpty()) {
             initKeyValue(outKey);
         }
         return outKey;
