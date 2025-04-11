@@ -7,16 +7,18 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletConnection;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
 
 /** Implementation of the HttpServletRequest for testing purpose.
  *
@@ -29,9 +31,9 @@ public class TestServletRequest implements HttpServletRequest {
 
     /** TestServletRequest constructor comment. */
     private TestServletRequest(final Builder inBuilder) {
-        method = inBuilder.method;
-        contentType = inBuilder.contentType;
-        parameters = inBuilder.parameters;
+        this.method = inBuilder.method;
+        this.contentType = inBuilder.contentType;
+        this.parameters = inBuilder.parameters;
     }
 
     /** getAttribute method comment. */
@@ -68,7 +70,7 @@ public class TestServletRequest implements HttpServletRequest {
     /** getContentType method comment. */
     @Override
     public String getContentType() {
-        return contentType;
+        return this.contentType;
     }
 
     /** getContextPath method comment. */
@@ -79,7 +81,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /** getCookies method comment. */
     @Override
-    public javax.servlet.http.Cookie[] getCookies() {
+    public jakarta.servlet.http.Cookie[] getCookies() {
         return null;
     }
 
@@ -111,7 +113,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /** getInputStream method comment. */
     @Override
-    public javax.servlet.ServletInputStream getInputStream() throws java.io.IOException {
+    public jakarta.servlet.ServletInputStream getInputStream() throws java.io.IOException {
         return null;
     }
 
@@ -137,34 +139,34 @@ public class TestServletRequest implements HttpServletRequest {
     /** getMethod method comment. */
     @Override
     public String getMethod() {
-        return method;
+        return this.method;
     }
 
     @Override
     public String getParameter(final String inKey) {
-        final String[] out = parameters.get(inKey);
-        return out == null ? "" : (out.length == 0 ? "" : out[0]);
+        final String[] out = this.parameters.get(inKey);
+        return out == null ? "" : out.length == 0 ? "" : out[0];
     }
 
     @Override
     @SuppressWarnings("rawtypes")
     public Enumeration getParameterNames() {
-        return parameters.keys();
+        return this.parameters.keys();
     }
 
     /*
      * Returns an array of String objects containing all of the values the given request parameter has, or null if the
      * parameter does not exist.<br/>
-     * 
+     *
      * If the parameter has a single value, the array has a length of 1.
-     * 
+     *
      * @param inKey java.lang.String a String containing the name of the parameter whose value is requested
-     * 
+     *
      * @return java.lang.String[] an array of String objects containing the parameter's values
      */
     @Override
     public String[] getParameterValues(final String inKey) {
-        final Object lValue = parameters.get(inKey);
+        final Object lValue = this.parameters.get(inKey);
         if (lValue instanceof String[]) {
             return (String[]) lValue;
         }
@@ -223,7 +225,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /** getRequestDispatcher method comment. */
     @Override
-    public javax.servlet.RequestDispatcher getRequestDispatcher(final String arg1) {
+    public jakarta.servlet.RequestDispatcher getRequestDispatcher(final String arg1) {
         return null;
     }
 
@@ -282,11 +284,13 @@ public class TestServletRequest implements HttpServletRequest {
      * @return javax.servlet.http.HttpSession */
     @Override
     public HttpSession getSession(final boolean inNew) {
-        if (inNew)
-            if (session == null)
-                session = new TestSession();
+        if (inNew) {
+            if (this.session == null) {
+                this.session = new TestSession();
+            }
+        }
 
-        return session;
+        return this.session;
     }
 
     /** getUserPrincipal method comment. */
@@ -299,12 +303,6 @@ public class TestServletRequest implements HttpServletRequest {
     @Override
     public boolean isRequestedSessionIdFromCookie() {
         return true;
-    }
-
-    /** isRequestedSessionIdFromUrl method comment. */
-    @Override
-    public boolean isRequestedSessionIdFromUrl() {
-        return false;
     }
 
     /** isRequestedSessionIdFromURL method comment. */
@@ -341,16 +339,10 @@ public class TestServletRequest implements HttpServletRequest {
     public void setAttribute(final String arg1, final Object arg2) {
     }
 
-    /** getRealPath method comment. */
-    @Override
-    public String getRealPath(final String arg1) {
-        return null;
-    }
-
     @Override
     @SuppressWarnings("rawtypes")
     public Map getParameterMap() {
-        return parameters;
+        return this.parameters;
     }
 
     @Override
@@ -388,7 +380,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.ServletRequest#getServletContext()
      */
     @Override
@@ -399,7 +391,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.ServletRequest#startAsync()
      */
     @Override
@@ -410,7 +402,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.ServletRequest#startAsync(javax.servlet.ServletRequest, javax.servlet.ServletResponse)
      */
     @Override
@@ -422,7 +414,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.ServletRequest#isAsyncStarted()
      */
     @Override
@@ -433,7 +425,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.ServletRequest#isAsyncSupported()
      */
     @Override
@@ -444,7 +436,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.ServletRequest#getAsyncContext()
      */
     @Override
@@ -455,7 +447,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.ServletRequest#getDispatcherType()
      */
     @Override
@@ -466,7 +458,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.http.HttpServletRequest#authenticate(javax.servlet.http.HttpServletResponse)
      */
     @Override
@@ -477,7 +469,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.http.HttpServletRequest#login(java.lang.String, java.lang.String)
      */
     @Override
@@ -488,7 +480,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.http.HttpServletRequest#logout()
      */
     @Override
@@ -499,7 +491,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.http.HttpServletRequest#getParts()
      */
     @Override
@@ -510,7 +502,7 @@ public class TestServletRequest implements HttpServletRequest {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.http.HttpServletRequest#getPart(java.lang.String)
      */
     @Override
@@ -527,17 +519,17 @@ public class TestServletRequest implements HttpServletRequest {
         private Hashtable<String, String[]> parameters = new Hashtable<String, String[]>();
 
         public Builder setMethod(final String inMethod) {
-            method = inMethod;
+            this.method = inMethod;
             return this;
         }
 
         public Builder setContentType(final String inContentType) {
-            contentType = inContentType;
+            this.contentType = inContentType;
             return this;
         }
 
         public Builder setParameters(final Hashtable<String, String[]> inParameters) {
-            parameters = inParameters;
+            this.parameters = inParameters;
             return this;
         }
 
@@ -545,6 +537,42 @@ public class TestServletRequest implements HttpServletRequest {
             return new TestServletRequest(this);
         }
 
+    }
+
+    @Override
+    public long getContentLengthLong() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public String changeSessionId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <T extends HttpUpgradeHandler> T upgrade(final Class<T> handlerClass) throws IOException, ServletException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getRequestId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getProtocolRequestId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ServletConnection getServletConnection() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

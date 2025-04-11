@@ -1,9 +1,9 @@
 package org.hip.kernel.bom.model.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,7 +19,7 @@ import org.hip.kernel.bom.model.PropertyDef;
 import org.hip.kernel.bom.model.impl.JoinedObjectDefGenerator;
 import org.hip.kernel.bom.model.impl.JoinedObjectDefImpl;
 import org.hip.kernel.util.DefaultNameValueList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author: Benno Luthiger */
 public class JoinedObjectDefImplTest {
@@ -101,7 +101,7 @@ public class JoinedObjectDefImplTest {
 
     @Test
     public void testAddColumnDef() throws Exception {
-        final JoinedObjectDef lDef = new JoinedObjectDefImpl(constObjectDef);
+        final JoinedObjectDef lDef = new JoinedObjectDefImpl(this.constObjectDef);
         assertNotNull(lDef);
 
         // We create a column def and add it to the object def
@@ -128,9 +128,9 @@ public class JoinedObjectDefImplTest {
         assertNotNull(lList3);
         lDef.addColumnDef(lList3);
 
-        assertEquals("columnName 1", "tblTestMember.TESTMEMBERID", lDef.getColumnName(lList1));
-        assertEquals("columnName 2", "tblTestMember.SFIRSTNAME", lDef.getColumnName(lList2));
-        assertEquals("columnName 3", "tblTestMember.DTMUTATION", lDef.getColumnName(lList3));
+        assertEquals("tblTestMember.TESTMEMBERID", lDef.getColumnName(lList1));
+        assertEquals("tblTestMember.SFIRSTNAME", lDef.getColumnName(lList2));
+        assertEquals("tblTestMember.DTMUTATION", lDef.getColumnName(lList3));
     }
 
     // <columnDef columnName='FirstName' nestedObject='SelectNested'
@@ -139,7 +139,7 @@ public class JoinedObjectDefImplTest {
     public void testAddColumnDef2() throws Exception {
         final String lExpectedSQL = "SelectNested.SFIRSTNAME";
         final String lExpectedColumn = "FirstName";
-        final JoinedObjectDef lDef = new JoinedObjectDefImpl(constObjectDef);
+        final JoinedObjectDef lDef = new JoinedObjectDefImpl(this.constObjectDef);
         final DefaultNameValueList lList = new DefaultNameValueList();
         lList.setValue(ColumnDefDef.columnName, lExpectedColumn);
         lList.setValue(ColumnDefDef.domainObject, "org.hip.kernel.bom.impl.test.TestDomainObjectImpl");
@@ -147,12 +147,12 @@ public class JoinedObjectDefImplTest {
 
         lDef.addColumnDef(lList);
 
-        assertEquals("nested with domain object", lExpectedSQL,
+        assertEquals(lExpectedSQL,
                 ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs)).iterator().next());
 
         final MappingDef lMapping = lDef.getDomainObjectDef().getPropertyDef(lExpectedColumn).getMappingDef();
-        assertEquals("mapped table name", "tblTestMember", lMapping.getTableName());
-        assertEquals("mapped column name", "SFIRSTNAME", lMapping.getColumnName());
+        assertEquals("tblTestMember", lMapping.getTableName());
+        assertEquals("SFIRSTNAME", lMapping.getColumnName());
     }
 
     // <columnDef columnName='FirstName' nestedObject='SelectNested' valueType='String'/>
@@ -160,7 +160,7 @@ public class JoinedObjectDefImplTest {
     public void testAddColumnDef3() throws Exception {
         final String lExpectedSQL = "SelectNested.FIRSTNAME";
         final String lExpectedColumn = "FIRSTNAME";
-        final JoinedObjectDef lDef = new JoinedObjectDefImpl(constObjectDef);
+        final JoinedObjectDef lDef = new JoinedObjectDefImpl(this.constObjectDef);
         final DefaultNameValueList lList = new DefaultNameValueList();
         lList.setValue(ColumnDefDef.columnName, lExpectedColumn);
         lList.setValue(ColumnDefDef.nestedObject, "SelectNested");
@@ -168,12 +168,12 @@ public class JoinedObjectDefImplTest {
 
         lDef.addColumnDef(lList);
 
-        assertEquals("SQL of nested without domain object", lExpectedSQL,
+        assertEquals(lExpectedSQL,
                 ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs)).iterator().next());
 
         final MappingDef lMapping = lDef.getDomainObjectDef().getPropertyDef(lExpectedColumn).getMappingDef();
-        assertEquals("mapped table name", "SelectNested", lMapping.getTableName());
-        assertEquals("mapped column name", lExpectedColumn, lMapping.getColumnName());
+        assertEquals("SelectNested", lMapping.getTableName());
+        assertEquals(lExpectedColumn, lMapping.getColumnName());
     }
 
     // <columnDef columnName='FirstName' as='AsSomethingDifferent' nestedObject='SelectNested'
@@ -185,7 +185,7 @@ public class JoinedObjectDefImplTest {
         final String lExpectedSQL1 = "SelectNested.SFIRSTNAME AS ASSOMETHINGDIFFERENT";
         final String lExpectedSQL2 = "tblTestMember.SFIRSTNAME AS ASSOMETHINGDIFFERENT";
         final String lExpectedColumn = "ASSOMETHINGDIFFERENT";
-        JoinedObjectDef lDef = new JoinedObjectDefImpl(constObjectDef);
+        JoinedObjectDef lDef = new JoinedObjectDefImpl(this.constObjectDef);
         DefaultNameValueList lList = new DefaultNameValueList();
         lList.setValue(ColumnDefDef.columnName, "FirstName");
         lList.setValue(ColumnDefDef.nestedObject, "SelectNested");
@@ -194,27 +194,27 @@ public class JoinedObjectDefImplTest {
 
         lDef.addColumnDef(lList);
 
-        assertEquals("SQL of nested alterted", lExpectedSQL1, ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs))
+        assertEquals(lExpectedSQL1, ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs))
                 .iterator().next());
 
         MappingDef lMapping = lDef.getDomainObjectDef().getPropertyDef(lExpectedColumn).getMappingDef();
-        assertEquals("mapped table name", "", lMapping.getTableName());
-        assertEquals("mapped column name", lExpectedColumn, lMapping.getColumnName());
+        assertEquals("", lMapping.getTableName());
+        assertEquals(lExpectedColumn, lMapping.getColumnName());
 
         lList = new DefaultNameValueList();
         lList.setValue(ColumnDefDef.columnName, "FirstName");
         lList.setValue(ColumnDefDef.domainObject, "org.hip.kernel.bom.impl.test.TestDomainObjectImpl");
         lList.setValue(ColumnDefDef.as, lExpectedColumn);
 
-        lDef = new JoinedObjectDefImpl(constObjectDef);
+        lDef = new JoinedObjectDefImpl(this.constObjectDef);
         lDef.addColumnDef(lList);
 
-        assertEquals("SQL of alterted", lExpectedSQL2, ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs))
+        assertEquals(lExpectedSQL2, ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs))
                 .iterator().next());
 
         lMapping = lDef.getDomainObjectDef().getPropertyDef(lExpectedColumn).getMappingDef();
-        assertEquals("mapped table name", "", lMapping.getTableName());
-        assertEquals("mapped column name", lExpectedColumn, lMapping.getColumnName());
+        assertEquals("", lMapping.getTableName());
+        assertEquals(lExpectedColumn, lMapping.getColumnName());
     }
 
     // <columnDef columnName='FirstName' alias='AliasSomethingDifferent'
@@ -223,7 +223,7 @@ public class JoinedObjectDefImplTest {
     public void testAddColumnDef5() throws Exception {
         final String lExpectedSQL = "tblTestMember.SFIRSTNAME";
         final String lExpectedColumn = "AliasSomethingDifferent";
-        final JoinedObjectDef lDef = new JoinedObjectDefImpl(constObjectDef);
+        final JoinedObjectDef lDef = new JoinedObjectDefImpl(this.constObjectDef);
         final DefaultNameValueList lList = new DefaultNameValueList();
         lList.setValue(ColumnDefDef.columnName, "FirstName");
         lList.setValue(ColumnDefDef.domainObject, "org.hip.kernel.bom.impl.test.TestDomainObjectImpl");
@@ -231,12 +231,12 @@ public class JoinedObjectDefImplTest {
 
         lDef.addColumnDef(lList);
 
-        assertEquals("SQL of nested alterted", lExpectedSQL, ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs))
+        assertEquals(lExpectedSQL, ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs))
                 .iterator().next());
 
         final MappingDef lMapping = lDef.getDomainObjectDef().getPropertyDef(lExpectedColumn).getMappingDef();
-        assertEquals("mapped table name", "tblTestMember", lMapping.getTableName());
-        assertEquals("mapped column name", "SFIRSTNAME", lMapping.getColumnName());
+        assertEquals("tblTestMember", lMapping.getTableName());
+        assertEquals("SFIRSTNAME", lMapping.getColumnName());
     }
 
     // <columnDef columnName='Mutation' template='NOW() > {0}'
@@ -257,7 +257,7 @@ public class JoinedObjectDefImplTest {
         final String lExpectedColumn2 = "ISACTIVE";
         final String lExpectedColumn3 = "HASSUSPENDED";
 
-        JoinedObjectDef lDef = new JoinedObjectDefImpl(constObjectDef);
+        JoinedObjectDef lDef = new JoinedObjectDefImpl(this.constObjectDef);
         DefaultNameValueList lList = new DefaultNameValueList();
         lList.setValue(ColumnDefDef.columnName, lExpectedColumn1);
         lList.setValue(ColumnDefDef.domainObject, "org.hip.kernel.bom.impl.test.TestDomainObjectImpl");
@@ -265,12 +265,12 @@ public class JoinedObjectDefImplTest {
 
         lDef.addColumnDef(lList);
 
-        assertEquals("SQL with template", lExpectedSQL1, ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs))
+        assertEquals(lExpectedSQL1, ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs))
                 .iterator().next());
 
         MappingDef lMapping = lDef.getDomainObjectDef().getPropertyDef(lExpectedColumn1).getMappingDef();
-        assertEquals("mapped table name 1", "tblTestMember", lMapping.getTableName());
-        assertEquals("mapped column name 1", "DTMUTATION", lMapping.getColumnName());
+        assertEquals("tblTestMember", lMapping.getTableName());
+        assertEquals("DTMUTATION", lMapping.getColumnName());
         //
         lList = new DefaultNameValueList();
         lList.setValue(ColumnDefDef.columnName, lExpectedColumn1);
@@ -278,15 +278,15 @@ public class JoinedObjectDefImplTest {
         lList.setValue(ColumnDefDef.template, "NOW() > {0}");
         lList.setValue(ColumnDefDef.as, lExpectedColumn2);
 
-        lDef = new JoinedObjectDefImpl(constObjectDef);
+        lDef = new JoinedObjectDefImpl(this.constObjectDef);
         lDef.addColumnDef(lList);
 
-        assertEquals("SQL with template altered", lExpectedSQL2,
+        assertEquals(lExpectedSQL2,
                 ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs)).iterator().next());
 
         lMapping = lDef.getDomainObjectDef().getPropertyDef(lExpectedColumn2).getMappingDef();
-        assertEquals("mapped table name 2", "", lMapping.getTableName());
-        assertEquals("mapped column name 2", lExpectedColumn2, lMapping.getColumnName());
+        assertEquals("", lMapping.getTableName());
+        assertEquals(lExpectedColumn2, lMapping.getColumnName());
         //
         lList = new DefaultNameValueList();
         lList.setValue(ColumnDefDef.columnName, lExpectedColumn3);
@@ -295,15 +295,15 @@ public class JoinedObjectDefImplTest {
         lList.setValue(ColumnDefDef.nestedObject, "SelectNested");
         lList.setValue(ColumnDefDef.valueType, "Number");
 
-        lDef = new JoinedObjectDefImpl(constObjectDef);
+        lDef = new JoinedObjectDefImpl(this.constObjectDef);
         lDef.addColumnDef(lList);
 
-        assertEquals("SQL with template and virtual column", lExpectedSQL3,
+        assertEquals(lExpectedSQL3,
                 ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs)).iterator().next());
 
         lMapping = lDef.getDomainObjectDef().getPropertyDef(lExpectedColumn3).getMappingDef();
-        assertEquals("mapped table name 3", "", lMapping.getTableName());
-        assertEquals("mapped column name 3", lExpectedColumn3, lMapping.getColumnName());
+        assertEquals("", lMapping.getTableName());
+        assertEquals(lExpectedColumn3, lMapping.getColumnName());
         //
         lList = new DefaultNameValueList();
         lList.setValue(ColumnDefDef.columnName, lExpectedColumn1);
@@ -312,17 +312,17 @@ public class JoinedObjectDefImplTest {
         lList.setValue(ColumnDefDef.as, lExpectedColumn2);
         lList.setValue(ColumnDefDef.valueType, "Number");
 
-        lDef = new JoinedObjectDefImpl(constObjectDef);
+        lDef = new JoinedObjectDefImpl(this.constObjectDef);
         lDef.addColumnDef(lList);
 
-        assertEquals("SQL with template and value type", lExpectedSQL2,
+        assertEquals(lExpectedSQL2,
                 ((Collection<?>) lDef.get(JoinedObjectDefDef.columnDefs)).iterator().next());
 
         final PropertyDef lPropertyDef = lDef.getDomainObjectDef().getPropertyDef(lExpectedColumn2);
         lMapping = lPropertyDef.getMappingDef();
-        assertEquals("mapped table name 4", "", lMapping.getTableName());
-        assertEquals("mapped column name 4", lExpectedColumn2, lMapping.getColumnName());
-        assertEquals("value type", "Number", lPropertyDef.getValueType());
+        assertEquals("", lMapping.getTableName());
+        assertEquals(lExpectedColumn2, lMapping.getColumnName());
+        assertEquals("Number", lPropertyDef.getValueType());
     }
 
     @Test
@@ -330,22 +330,22 @@ public class JoinedObjectDefImplTest {
         final String[] lExpected = { "version", "columnDefs", "joinDef", "parent", "objectName" };
         final Vector<String> lVExpected = new Vector<String>(Arrays.asList(lExpected));
         JoinedObjectDef lDef = new JoinedObjectDefImpl();
-        assertNotNull("testCreation", lDef);
+        assertNotNull(lDef);
 
         int i = 0;
         for (final String lName : lDef.getPropertyNames2()) {
-            assertTrue("testCreation 1." + i, lVExpected.contains(lName));
+            assertTrue(lVExpected.contains(lName));
         }
 
         lDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(XML_OBJECT_DEF1);
         i = 0;
         for (final String lName : lDef.getPropertyNames2()) {
-            assertTrue("testCreation 2." + i, lVExpected.contains(lName));
+            assertTrue(lVExpected.contains(lName));
         }
 
-        assertEquals("objectName", "TestJoin1", lDef.get(JoinedObjectDefDef.objectName));
-        assertEquals("parent", "org.hip.kernel.bom.ReadOnlyDomainObject", lDef.get(JoinedObjectDefDef.parent));
-        assertEquals("version", "1.0", lDef.get(JoinedObjectDefDef.version));
+        assertEquals("TestJoin1", lDef.get(JoinedObjectDefDef.objectName));
+        assertEquals("org.hip.kernel.bom.ReadOnlyDomainObject", lDef.get(JoinedObjectDefDef.parent));
+        assertEquals("1.0", lDef.get(JoinedObjectDefDef.version));
     }
 
     @Test
@@ -357,10 +357,10 @@ public class JoinedObjectDefImplTest {
         final JoinedObjectDef lObjectDef3 = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(
                 XML_OBJECT_DEF1);
 
-        assertTrue("equals", lObjectDef1.equals(lObjectDef3));
-        assertEquals("equal hash code", lObjectDef1.hashCode(), lObjectDef3.hashCode());
-        assertTrue("not equals", !lObjectDef1.equals(lObjectDef2));
-        assertTrue("not equal hash code", lObjectDef1.hashCode() != lObjectDef2.hashCode());
+        assertTrue(lObjectDef1.equals(lObjectDef3));
+        assertEquals(lObjectDef1.hashCode(), lObjectDef3.hashCode());
+        assertTrue(!lObjectDef1.equals(lObjectDef2));
+        assertTrue(lObjectDef1.hashCode() != lObjectDef2.hashCode());
     }
 
     @Test
@@ -372,7 +372,7 @@ public class JoinedObjectDefImplTest {
         lList.setValue(ColumnDefDef.columnName, "MemberID");
         lList.setValue(ColumnDefDef.domainObject, "org.hip.kernel.bom.impl.test.TestDomainObjectImpl");
 
-        assertEquals("getColumnName", "tblTestMember.TESTMEMBERID", lObjectDef.getColumnName(lList));
+        assertEquals("tblTestMember.TESTMEMBERID", lObjectDef.getColumnName(lList));
     }
 
     @Test
@@ -380,16 +380,16 @@ public class JoinedObjectDefImplTest {
         final JoinedObjectDef lObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(
                 XML_OBJECT_DEF1);
 
-        assertEquals("getTableName 1", "tblTestMember",
+        assertEquals("tblTestMember",
                 lObjectDef.getTableName("org.hip.kernel.bom.impl.test.TestDomainObjectImpl"));
-        assertEquals("getTableName 2", "tblGroupAdmin",
+        assertEquals("tblGroupAdmin",
                 lObjectDef.getTableName("org.hip.kernel.bom.impl.test.LinkGroupMemberImpl"));
     }
 
     @Test
     public void testSet() throws Exception {
         final JoinedObjectDef lDef = new JoinedObjectDefImpl();
-        assertNotNull("testSet", lDef);
+        assertNotNull(lDef);
 
         // correct set
         try {
@@ -429,7 +429,7 @@ public class JoinedObjectDefImplTest {
     public void testHidden() throws Exception {
         final JoinedObjectDef lObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(
                 XML_OBJECT_DEF2);
-        assertEquals("hidden", "tblGroupAdmin.GROUPID", lObjectDef.getHidden("GroupID"));
+        assertEquals("tblGroupAdmin.GROUPID", lObjectDef.getHidden("GroupID"));
     }
 
     @Test
@@ -441,7 +441,7 @@ public class JoinedObjectDefImplTest {
 
         final JoinedObjectDef lObjectDef = new JoinedObjectDefImpl();
         lObjectDef.addHidden(lList);
-        assertEquals("hidden", "tblTestMember.TESTMEMBERID", lObjectDef.getHidden(lHidden));
+        assertEquals("tblTestMember.TESTMEMBERID", lObjectDef.getHidden(lHidden));
     }
 
     @Test

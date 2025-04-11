@@ -1,12 +1,11 @@
 package org.hip.kernel.bom.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import org.hip.kernel.bom.BOMException;
 import org.hip.kernel.bom.DBAdapterJoin;
@@ -27,9 +26,9 @@ import org.hip.kernel.bom.model.JoinedObjectDef;
 import org.hip.kernel.bom.model.impl.JoinedObjectDefGenerator;
 import org.hip.kernel.exc.VException;
 import org.hip.kernel.test.VSysHelper;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 /** MySQLAdapterJoinTest.java
@@ -101,12 +100,12 @@ public class MySQLAdapterJoinTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void before() {
         VSysHelper.INSTANCE.copyToRunning();
     }
 
-    @AfterClass
+    @AfterAll
     public static void after() {
         VSysHelper.INSTANCE.deleteRunning();
     }
@@ -124,19 +123,19 @@ public class MySQLAdapterJoinTest {
                     lObjecDefString);
             DBAdapterJoin lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
             String lSQL = lAdapter.createCountAllSQL();
-            assertEquals("createCountAllSQL equi", lExpected1, lSQL);
+            assertEquals(lExpected1, lSQL);
 
             lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
             lJoinedObjectDef.getJoinDef().set(JoinDefDef.joinType, "LEFT_JOIN");
             lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
             lSQL = lAdapter.createCountAllSQL();
-            assertEquals("createCountAllSQL left", lExpected2, lSQL);
+            assertEquals(lExpected2, lSQL);
 
             lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
             lJoinedObjectDef.getJoinDef().set(JoinDefDef.joinType, "RIGHT_JOIN");
             lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
             lSQL = lAdapter.createCountAllSQL();
-            assertEquals("createCountAllSQL right", lExpected3, lSQL);
+            assertEquals(lExpected3, lSQL);
         } catch (final SAXException exc) {
             fail(exc.getMessage());
         } catch (final VException exc) {
@@ -172,19 +171,19 @@ public class MySQLAdapterJoinTest {
                     lObjecDefString);
             DBAdapterJoin lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
             String lSQL = lAdapter.createSelectAllSQL();
-            assertEquals("createSelectAllSQL equi", lExpected1, lSQL);
+            assertEquals(lExpected1, lSQL);
 
             lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
             lJoinedObjectDef.getJoinDef().set(JoinDefDef.joinType, "LEFT_JOIN");
             lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
             lSQL = lAdapter.createSelectAllSQL();
-            assertEquals("createSelectAllSQL left", lExpected2, lSQL);
+            assertEquals(lExpected2, lSQL);
 
             lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
             lJoinedObjectDef.getJoinDef().set(JoinDefDef.joinType, "RIGHT_JOIN");
             lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
             lSQL = lAdapter.createSelectAllSQL();
-            assertEquals("createSelectAllSQL right", lExpected3, lSQL);
+            assertEquals(lExpected3, lSQL);
         } catch (final SAXException exc) {
             fail(exc.getMessage());
         } catch (final VException exc) {
@@ -204,13 +203,13 @@ public class MySQLAdapterJoinTest {
             lJoinedObjectDef.getJoinDef().fillPlaceholder(PLACEHOLDER_NAME, lPart1);
 
             final DBAdapterJoin lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
-            assertEquals("createSelectAllSQL with placeholder 1", lExpected1, lAdapter.createSelectAllSQL());
+            assertEquals(lExpected1, lAdapter.createSelectAllSQL());
 
             lJoinedObjectDef.getJoinDef().fillPlaceholder(PLACEHOLDER_NAME, lPart2);
-            assertEquals("createSelectAllSQL with placeholder 1 again", lExpected1, lAdapter.createSelectAllSQL());
+            assertEquals(lExpected1, lAdapter.createSelectAllSQL());
 
             lAdapter.reset();
-            assertEquals("createSelectAllSQL with placeholder 2", lExpected2, lAdapter.createSelectAllSQL());
+            assertEquals(lExpected2, lAdapter.createSelectAllSQL());
         } catch (final Exception exc) {
             fail(exc.getMessage());
         }
@@ -231,7 +230,7 @@ public class MySQLAdapterJoinTest {
         lKey.setValue("TestID", new BigDecimal(12));
         lKey.setValue("Name", "Nova");
 
-        final Calendar lCalender = GregorianCalendar.getInstance();
+        final Calendar lCalender = Calendar.getInstance();
         lCalender.set(2002, 1, 1, 10, 0, 0);
         lCalender.getTime();
         lKey.setValue("Mutation", new Timestamp(lCalender.getTimeInMillis()));
@@ -240,23 +239,23 @@ public class MySQLAdapterJoinTest {
                 lObjecDefString);
         DBAdapterJoin lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
         String lSQL = lAdapter.createCountSQL(lKey, lHome);
-        assertEquals("createCountSQL equi", lExpected1, lSQL);
+        assertEquals(lExpected1, lSQL);
 
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
         lJoinedObjectDef.getJoinDef().set(JoinDefDef.joinType, "LEFT_JOIN");
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
         lSQL = lAdapter.createCountSQL(lKey, lHome);
-        assertEquals("createCountSQL left", lExpected2, lSQL);
+        assertEquals(lExpected2, lSQL);
 
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
         lJoinedObjectDef.getJoinDef().set(JoinDefDef.joinType, "RIGHT_JOIN");
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
         lSQL = lAdapter.createCountSQL(lKey, lHome);
-        assertEquals("createCountSQL right", lExpected3, lSQL);
+        assertEquals(lExpected3, lSQL);
 
         lKey.setDistinct(true);
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
-        assertEquals("createCountSQL distinct", lExpected5, lAdapter.createCountSQL(lKey, lHome));
+        assertEquals(lExpected5, lAdapter.createCountSQL(lKey, lHome));
         lKey.setDistinct(false);
 
         final GroupByObject lGroupBy = new GroupByObjectImpl();
@@ -265,7 +264,7 @@ public class MySQLAdapterJoinTest {
         lJoinedObjectDef.getJoinDef().set(JoinDefDef.joinType, "RIGHT_JOIN");
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
         lSQL = lAdapter.createCountSQL(lKey, new HavingObjectImpl(), lGroupBy, lHome);
-        assertEquals("createCountSQL with GROUP BY", lExpected4, lSQL);
+        assertEquals(lExpected4, lSQL);
     }
 
     @Test
@@ -288,7 +287,7 @@ public class MySQLAdapterJoinTest {
         lKey.setValue("TestID", new BigDecimal(12));
         lKey.setValue("Name", "Nova");
 
-        final Calendar lCalender = GregorianCalendar.getInstance();
+        final Calendar lCalender = Calendar.getInstance();
         lCalender.set(2002, 1, 1, 10, 0, 0);
         lCalender.getTime();
         lKey.setValue("Mutation", new Timestamp(lCalender.getTimeInMillis()));
@@ -301,19 +300,19 @@ public class MySQLAdapterJoinTest {
                 lObjecDefString);
         DBAdapterJoin lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
         String lSQL = lAdapter.createSelectSQL(lKey, lOrder, lHome);
-        assertEquals("createSelectSQL equi", lExpected1, lSQL);
+        assertEquals(lExpected1, lSQL);
 
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
         lJoinedObjectDef.getJoinDef().set(JoinDefDef.joinType, "LEFT_JOIN");
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
         lSQL = lAdapter.createSelectSQL(lKey, lOrder, lHome);
-        assertEquals("createSelectSQL left", lExpected2, lSQL);
+        assertEquals(lExpected2, lSQL);
 
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
         lJoinedObjectDef.getJoinDef().set(JoinDefDef.joinType, "RIGHT_JOIN");
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
         lSQL = lAdapter.createSelectSQL(lKey, lOrder, lHome);
-        assertEquals("createSelectSQL right", lExpected3, lSQL);
+        assertEquals(lExpected3, lSQL);
 
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
@@ -321,7 +320,7 @@ public class MySQLAdapterJoinTest {
         lKey.setValue("TestID", new BigDecimal(12), "<=");
         lKey.setValue("Name", "Nova");
         lSQL = lAdapter.createSelectSQL(lKey, lHome);
-        assertEquals("createSelectSQL with comparison", lExpected4, lSQL);
+        assertEquals(lExpected4, lSQL);
 
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
@@ -329,11 +328,11 @@ public class MySQLAdapterJoinTest {
         lKey.setValue("TestID", new BigDecimal(12), "<=");
         lKey.setValue("Name", "Nova", "=", BinaryBooleanOperator.OR);
         lSQL = lAdapter.createSelectSQL(lKey, lHome);
-        assertEquals("createSelectSQL with link", lExpected5, lSQL);
+        assertEquals(lExpected5, lSQL);
 
         lKey.setDistinct(true);
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
-        assertEquals("createSelectSQL with distinct rows", lExpected10, lAdapter.createSelectSQL(lKey, lHome));
+        assertEquals(lExpected10, lAdapter.createSelectSQL(lKey, lHome));
         lKey.setDistinct(false);
 
         final HavingObject lHaving = new HavingObjectImpl();
@@ -341,25 +340,25 @@ public class MySQLAdapterJoinTest {
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
         lSQL = lAdapter.createSelectSQL(lKey, new OrderObjectImpl(), lHaving, lHome);
-        assertEquals("createSelectSQL with HAVING", lExpected6, lSQL);
+        assertEquals(lExpected6, lSQL);
 
         final GroupByObject lGroupBy = new GroupByObjectImpl();
         lGroupBy.setValue("Mutation", false, 0);
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
         lSQL = lAdapter.createSelectSQL(lKey, new OrderObjectImpl(), lHaving, lGroupBy, lHome);
-        assertEquals("createSelectSQL with GROUP BY", lExpected7, lSQL);
+        assertEquals(lExpected7, lSQL);
 
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
         lSQL = lAdapter.createSelectSQL(new KeyObjectImpl(), new OrderObjectImpl(), new HavingObjectImpl(), lGroupBy,
                 lHome);
-        assertEquals("createSelectSQL with GROUP BY and empty key", lExpected8, lSQL);
+        assertEquals(lExpected8, lSQL);
 
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(lObjecDefString);
         lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
         lSQL = lAdapter.createSelectSQL(lKey, new LimitObjectImpl(10, 75), lHome);
-        assertEquals("createSelectSQL with LIMIT", lExpected9, lSQL);
+        assertEquals(lExpected9, lSQL);
     }
 
     @Test
@@ -373,7 +372,7 @@ public class MySQLAdapterJoinTest {
                     lObjecDefString);
             final DBAdapterJoin lAdapter = new MySQLAdapterJoin(lJoinedObjectDef);
             final String lSQL = lAdapter.createSelectAllSQL();
-            assertEquals("create nested", lExpected, lSQL);
+            assertEquals(lExpected, lSQL);
         } catch (final SAXException exc) {
             fail(exc.getMessage());
         } catch (final VException exc) {

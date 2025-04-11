@@ -1,8 +1,8 @@
 package org.hip.kernel.bom.model.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Iterator;
 
@@ -14,7 +14,7 @@ import org.hip.kernel.bom.model.PrimaryKeyDef;
 import org.hip.kernel.bom.model.PropertyDef;
 import org.hip.kernel.bom.model.impl.ObjectDefGenerator;
 import org.hip.kernel.sys.VSys;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author: Benno Luthiger */
 public class ObjectDefGeneratorTest {
@@ -110,9 +110,9 @@ public class ObjectDefGeneratorTest {
         try {
             final ObjectDef lObjectDef = ObjectDefGenerator.getSingleton().createObjectDef(XML_OBJECT_DEF);
 
-            assertEquals("testGenerate 1", "TestDomainObject", lObjectDef.get(ObjectDefDef.objectName));
-            assertEquals("testGenerate 2", "org.hip.kernel.bom.DomainObject", lObjectDef.get(ObjectDefDef.parent));
-            assertEquals("testGenerate 3", "1.0", lObjectDef.get(ObjectDefDef.version));
+            assertEquals("TestDomainObject", lObjectDef.get(ObjectDefDef.objectName));
+            assertEquals("org.hip.kernel.bom.DomainObject", lObjectDef.get(ObjectDefDef.parent));
+            assertEquals("1.0", lObjectDef.get(ObjectDefDef.version));
 
             outPrimary(lObjectDef);
             outPropertySet((PropertySet) lObjectDef.get(ObjectDefDef.propertyDefs));

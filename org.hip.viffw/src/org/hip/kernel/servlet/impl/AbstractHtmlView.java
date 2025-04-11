@@ -25,8 +25,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-import javax.servlet.ServletOutputStream;
-
 import org.hip.kernel.exc.VError;
 import org.hip.kernel.servlet.Context;
 import org.hip.kernel.servlet.HtmlView;
@@ -34,6 +32,8 @@ import org.hip.kernel.servlet.RequestException;
 import org.hip.kernel.sys.VSys;
 import org.hip.kernel.util.TransformerProxy;
 import org.hip.kernel.util.XSLProcessingException;
+
+import jakarta.servlet.ServletOutputStream;
 
 /** Baseclass of all html views
  *
@@ -64,7 +64,7 @@ abstract public class AbstractHtmlView extends AbstractView implements HtmlView 
     protected AbstractHtmlView(final Context inContext) {
         super(inContext);
         if (inContext != null) {
-            subAppPath = inContext.getServletPath() + "/";
+            this.subAppPath = inContext.getServletPath() + "/";
         }
         this.initialize();
     }
@@ -73,7 +73,7 @@ abstract public class AbstractHtmlView extends AbstractView implements HtmlView 
      *
      * @return java.lang.String - html-string of view. */
     public String getHTMLString() {
-        return htmlString;
+        return this.htmlString;
     }
 
     private String getRelativeHTMLName() {
@@ -84,7 +84,7 @@ abstract public class AbstractHtmlView extends AbstractView implements HtmlView 
      *
      * @return String */
     protected String getSubAppPath() {
-        return subAppPath;
+        return this.subAppPath;
     }
 
     /** Returns the relative path and name of the HTML or XSL file (relative to the root of the websites)
@@ -150,7 +150,7 @@ abstract public class AbstractHtmlView extends AbstractView implements HtmlView 
      * <b>Note:</b> Use this method to output bit streams.<br/>
      * To render the view with the correct encodings set, use <code>renderToWriter(PrintWriter, String)</code> instead.
      *
-     * @param inStream javax.servlet.ServletOutputStream - Output stream of servlet response
+     * @param inStream {@link ServletOutputStream} - Output stream of servlet response
      * @param inSessionID java.lang.String
      * @throws org.hip.kernel.servlet.RequestException */
     @Override
@@ -165,16 +165,16 @@ abstract public class AbstractHtmlView extends AbstractView implements HtmlView 
     @Override
     public void renderToWriter(final PrintWriter inWriter, final String inSessionID) throws RequestException { // NOPMD
         try {
-            if (xsltTransformer == null) {
-                if (htmlString == null) {
+            if (this.xsltTransformer == null) {
+                if (this.htmlString == null) {
                     inWriter.println("No HTML for view!");
                 }
                 else {
-                    inWriter.print(htmlString);
+                    inWriter.print(this.htmlString);
                 }
                 return;
             }
-            xsltTransformer.renderToWriter(inWriter, inSessionID);
+            this.xsltTransformer.renderToWriter(inWriter, inSessionID);
         } catch (final XSLProcessingException exc) {
             throw new RequestException(exc);
         }
@@ -184,7 +184,7 @@ abstract public class AbstractHtmlView extends AbstractView implements HtmlView 
      *
      * @param inHTMLString java.lang.String - html-representation of this view. */
     public void setHTMLString(final String inHTMLString) {
-        htmlString = inHTMLString;
+        this.htmlString = inHTMLString;
     }
 
     /** Sets the Transformer to generate this view.
@@ -192,7 +192,7 @@ abstract public class AbstractHtmlView extends AbstractView implements HtmlView 
      * @param inTransformer org.hip.kernel.util.TransformerProxy */
     @Override
     public void setTransformer(final TransformerProxy inTransformer) {
-        xsltTransformer = inTransformer;
+        this.xsltTransformer = inTransformer;
     }
 
     /** Returns the Transformer which generates this view. If it wasn't set the method returns null.
@@ -200,14 +200,14 @@ abstract public class AbstractHtmlView extends AbstractView implements HtmlView 
      * @return org.hip.kernel.util.TransformerProxy */
     @Override
     public TransformerProxy getTransformer() {
-        return xsltTransformer;
+        return this.xsltTransformer;
     }
 
     @Override
     public int hashCode() { // NOPMD
         final int prime = 31; // NOPMD
         int result = 1;
-        result = prime * result + ((htmlString == null) ? 0 : htmlString.hashCode());
+        result = prime * result + (this.htmlString == null ? 0 : this.htmlString.hashCode());
         return result;
     }
 
@@ -224,12 +224,12 @@ abstract public class AbstractHtmlView extends AbstractView implements HtmlView 
             return false;
         }
         final AbstractHtmlView lOther = (AbstractHtmlView) inObject;
-        if (htmlString == null) {
+        if (this.htmlString == null) {
             if (lOther.getHTMLString() != null) {
                 return false;
             }
         }
-        else if (!htmlString.equals(lOther.getHTMLString())) {
+        else if (!this.htmlString.equals(lOther.getHTMLString())) {
             return false;
         }
         return true;

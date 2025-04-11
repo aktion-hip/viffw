@@ -1,14 +1,14 @@
 package org.hip.kernel.util.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
 import org.hip.kernel.util.DefaultNameValue;
 import org.hip.kernel.util.NameValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author: Benno Luthiger */
 public class DefaultNameValueTest {
@@ -19,13 +19,13 @@ public class DefaultNameValueTest {
         final Object lValue = new Integer(100);
         final NameValue lNameValue = new DefaultNameValue(null, lName, lValue);
 
-        assertEquals("getName", lName, lNameValue.getName());
-        assertEquals("getValue", lValue, lNameValue.getValue());
+        assertEquals(lName, lNameValue.getName());
+        assertEquals(lValue, lNameValue.getValue());
 
         // setName() does nothing
         try {
             lNameValue.setName(lName + "!!");
-            assertEquals("getName", lName, lNameValue.getName());
+            assertEquals(lName, lNameValue.getName());
         } catch (final org.hip.kernel.util.VInvalidNameException exc) {
             fail(exc.getMessage());
         }
@@ -33,8 +33,8 @@ public class DefaultNameValueTest {
         // set() does nothing
         try {
             lNameValue.set(lName + "!!", lName + "!!!");
-            assertEquals("getName", lName, lNameValue.getName());
-            assertEquals("getValue", lValue, lNameValue.getValue());
+            assertEquals(lName, lNameValue.getName());
+            assertEquals(lValue, lNameValue.getValue());
         } catch (final org.hip.kernel.util.VInvalidNameException exc) {
             fail(exc.getMessage());
         } catch (final org.hip.kernel.util.VInvalidValueException exc) {
@@ -44,7 +44,7 @@ public class DefaultNameValueTest {
         // setValue() changes the value
         try {
             lNameValue.setValue(lName + "!!!");
-            assertEquals("getValue", lName + "!!!", lNameValue.getValue());
+            assertEquals(lName + "!!!", lNameValue.getValue());
         } catch (final org.hip.kernel.util.VInvalidValueException exc) {
             fail(exc.getMessage());
         }
@@ -62,11 +62,11 @@ public class DefaultNameValueTest {
 
         final NameValue lNameValue3 = new DefaultNameValue(null, lName1, lValue1);
 
-        assertTrue("equals 1", lNameValue1.equals(lNameValue3));
-        assertEquals("equal hashCode 1", lNameValue1.hashCode(), lNameValue3.hashCode());
+        assertTrue(lNameValue1.equals(lNameValue3));
+        assertEquals(lNameValue1.hashCode(), lNameValue3.hashCode());
 
-        assertTrue("not equals 1", !lNameValue1.equals(lNameValue2));
-        assertTrue("not equal hashCode 1", lNameValue1.hashCode() != lNameValue2.hashCode());
+        assertTrue(!lNameValue1.equals(lNameValue2));
+        assertTrue(lNameValue1.hashCode() != lNameValue2.hashCode());
 
         // change the value of lNameValue3
         try {
@@ -74,10 +74,10 @@ public class DefaultNameValueTest {
         } catch (final org.hip.kernel.util.VInvalidValueException exc) {
             fail(exc.getMessage());
         }
-        assertTrue("not equals 2", !lNameValue1.equals(lNameValue3));
-        assertTrue("not equal hashCode 2", lNameValue1.hashCode() != lNameValue3.hashCode());
-        assertTrue("not equals 3", !lNameValue1.equals(lNameValue3));
-        assertTrue("not equal hashCode 3", lNameValue1.hashCode() != lNameValue3.hashCode());
+        assertTrue(!lNameValue1.equals(lNameValue3));
+        assertTrue(lNameValue1.hashCode() != lNameValue3.hashCode());
+        assertTrue(!lNameValue1.equals(lNameValue3));
+        assertTrue(lNameValue1.hashCode() != lNameValue3.hashCode());
 
         // change back the value of lNameValue3
         try {
@@ -85,10 +85,10 @@ public class DefaultNameValueTest {
         } catch (final org.hip.kernel.util.VInvalidValueException exc) {
             fail(exc.getMessage());
         }
-        assertTrue("equals 2", lNameValue1.equals(lNameValue3));
-        assertEquals("equal hashCode 2", lNameValue1.hashCode(), lNameValue3.hashCode());
-        assertTrue("not equals 4", !lNameValue3.equals(lNameValue2));
-        assertTrue("not equal hashCode 4", lNameValue3.hashCode() != lNameValue2.hashCode());
+        assertTrue(lNameValue1.equals(lNameValue3));
+        assertEquals(lNameValue1.hashCode(), lNameValue3.hashCode());
+        assertTrue(!lNameValue3.equals(lNameValue2));
+        assertTrue(lNameValue3.hashCode() != lNameValue2.hashCode());
 
     }
 

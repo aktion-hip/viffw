@@ -1,8 +1,9 @@
 package org.hip.kernel.bom.model.impl.test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.hip.kernel.bom.model.impl.JoinDefOperand;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Luthiger
@@ -10,17 +11,17 @@ import org.junit.Test;
  */
 public class JoinDefOperandTest {
 
-	@Test
-	public void testRender() throws Exception {
-		JoinDefOperand lOperand = new JoinDefOperand();
-		lOperand.setJoinOperand("TableLeft.Field1");
-		lOperand.setJoinOperand("TableRight.Field1");		
-		assertEquals("simple", "TableLeft.Field1 = TableRight.Field1", lOperand.renderSQL());
-				
-		lOperand = new JoinDefOperand("AND");
-		lOperand.setJoinOperand("TableLeft.Field1");
-		lOperand.setJoinOperand("TableRight.Field1");
-		assertEquals("additional", " AND TableLeft.Field1 = TableRight.Field1", lOperand.renderSQL());
-	}
+    @Test
+    public void testRender() throws Exception {
+        JoinDefOperand lOperand = new JoinDefOperand();
+        lOperand.setJoinOperand("TableLeft.Field1");
+        lOperand.setJoinOperand("TableRight.Field1");
+        assertEquals("simple", "TableLeft.Field1 = TableRight.Field1", lOperand.renderSQL());
+
+        lOperand = new JoinDefOperand("AND");
+        lOperand.setJoinOperand("TableLeft.Field1");
+        lOperand.setJoinOperand("TableRight.Field1");
+        assertEquals("additional", " AND TableLeft.Field1 = TableRight.Field1", lOperand.renderSQL());
+    }
 
 }

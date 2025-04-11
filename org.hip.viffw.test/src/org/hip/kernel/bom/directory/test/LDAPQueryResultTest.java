@@ -1,8 +1,8 @@
 package org.hip.kernel.bom.directory.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,7 +21,7 @@ import org.hip.kernel.bom.directory.LDAPObjectHome;
 import org.hip.kernel.bom.directory.LDAPQueryResult;
 import org.hip.kernel.bom.directory.LDAPQueryStatement;
 import org.hip.kernel.exc.VException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author Luthiger Created: 06.07.2007 */
 public class LDAPQueryResultTest {
@@ -36,7 +36,7 @@ public class LDAPQueryResultTest {
             "Output: cn=seventh, uid=7, name=Seventh, sn=Seventh's sn, mail=seventh@my.org",
             "Output: cn=eighth, uid=8, name=Eighth, sn=Eighth's sn, mail=eighth@my.org",
             "Output: cn=ninth, uid=9, name=Ninth, sn=Ninth's sn, mail=ninth@my.org",
-            "Output: cn=tenth, uid=1010, name=Tenth, sn=Tenth's sn, mail=tenth@my.org" };
+    "Output: cn=tenth, uid=1010, name=Tenth, sn=Tenth's sn, mail=tenth@my.org" };
 
     @Test
     public void testDo() throws NamingException, VException, SQLException {
@@ -50,9 +50,9 @@ public class LDAPQueryResultTest {
             lRetrieved.add(getContent(lModel));
         }
 
-        assertEquals("Number of retrieved", EXPECTED.length, lRetrieved.size());
+        assertEquals(EXPECTED.length, lRetrieved.size());
         for (int i = 0; i < EXPECTED.length; i++) {
-            assertTrue("Element retrieved: " + i, lRetrieved.contains(EXPECTED[i]));
+            assertTrue(lRetrieved.contains(EXPECTED[i]));
         }
     }
 
@@ -86,12 +86,12 @@ public class LDAPQueryResultTest {
             lTest.append(lResult.nextAsXMLString());
         }
 
-        assertTrue("Expected String is included", lTest.indexOf(lExpected) >= 0);
+        assertTrue(lTest.indexOf(lExpected) >= 0);
     }
 
     @Test
     public void testSerialization() throws NamingException, SQLException, IOException, ClassNotFoundException,
-            VException {
+    VException {
         final DirContextWrapper lContext = new TestDirContext();
 
         final String lFilter = "(cn=test)";
@@ -113,12 +113,12 @@ public class LDAPQueryResultTest {
             lContents.add(getContent(lRetrieved.next()));
         }
 
-        assertEquals("size 1", 8, lContents.size());
+        assertEquals(8, lContents.size());
         for (int i = 2; i < EXPECTED.length; i++) {
-            assertTrue("contains " + i, lContents.contains(EXPECTED[i]));
+            assertTrue(lContents.contains(EXPECTED[i]));
         }
-        assertFalse("not contained: 0", lContents.contains(EXPECTED[0]));
-        assertFalse("not contained: 1", lContents.contains(EXPECTED[1]));
+        assertFalse(lContents.contains(EXPECTED[0]));
+        assertFalse(lContents.contains(EXPECTED[1]));
 
         // 2. test: setting cursor one steps ahead
         lResult = new LDAPQueryResult(lHome, lContext.search(lFilter, null), EXPECTED.length, lStatement);
@@ -132,7 +132,7 @@ public class LDAPQueryResultTest {
             lContents.add(getContent(lRetrieved.next()));
         }
 
-        assertEquals("size 1", 9, lContents.size());
+        assertEquals(9, lContents.size());
     }
 
     private LDAPQueryResult serDes(LDAPQueryResult inResult) throws IOException, ClassNotFoundException {

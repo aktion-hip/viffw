@@ -1,10 +1,10 @@
 package org.hip.kernel.bom.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,15 +33,14 @@ import org.hip.kernel.bom.model.ObjectDef;
 import org.hip.kernel.bom.model.PropertyDef;
 import org.hip.kernel.exc.VException;
 import org.hip.kernel.sys.VSys;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /** @author: Benno Luthiger */
 public class DomainObjectHomeImplTest {
     private final static String KEY_NAME = "Name";
     private static TestDomainObjectHomeImpl home;
-    private static DataHouseKeeper data;
 
     private class UnionHomeSub extends SetOperatorHomeImpl {
         private UnionHomeSub() {
@@ -53,16 +52,15 @@ public class DomainObjectHomeImplTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
-        data = DataHouseKeeper.getInstance();
         home = (TestDomainObjectHomeImpl) VSys.homeManager
                 .getHome("org.hip.kernel.bom.impl.test.TestDomainObjectHomeImpl");
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
-        data.deleteAllFromSimple();
+        DataHouseKeeper.INSTANCE.deleteAllFromSimple();
     }
 
     private String createColumnList(final ObjectDef inObjectDef) {
@@ -94,35 +92,35 @@ public class DomainObjectHomeImplTest {
     @Test
     public void testCreate() {
         try {
-            int lCount = data.getSimpleHome().getCount();
-            assertEquals("number before insert", 0, lCount);
+            int lCount = DataHouseKeeper.INSTANCE.getSimpleHome().getCount();
+            assertEquals(0, lCount);
 
             final String lName = "Dummy";
             final String lFirstname = "Fi";
 
             // test create / insert
-            data.createTestEntry(lName, lFirstname);
-            lCount = data.getSimpleHome().getCount();
-            assertEquals("number after insert", 1, lCount);
+            DataHouseKeeper.INSTANCE.createTestEntry(lName, lFirstname);
+            lCount = DataHouseKeeper.INSTANCE.getSimpleHome().getCount();
+            assertEquals(1, lCount);
 
             // test find / delete
             final KeyObject lKey = new KeyObjectImpl();
             lKey.setValue(KEY_NAME, lName);
             lKey.setValue("Firstname", lFirstname);
 
-            DomainObject lFound = data.getSimpleHome().findByKey(lKey);
+            DomainObject lFound = DataHouseKeeper.INSTANCE.getSimpleHome().findByKey(lKey);
             final XMLSerializer lXML = new XMLSerializer();
             lFound.accept(lXML);
             VSys.out.print(lXML.toString());
-            assertTrue("found domain object", lXML.toString().length() > 400);
+            assertTrue(lXML.toString().length() > 400);
             lFound.delete();
 
-            lCount = data.getSimpleHome().getCount();
-            assertEquals("number after delete", 0, lCount);
+            lCount = DataHouseKeeper.INSTANCE.getSimpleHome().getCount();
+            assertEquals(0, lCount);
 
             // insert with double amount
             final BigDecimal lAmount = new BigDecimal(17.556);
-            final DomainObject lNew = data.getSimpleHome().create();
+            final DomainObject lNew = DataHouseKeeper.INSTANCE.getSimpleHome().create();
             lNew.set(KEY_NAME, lName);
             lNew.set("Firstname", lFirstname);
             lNew.set("Mail", "dummy1@aktion-hip.ch");
@@ -130,9 +128,9 @@ public class DomainObjectHomeImplTest {
             lNew.set("Amount", lAmount);
             lNew.insert(true);
 
-            lFound = data.getSimpleHome().findByKey(lKey);
+            lFound = DataHouseKeeper.INSTANCE.getSimpleHome().findByKey(lKey);
             final BigDecimal lReturned = (BigDecimal) lFound.get("Amount");
-            assertEquals("Amount", lAmount.setScale(2, 2), lReturned);
+            assertEquals(lAmount.setScale(2, 2), lReturned);
             lFound.delete();
         } catch (final org.hip.kernel.exc.VException exc) {
             fail("testCreate f1 " + exc.getMessage());
@@ -143,33 +141,33 @@ public class DomainObjectHomeImplTest {
 
     @Test
     public void testStrings() throws VException, SQLException {
-        final DomainObjectHome lHome = data.getSimpleHome();
-        assertEquals("count 1", 0, lHome.getCount());
+        final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
+        assertEquals(0, lHome.getCount());
         final DomainObject lModel = lHome.create();
 
         String lText = "String with apostroph: Here\'s one (1).";
         lModel.set(Test2DomainObjectHomeImpl.KEY_NAME, lText);
         lModel.set(Test2DomainObjectHomeImpl.KEY_SEX, new Integer(1));
         final Long lID = lModel.insert(true);
-        assertEquals("count 2", 1, lHome.getCount());
+        assertEquals(1, lHome.getCount());
 
         final KeyObject lKey = new KeyObjectImpl();
         lKey.setValue(Test2DomainObjectHomeImpl.KEY_ID, lID);
         DomainObject lRetrieved = lHome.findByKey(lKey);
-        assertEquals("text 1", "String with apostroph: Here's one (1).",
+        assertEquals("String with apostroph: Here's one (1).",
                 lRetrieved.get(Test2DomainObjectHomeImpl.KEY_NAME).toString());
 
         lText = "String with apostroph: Here's one (2).";
         lRetrieved.set(Test2DomainObjectHomeImpl.KEY_NAME, lText);
         lRetrieved.update(true);
         lRetrieved = lHome.findByKey(lKey);
-        assertEquals("text 2", lText, lRetrieved.get(Test2DomainObjectHomeImpl.KEY_NAME).toString());
+        assertEquals(lText, lRetrieved.get(Test2DomainObjectHomeImpl.KEY_NAME).toString());
 
         lText = "This is a quote: \"Hello World\"";
         lRetrieved.set(Test2DomainObjectHomeImpl.KEY_NAME, lText);
         lRetrieved.update(true);
         lRetrieved = lHome.findByKey(lKey);
-        assertEquals("text 3", lText, lRetrieved.get(Test2DomainObjectHomeImpl.KEY_NAME).toString());
+        assertEquals(lText, lRetrieved.get(Test2DomainObjectHomeImpl.KEY_NAME).toString());
     }
 
     @Test
@@ -181,20 +179,20 @@ public class DomainObjectHomeImplTest {
             final String lFirstname2 = "Eva";
 
             // test create / insert
-            final DomainObject lNew = data.getSimpleHome().create();
+            final DomainObject lNew = DataHouseKeeper.INSTANCE.getSimpleHome().create();
             lNew.set(KEY_NAME, lName);
             lNew.set("Firstname", lFirstname);
             lNew.set("Mail", "dummy1@aktion-hip.ch");
             lNew.set("Sex", new Integer(1));
 
-            final DomainObject lNew2 = data.getSimpleHome().create();
+            final DomainObject lNew2 = DataHouseKeeper.INSTANCE.getSimpleHome().create();
             lNew2.set(KEY_NAME, lName2);
             lNew2.set("Firstname", lFirstname2);
             lNew2.set("Mail", "dummy2@aktion-hip.ch");
             lNew2.set("Sex", new Integer(2));
 
-            assertTrue("equals 1", lNew2.equals(lNew));
-            assertEquals("hash code 1", lNew2.hashCode(), lNew.hashCode());
+            assertTrue(lNew2.equals(lNew));
+            assertEquals(lNew2.hashCode(), lNew.hashCode());
 
             lNew.insert();
             lNew2.insert();
@@ -202,12 +200,12 @@ public class DomainObjectHomeImplTest {
             final KeyObject lKey = new KeyObjectImpl();
             lKey.setValue(KEY_NAME, lName);
             lKey.setValue("Firstname", lFirstname);
-            final DomainObject lFound = data.getSimpleHome().findByKey(lKey);
+            final DomainObject lFound = DataHouseKeeper.INSTANCE.getSimpleHome().findByKey(lKey);
 
             final KeyObject lKey2 = new KeyObjectImpl();
             lKey2.setValue(KEY_NAME, lName2);
             lKey2.setValue("Firstname", lFirstname2);
-            final DomainObject lFound2 = data.getSimpleHome().findByKey(lKey2);
+            final DomainObject lFound2 = DataHouseKeeper.INSTANCE.getSimpleHome().findByKey(lKey2);
 
             if (lFound.equals(lFound2)) {
                 fail("Found domain objects arn't equal anymore!");
@@ -228,9 +226,9 @@ public class DomainObjectHomeImplTest {
 
     @Test
     public void testGetColumnNameFor() {
-        assertEquals("getColumnNameFor 1", "tblTestMember.TESTMEMBERID", home.getColumnNameFor("MemberID"));
-        assertEquals("getColumnNameFor 2", "tblTestMember.DTMUTATION", home.getColumnNameFor("Mutation"));
-        assertEquals("getColumnNameFor 3", "", home.getColumnNameFor("Dummy"));
+        assertEquals("tblTestMember.TESTMEMBERID", home.getColumnNameFor("MemberID"));
+        assertEquals("tblTestMember.DTMUTATION", home.getColumnNameFor("Mutation"));
+        assertEquals("", home.getColumnNameFor("Dummy"));
     }
 
     @Test
@@ -239,8 +237,8 @@ public class DomainObjectHomeImplTest {
         try {
             lDef.get("keyDefs");
             lDef.get("propertyDefs");
-            assertEquals("testGetObjectDef 1", "org.hip.kernel.bom.DomainObject", lDef.get("parent"));
-            assertEquals("testGetObjectDef 2", "TestDomainObject", lDef.get("objectName"));
+            assertEquals("org.hip.kernel.bom.DomainObject", lDef.get("parent"));
+            assertEquals("TestDomainObject", lDef.get("objectName"));
         } catch (final org.hip.kernel.bom.GettingException exc) {
             fail("testGetObjectDef.get()");
         }
@@ -249,38 +247,38 @@ public class DomainObjectHomeImplTest {
     @Test
     public void testGetPropertyDef() {
         final String[] lExpected = { "propertyType", "valueType", "propertyName", "mappingDef", "formatPattern",
-                "relationshipDef" };
+        "relationshipDef" };
         final Vector<String> lContainsExpected = new Vector<String>(Arrays.asList(lExpected));
 
         final PropertyDef lDef = home.getPropertyDef("MemberID");
-        assertEquals("getPropertyType", "simple", lDef.getPropertyType());
-        assertEquals("getValueType", "Number", lDef.getValueType());
-        int i = 0;
+        assertEquals("simple", lDef.getPropertyType());
+        assertEquals("Number", lDef.getValueType());
+        final int i = 0;
         for (final String lName : lDef.getPropertyNames2()) {
-            assertTrue("getPropertyNames " + i++, lContainsExpected.contains(lName));
+            assertTrue(lContainsExpected.contains(lName));
         }
-        assertEquals("getMappingDef", "tblTestMember.TESTMEMBERID", lDef.getMappingDef().getTableName() + "."
+        assertEquals("tblTestMember.TESTMEMBERID", lDef.getMappingDef().getTableName() + "."
                 + lDef.getMappingDef().getColumnName());
-        assertNull("getRelationshipDef", lDef.getRelationshipDef());
+        assertNull(lDef.getRelationshipDef());
     }
 
     @Test
     public void testGetPropertyDefFor() {
         final String[] lExpected = { "propertyType", "valueType", "propertyName", "mappingDef", "formatPattern",
-                "relationshipDef" };
+        "relationshipDef" };
         final Vector<String> lContainsExpected = new Vector<String>(Arrays.asList(lExpected));
 
         final PropertyDef lDef = home.getPropertyDefFor("DTMUTATION");
-        assertEquals("getPropertyType", "simple", lDef.getPropertyType());
-        assertEquals("getValueType", "Timestamp", lDef.getValueType());
-        assertEquals("getName", "Mutation", lDef.getName());
-        int i = 0;
+        assertEquals("simple", lDef.getPropertyType());
+        assertEquals("Timestamp", lDef.getValueType());
+        assertEquals("Mutation", lDef.getName());
+        final int i = 0;
         for (final String lName : lDef.getPropertyNames2()) {
-            assertTrue("getPropertyNames " + i++, lContainsExpected.contains(lName));
+            assertTrue(lContainsExpected.contains(lName));
         }
-        assertEquals("getMappingDef", "tblTestMember.DTMUTATION", lDef.getMappingDef().getTableName() + "."
+        assertEquals("tblTestMember.DTMUTATION", lDef.getMappingDef().getTableName() + "."
                 + lDef.getMappingDef().getColumnName());
-        assertNull("getRelationshipDef", lDef.getRelationshipDef());
+        assertNull(lDef.getRelationshipDef());
     }
 
     @Test
@@ -297,9 +295,9 @@ public class DomainObjectHomeImplTest {
         int i = 0;
         while (lStringTokenizer.hasMoreTokens()) {
             i++;
-            assertTrue("ColumnList " + i, lVExpectedCols.contains(lStringTokenizer.nextToken().trim()));
+            assertTrue(lVExpectedCols.contains(lStringTokenizer.nextToken().trim()));
         }
-        assertEquals("ColumnList size", lVExpectedCols.size(), i);
+        assertEquals(lVExpectedCols.size(), i);
 
         // check the other test objects with the help of the actual ColumnList
         final String[] lExpected = new String[6];
@@ -314,11 +312,11 @@ public class DomainObjectHomeImplTest {
                 + " FROM tblTestMember WHERE tblTestMember.SNAME = 'Luthiger' AND tblTestMember.TESTMEMBERID = 12 AND tblTestMember.DTMUTATION = TIMESTAMP('2001-12-24 00:00:00')";
 
         Iterator<Object> lTestObjects = home.getTestObjects();
-        assertNotNull("TestObjects not null", lTestObjects);
+        assertNotNull(lTestObjects);
 
         i = 0;
         for (lTestObjects = home.getTestObjects(); lTestObjects.hasNext();) {
-            assertEquals("testObjects " + i, lExpected[i], lTestObjects.next());
+            assertEquals(lExpected[i], lTestObjects.next());
             i++;
         }
     }
@@ -331,7 +329,7 @@ public class DomainObjectHomeImplTest {
         DomainObject lNew = null;
 
         try {
-            lNew = data.getSimpleHome().create();
+            lNew = DataHouseKeeper.INSTANCE.getSimpleHome().create();
         } catch (final org.hip.kernel.bom.BOMException exc) {
             fail("testSetCheck create " + exc.getMessage());
         }
@@ -356,27 +354,27 @@ public class DomainObjectHomeImplTest {
         final String lExpectedName1 = "Test_Name_1";
         final String lExpectedName2 = "Test_Name_2";
 
-        data.createTestEntry(lExpectedName1);
-        data.createTestEntry(lExpectedName2);
+        DataHouseKeeper.INSTANCE.createTestEntry(lExpectedName1);
+        DataHouseKeeper.INSTANCE.createTestEntry(lExpectedName2);
 
-        final DomainObjectHome lHome = data.getSimpleHome();
-        assertEquals("Number after insert", 2, lHome.getCount());
+        final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
+        assertEquals(2, lHome.getCount());
 
         final KeyObject lKey = new KeyObjectImpl();
         lKey.setValue(KEY_NAME, lExpectedName1);
 
         lHome.delete(lKey, true);
-        assertEquals("Number after delete", 1, lHome.getCount());
+        assertEquals(1, lHome.getCount());
 
-        assertEquals("Remaining entry", lExpectedName2, lHome.select().next().get(KEY_NAME));
+        assertEquals(lExpectedName2, lHome.select().next().get(KEY_NAME));
     }
 
     @Test
     public void testMax() throws VException, SQLException {
         final double[] lExpected = { 12.45, 112.331967 };
 
-        final DomainObjectHome lHome = data.getSimpleHome();
-        assertEquals("number before insert", 0, lHome.getCount());
+        final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
+        assertEquals(0, lHome.getCount());
 
         DomainObject lNew = lHome.create();
         lNew.set("Name", "Test1");
@@ -408,15 +406,15 @@ public class DomainObjectHomeImplTest {
         lNew.insert(true);
         lNew.release();
 
-        assertEquals("number after insert", 3, lHome.getCount());
-        assertEquals("Maximum value insertet 1", lExpected[0], lHome.getMax("Amount").doubleValue(), 0.0001);
-        assertEquals("Maximum value insertet 2", lExpected[1], lHome.getMax("Double").doubleValue(), 0.0001);
+        assertEquals(3, lHome.getCount());
+        assertEquals(lExpected[0], lHome.getMax("Amount").doubleValue(), 0.0001);
+        assertEquals(lExpected[1], lHome.getMax("Double").doubleValue(), 0.0001);
 
         final String[] lColumns = { "Amount", "Double" };
         final Collection<Object> lResult = lHome.getModified(new ModifierStrategy(lColumns, ModifierStrategy.MAX));
         final Iterator<Object> lValues = lResult.iterator();
         for (int i = 0; i < lExpected.length; i++) {
-            assertEquals("Maximum value retrieved " + i, lExpected[i], ((BigDecimal) lValues.next()).doubleValue(),
+            assertEquals(lExpected[i], ((BigDecimal) lValues.next()).doubleValue(),
                     0.0001);
         }
     }
@@ -431,19 +429,19 @@ public class DomainObjectHomeImplTest {
         lKey.setValue(KEY_NAME, lExpectedName);
 
         home.createSelectString(lUnionHome, lKey);
-        assertEquals("union select", lExpected, lUnionHome.getSQL());
+        assertEquals(lExpected, lUnionHome.getSQL());
     }
 
     @Test
     public void testSerialization() throws IOException, ClassNotFoundException, VException, SQLException {
         DomainObjectHome lHome = (Test2DomainObjectHomeImpl) VSys.homeManager
                 .getHome("org.hip.kernel.bom.impl.test.Test2DomainObjectHomeImpl");
-        assertEquals("count 0", 0, lHome.getCount());
+        assertEquals(0, lHome.getCount());
         DomainObject lNew = lHome.create();
         lNew.set(Test2DomainObjectHomeImpl.KEY_NAME, "Test 1");
         lNew.set(Test2DomainObjectHomeImpl.KEY_SEX, new Integer(1));
         lNew.insert(true);
-        assertEquals("count 1", 1, lHome.getCount());
+        assertEquals(1, lHome.getCount());
 
         final ByteArrayOutputStream lBytesOut = new ByteArrayOutputStream();
         final ObjectOutputStream lObjectOut = new ObjectOutputStream(lBytesOut);
@@ -459,12 +457,12 @@ public class DomainObjectHomeImplTest {
         lObjectIn.close();
         lBytesIn.close();
 
-        assertEquals("count 2", 1, lRetrieved.getCount());
+        assertEquals(1, lRetrieved.getCount());
         lNew = lRetrieved.create();
         lNew.set(Test2DomainObjectHomeImpl.KEY_NAME, "Test 2");
         lNew.set(Test2DomainObjectHomeImpl.KEY_SEX, new Integer(0));
         lNew.insert(true);
-        assertEquals("count 3", 2, lRetrieved.getCount());
+        assertEquals(2, lRetrieved.getCount());
     }
 
     @SuppressWarnings("unchecked")
@@ -474,12 +472,12 @@ public class DomainObjectHomeImplTest {
                 .getHome("org.hip.kernel.bom.impl.test.Test2DomainObjectHomeImpl");
         DomainObjectHome lHome2 = (Test2DomainObjectHomeImpl) VSys.homeManager
                 .getHome("org.hip.kernel.bom.impl.test.Test2DomainObjectHomeImpl");
-        assertTrue("identity 1", lHome1 == lHome2);
+        assertTrue(lHome1 == lHome2);
 
         Collection<DomainObjectHome> lHomes = new Vector<DomainObjectHome>(2);
         lHomes.add(lHome1);
         lHomes.add(lHome2);
-        assertEquals("size of collection referencing the same home", 2, lHomes.size());
+        assertEquals(2, lHomes.size());
 
         final ByteArrayOutputStream lBytesOut = new ByteArrayOutputStream();
         final ObjectOutputStream lObjectOut = new ObjectOutputStream(lBytesOut);
@@ -497,8 +495,8 @@ public class DomainObjectHomeImplTest {
         lObjectIn.close();
         lBytesIn.close();
 
-        assertEquals("size of collection retrieved", 2, lRetrieved.size());
-        assertTrue("identity 2", lRetrieved.elementAt(0) == lRetrieved.elementAt(1));
+        assertEquals(2, lRetrieved.size());
+        assertTrue(lRetrieved.elementAt(0) == lRetrieved.elementAt(1));
 
     }
 

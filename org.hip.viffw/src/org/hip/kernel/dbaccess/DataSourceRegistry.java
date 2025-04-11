@@ -60,7 +60,7 @@ public enum DataSourceRegistry {
     public void register(final DataSourceFactory inFactory) {
         try {
             final FactoryProperties lParameters = new FactoryProperties(inFactory);
-            factories.put(lParameters.getFactoryID(), lParameters);
+            this.factories.put(lParameters.getFactoryID(), lParameters);
             LOG.debug("Registered DB access \"{}\".", lParameters.getFactoryID());
         } catch (final SQLException exc) {
             LOG.error("Error encountered while registering DB access!", exc);
@@ -71,9 +71,9 @@ public enum DataSourceRegistry {
      *
      * @param inFactory {@link DataSourceFactory} */
     public void unregister(final DataSourceFactory inFactory) {
-        for (final FactoryProperties lProperties : factories.values()) {
+        for (final FactoryProperties lProperties : this.factories.values()) {
             if (lProperties.getFactory().equals(inFactory)) {
-                factories.remove(lProperties.getFactoryID());
+                this.factories.remove(lProperties.getFactoryID());
                 return;
             }
         }
@@ -85,7 +85,7 @@ public enum DataSourceRegistry {
      * @return {@link DataSourceFactory}
      * @throws VException */
     public DataSourceFactory getFactory(final DBAccessConfiguration inProperties) throws VException {
-        final FactoryProperties out = factories.get(inProperties.getDBSourceID());
+        final FactoryProperties out = this.factories.get(inProperties.getDBSourceID());
         if (out != null) {
             return out.getFactory();
         }
@@ -103,7 +103,7 @@ public enum DataSourceRegistry {
      * @throws SQLException
      * @throws VException */
     public DataSource getDataSource(final DBAccessConfiguration inProperties) throws SQLException, VException {
-        final FactoryProperties lFactory = factories.get(inProperties.getDBSourceID());
+        final FactoryProperties lFactory = this.factories.get(inProperties.getDBSourceID());
         if (lFactory != null) {
             return lFactory.getFactory().createDataSource(inProperties.getProperties());
         }
@@ -120,7 +120,7 @@ public enum DataSourceRegistry {
      * @throws VException */
     public ConnectionPoolDataSource getConnectionPoolDataSource(final DBAccessConfiguration inProperties)
             throws SQLException, VException {
-        final FactoryProperties lFactory = factories.get(inProperties.getDBSourceID());
+        final FactoryProperties lFactory = this.factories.get(inProperties.getDBSourceID());
         if (lFactory != null) {
             return lFactory.getFactory().createConnectionPoolDataSource(inProperties.getProperties());
         }
@@ -135,7 +135,7 @@ public enum DataSourceRegistry {
      * @return Collection&lt;DBSourceParameter> */
     public Collection<DBSourceParameter> getDBSourceParameters() {
         final List<DBSourceParameter> out = new ArrayList<DataSourceRegistry.DBSourceParameter>();
-        for (final FactoryProperties lProperties : factories.values()) {
+        for (final FactoryProperties lProperties : this.factories.values()) {
             out.add(lProperties.getDBSourceParameter());
         }
         Collections.sort(out);
@@ -145,42 +145,50 @@ public enum DataSourceRegistry {
     /** Setter for the active <code>DBAccessConfiguration</code>. This setter should be called by the application's
      * preferences handler.
      *
-     * @param inActiveConfiguration {@link DBAccessConfiguration} */
-    public void setActiveConfiguration(final DBAccessConfiguration inActiveConfiguration) {
-        activeConfiguration = inActiveConfiguration;
+     * @param activeConfiguration {@link DBAccessConfiguration} */
+    public void setActiveConfiguration(final DBAccessConfiguration activeConfiguration) {
+        this.activeConfiguration = activeConfiguration;
         synchronized (this) {
-            final FactoryProperties lFactory = factories.get(activeConfiguration.getDBSourceID());
-            if (lFactory != null) {
-                activeFactory = lFactory.getFactory();
+            final FactoryProperties factory = this.factories.get(activeConfiguration.getDBSourceID());
+            if (factory != null) {
+                this.activeFactory = factory.getFactory();
             }
         }
+    }
+
+    /** Checks the initialization, i.e. the method <code>DataSourceRegistry.setActiveConfiguration()</code> has been
+     * called..
+     *
+     * @return boolean <code>true</code> if this instance is initialized (with <code>DBAccessConfiguration</code>) */
+    public boolean isInitialized() {
+        return this.activeConfiguration != null;
     }
 
     /** Shortcut method to set the active <code>DataSourceFactory</code> directly.
      *
      * @param inFactory {@link DataSourceFactory} */
     public void setFactory(final DataSourceFactory inFactory) {
-        activeFactory = inFactory;
+        this.activeFactory = inFactory;
     }
 
     private DataSourceFactory getFactory() throws VException {
-        if (activeConfiguration == null) {
+        if (this.activeConfiguration == null) {
             throw new VException(String.format("Configuration problem: no DB access configuration provided"));
         }
 
-        if (NOOpFactory.class.equals(activeFactory.getClass())) {
-            if (activeConfiguration.getDBSourceID() == null) {
+        if (NOOpFactory.class.equals(this.activeFactory.getClass())) {
+            if (this.activeConfiguration.getDBSourceID() == null) {
                 throw new VException(String.format("Configuration problem: no data access bundle provided for \"%s\".",
-                        activeConfiguration.getDBSourceID()));
+                        this.activeConfiguration.getDBSourceID()));
             }
-            final FactoryProperties lFactory = factories.get(activeConfiguration.getDBSourceID());
+            final FactoryProperties lFactory = this.factories.get(this.activeConfiguration.getDBSourceID());
             if (lFactory == null) {
                 throw new VException(String.format("Configuration problem: no data access bundle provided for \"%s\".",
-                        activeConfiguration.getDBSourceID()));
+                        this.activeConfiguration.getDBSourceID()));
             }
-            activeFactory = lFactory.getFactory();
+            this.activeFactory = lFactory.getFactory();
         }
-        return activeFactory;
+        return this.activeFactory;
     }
 
     /** Returns a pooled <code>Connection</code> based on the active <code>DBAccessConfiguration</code>.
@@ -189,7 +197,7 @@ public enum DataSourceRegistry {
      * @throws SQLException
      * @throws VException */
     public Connection getConnection() throws SQLException, VException {
-        return getFactory().createConnectionPoolDataSource(activeConfiguration.getProperties()).getPooledConnection()
+        return getFactory().createConnectionPoolDataSource(this.activeConfiguration.getProperties()).getPooledConnection()
                 .getConnection();
     }
 
@@ -207,10 +215,10 @@ public enum DataSourceRegistry {
      *
      * @return {@link DBAdapterType} */
     public DBAdapterType getAdapterType() {
-        if (activeConfiguration == null) {
+        if (this.activeConfiguration == null) {
             return DBAdapterType.DB_TYPE_MYSQL;
         }
-        return getAdapterType(activeConfiguration);
+        return getAdapterType(this.activeConfiguration);
     }
 
     /** Returns the DB adapter type matching the specified DB access configuration.
@@ -236,18 +244,18 @@ public enum DataSourceRegistry {
         private final String factoryName;
 
         DBSourceParameter(final String inFactoryID, final String inFactoryName) {
-            factoryID = inFactoryID;
-            factoryName = inFactoryName;
+            this.factoryID = inFactoryID;
+            this.factoryName = inFactoryName;
         }
 
         /** @return String */
         public String getFactoryID() {
-            return factoryID;
+            return this.factoryID;
         }
 
         /** @return String */
         public String getFactoryName() {
-            return factoryName;
+            return this.factoryName;
         }
 
         @Override
@@ -264,11 +272,11 @@ public enum DataSourceRegistry {
         private transient final String driverVersion;
 
         FactoryProperties(final DataSourceFactory inFactory) throws SQLException {
-            factory = inFactory;
+            this.factory = inFactory;
             final ServiceReference<DataSourceFactory> lServiceReference = getServiceRef(inFactory);
-            driverClass = lServiceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS).toString();
-            driverName = (String) lServiceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME);
-            driverVersion = (String) lServiceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION);
+            this.driverClass = lServiceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS).toString();
+            this.driverName = (String) lServiceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME);
+            this.driverVersion = (String) lServiceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION);
         }
 
         @SuppressWarnings("unchecked")
@@ -287,17 +295,17 @@ public enum DataSourceRegistry {
 
         /** @return {@link DataSourceFactory} */
         public DataSourceFactory getFactory() {
-            return factory;
+            return this.factory;
         }
 
         /** @return String the factory id */
         public String getFactoryID() {
-            final StringBuilder out = new StringBuilder(driverClass);
-            if (driverName != null) {
-                out.append('/').append(driverName);
+            final StringBuilder out = new StringBuilder(this.driverClass);
+            if (this.driverName != null) {
+                out.append('/').append(this.driverName);
             }
-            if (driverVersion != null) {
-                out.append('/').append(driverVersion);
+            if (this.driverVersion != null) {
+                out.append('/').append(this.driverVersion);
             }
             return new String(out);
         }
@@ -309,7 +317,7 @@ public enum DataSourceRegistry {
 
         @Override
         public String toString() { // NOPMD by lbenno
-            return String.format("%s (%s)", driverName, driverVersion);
+            return String.format("%s (%s)", this.driverName, this.driverVersion);
         }
     }
 

@@ -20,7 +20,7 @@ package org.hip.kernel.servlet.impl;
 
 import java.util.Enumeration;
 
-import javax.servlet.ServletRequest;
+import jakarta.servlet.ServletRequest;
 
 /** A tool to get information out of a servlet request
  *
@@ -33,13 +33,13 @@ public class ServletRequestInspector {
 
     public ServletRequestInspector(final ServletRequest inRequest) { // NOPMD by lbenno
         super();
-        request = inRequest;
+        this.request = inRequest;
     }
 
     /** @return boolean
      * @param inName java.lang.String */
     public boolean containsParameter(final String inName) {
-        return containsParameter(request, inName);
+        return containsParameter(this.request, inName);
     }
 
     /** @return boolean
@@ -59,7 +59,7 @@ public class ServletRequestInspector {
     /** @return java.lang.String
      * @param inName java.lang.String */
     public String getParameterValue(final String inName) {
-        return getParameterValue(request, inName);
+        return getParameterValue(this.request, inName);
     }
 
     /** @return java.lang.String
@@ -77,6 +77,6 @@ public class ServletRequestInspector {
 
     /** @return javax.servlet.ServletRequest */
     public ServletRequest getRequest() {
-        return request;
+        return this.request;
     }
 }

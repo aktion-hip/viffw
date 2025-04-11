@@ -21,13 +21,7 @@ package org.hip.kernel.servlet.impl;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import java.lang.reflect.InvocationTargetException;
 
 import org.hip.kernel.exc.DefaultErrorHandler;
 import org.hip.kernel.exc.DefaultExceptionHandler;
@@ -44,6 +38,13 @@ import org.hip.kernel.servlet.Task;
 import org.hip.kernel.servlet.TaskManager;
 import org.hip.kernel.sys.VSys;
 import org.hip.kernel.util.TransformationError;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /** Base class of all request handler. All servlet requests are handled from this request handler. The request
  * type-parameter is required for every request. It holds the name of the task to run. Application specific request
@@ -72,8 +73,8 @@ public abstract class AbstractRequestHandler extends HttpServlet implements Requ
 
     /** Checks various parameters of the request and, if successful, handles it, i.e. executes the requested task.
      *
-     * @param inRequest javax.servlet.http.HttpServletRequest
-     * @param inResponse javax.servlet.http.HttpServletResponse
+     * @param inRequest {@link HttpServletRequest}
+     * @param inResponse {@link HttpServletResponse}
      * @param inContext org.hip.kernel.servlet.Context
      * @throws javax.servlet.ServletException
      * @throws java.io.IOException */
@@ -86,36 +87,36 @@ public abstract class AbstractRequestHandler extends HttpServlet implements Requ
             final String lRequestType = lHelper.containsParameter(AbstractContext.REQUEST_TYPE) ? lHelper
                     .getParameterValue(AbstractContext.REQUEST_TYPE) : getDefaultRequestType();
 
-                    inContext.set(AbstractContext.REQUEST_TYPE, lRequestType);
-                    lHelper.addParametersToContext(inContext, AbstractContext.REQUEST_TYPE);
-                    if (inContext.getParameterValue(BODY_PARAMETER).length() == 0) {
-                        setStartupRequestType(inContext);
-                    }
+            inContext.set(AbstractContext.REQUEST_TYPE, lRequestType);
+            lHelper.addParametersToContext(inContext, AbstractContext.REQUEST_TYPE);
+            if (inContext.getParameterValue(BODY_PARAMETER).length() == 0) {
+                setStartupRequestType(inContext);
+            }
 
-                    if ("memoryInfo".equals(lRequestType)) {
-                        showMemoryInfo(inContext);
-                        return;
-                    }
+            if ("memoryInfo".equals(lRequestType)) {
+                showMemoryInfo(inContext);
+                return;
+            }
 
-                    if (requestTypeCheck(lRequestType)) {
-                        subRequestTypeHandler(inContext, inResponse);
-                        return;
-                    }
+            if (requestTypeCheck(lRequestType)) {
+                subRequestTypeHandler(inContext, inResponse);
+                return;
+            }
 
-                    // Set the servlet path and the requested URL to the context.
-                    inContext.setServletPath(inRequest.getServletPath());
-                    inContext.setRequestURL(inRequest.getRequestURL());
+            // Set the servlet path and the requested URL to the context.
+            inContext.setServletPath(inRequest.getServletPath());
+            inContext.setRequestURL(inRequest.getRequestURL());
 
-                    // Set the clients host and address to the context
-                    String lRemoteInfo = inRequest.getRemoteAddr();
-                    inContext.setRemoteAddr(lRemoteInfo == null ? "N.N." : lRemoteInfo);
-                    lRemoteInfo = inRequest.getRemoteHost();
-                    inContext.setRemoteHost(lRemoteInfo == null ? "N.N." : lRemoteInfo);
+            // Set the clients host and address to the context
+            String lRemoteInfo = inRequest.getRemoteAddr();
+            inContext.setRemoteAddr(lRemoteInfo == null ? "N.N." : lRemoteInfo);
+            lRemoteInfo = inRequest.getRemoteHost();
+            inContext.setRemoteHost(lRemoteInfo == null ? "N.N." : lRemoteInfo);
 
-                    // /////////Create task for requestType an run task///////////////
-                    final Task lTask = taskManager.create(lRequestType);
-                    lTask.setContext(inContext);
-                    lTask.run();
+            // /////////Create task for requestType an run task///////////////
+            final Task lTask = this.taskManager.create(lRequestType);
+            lTask.setContext(inContext);
+            lTask.run();
         } catch (final Exception exc) { // NOPMD
             this.handle(getContext(inRequest), exc);
         }
@@ -235,7 +236,7 @@ public abstract class AbstractRequestHandler extends HttpServlet implements Requ
      * @param inMessage java.lang.String */
     public void error(final HttpServletRequest inRequest, final HttpServletResponse inResponse, final String inMessage) {
         try {
-            final Task lTask = taskManager.getErrorTask();
+            final Task lTask = this.taskManager.getErrorTask();
             final Context lContext = this.getContext(inRequest);
             lContext.set(AbstractContext.ERROR_MESSAGE_KEY, inMessage);
 
@@ -312,7 +313,7 @@ public abstract class AbstractRequestHandler extends HttpServlet implements Requ
 
     /** Sets the application specific taskmanager. */
     private void initialize() {
-        taskManager = this.getTaskManager();
+        this.taskManager = this.getTaskManager();
     }
 
     /** Returns a new instance of the application specific context.
@@ -325,8 +326,10 @@ public abstract class AbstractRequestHandler extends HttpServlet implements Requ
             // create a context object through reflection
             final String lContextClassName = this.getContextClassName();
             final Class<?> lContextClass = Class.forName(lContextClassName);
-            outContext = (Context) lContextClass.newInstance();
-        } catch (final InstantiationException | IllegalAccessException | ClassNotFoundException exc) {
+            outContext = (Context) lContextClass.getDeclaredConstructor().newInstance();
+        } catch (final InstantiationException | IllegalAccessException | ClassNotFoundException
+                | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                | SecurityException exc) {
             DefaultExceptionWriter.printOut(this, exc, true);
             outContext = new DefaultContextImpl();
         }

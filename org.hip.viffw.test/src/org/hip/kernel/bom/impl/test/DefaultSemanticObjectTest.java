@@ -1,10 +1,10 @@
 package org.hip.kernel.bom.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,7 +17,7 @@ import java.util.Iterator;
 
 import org.hip.kernel.bom.impl.DefaultSemanticObject;
 import org.hip.kernel.exc.VException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Test cases to test the functionality of the DomainObject framework.
  *
@@ -41,7 +41,7 @@ public class DefaultSemanticObjectTest {
             assertEquals(lTestObject.get(lName), lNewValue);
 
             lTestObject.setVirgin();
-            assertNull("virgin", lTestObject.get(lName));
+            assertNull( lTestObject.get(lName));
         } catch (final Exception exc) {
             fail(exc.toString());
         }
@@ -71,16 +71,16 @@ public class DefaultSemanticObjectTest {
             lSemantic3.set(lFName, lFValue);
             lSemantic3.set(lLName, lLValue);
 
-            assertTrue("equals", lSemantic1.equals(lSemantic3));
-            assertEquals("equal hash code", lSemantic1.hashCode(), lSemantic3.hashCode());
+            assertTrue( lSemantic1.equals(lSemantic3));
+            assertEquals( lSemantic1.hashCode(), lSemantic3.hashCode());
 
-            assertTrue("not equals", !lSemantic1.equals(lSemantic2));
-            assertTrue("not equal hash code", lSemantic1.hashCode() != lSemantic2.hashCode());
+            assertTrue( !lSemantic1.equals(lSemantic2));
+            assertTrue( lSemantic1.hashCode() != lSemantic2.hashCode());
 
             lSemantic1.setVirgin();
             lSemantic3.setVirgin();
-            assertTrue("equals 2", lSemantic1.equals(lSemantic3));
-            assertEquals("equal hash code 2", lSemantic1.hashCode(), lSemantic3.hashCode());
+            assertTrue( lSemantic1.equals(lSemantic3));
+            assertEquals( lSemantic1.hashCode(), lSemantic3.hashCode());
         } catch (final Exception exc) {
             fail(exc.toString());
         }
@@ -95,26 +95,26 @@ public class DefaultSemanticObjectTest {
 
         final DefaultSemanticObject lTestObject = new DefaultSemanticObject();
         assertNotNull(lTestObject);
-        assertEquals("toString 1", lExpected1, lTestObject.toString());
+        assertEquals( lExpected1, lTestObject.toString());
 
         lTestObject.set(lExpectedNames[0], "T. ");
         lTestObject.set(lExpectedNames[1], "Dummy");
-        assertTrue("toString 2", lTestObject.toString().indexOf("<name=\"lastName\" value=\"Dummy\"/>") > 0);
-        assertTrue("toString 3", lTestObject.toString().indexOf("<name=\"firstName\" value=\"T. \"/>") > 0);
-        assertTrue("toString 4", lTestObject.toString().indexOf("<org.hip.kernel.bom.impl.DefaultSemanticObject>") == 0);
-        assertTrue("toString 5", lTestObject.toString().indexOf("</org.hip.kernel.bom.impl.DefaultSemanticObject>") > 0);
+        assertTrue( lTestObject.toString().indexOf("<name=\"lastName\" value=\"Dummy\"/>") > 0);
+        assertTrue( lTestObject.toString().indexOf("<name=\"firstName\" value=\"T. \"/>") > 0);
+        assertTrue( lTestObject.toString().indexOf("<org.hip.kernel.bom.impl.DefaultSemanticObject>") == 0);
+        assertTrue( lTestObject.toString().indexOf("</org.hip.kernel.bom.impl.DefaultSemanticObject>") > 0);
 
         lTestObject.set(lExpectedNames[2], new java.util.GregorianCalendar(1960, 01, 22));
 
         final Collection<String> lExpected = Arrays.asList(lExpectedNames);
         for (final Iterator<String> lNames = lTestObject.getPropertyNames(); lNames.hasNext();) {
-            assertTrue("PropertyNames", lExpected.contains(lNames.next()));
+            assertTrue( lExpected.contains(lNames.next()));
         }
 
         for (int i = 0; i < lExpectedNames.length; i++) {
-            assertTrue("PropertyNames " + i, lTestObject.getPropertyNames2().contains(lExpectedNames[i]));
+            assertTrue(lTestObject.getPropertyNames2().contains(lExpectedNames[i]));
         }
-        assertEquals("equal size", lExpectedNames.length, lTestObject.getPropertyNames2().size());
+        assertEquals( lExpectedNames.length, lTestObject.getPropertyNames2().size());
     }
 
     @Test
@@ -140,8 +140,8 @@ public class DefaultSemanticObjectTest {
         lObjectIn.close();
         lBytesIn.close();
 
-        assertEquals("retrieved first name", lFirst, lRetrieved.get("firstName"));
-        assertEquals("retrieved last name", lName, lRetrieved.get("lastName"));
+        assertEquals( lFirst, lRetrieved.get("firstName"));
+        assertEquals( lName, lRetrieved.get("lastName"));
     }
 
     @Test

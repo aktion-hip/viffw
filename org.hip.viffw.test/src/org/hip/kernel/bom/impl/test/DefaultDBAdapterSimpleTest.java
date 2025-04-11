@@ -1,13 +1,12 @@
 package org.hip.kernel.bom.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import org.hip.kernel.bom.DBAdapterSimple;
 import org.hip.kernel.bom.DomainObject;
@@ -27,36 +26,29 @@ import org.hip.kernel.bom.impl.LimitObjectImpl;
 import org.hip.kernel.bom.impl.ModifierStrategy;
 import org.hip.kernel.bom.impl.OrderObjectImpl;
 import org.hip.kernel.exc.VException;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /** @author Luthiger Created: 15.10.2006 */
 public class DefaultDBAdapterSimpleTest {
-    private static DataHouseKeeper data;
 
-    @BeforeClass
-    public static void init() {
-        data = DataHouseKeeper.getInstance();
-    }
-
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
-        data.deleteAllFromSimple();
+        DataHouseKeeper.INSTANCE.deleteAllFromSimple();
     }
 
     @Test
     public void testCreateInsertString() {
         final String lExpected = "INSERT INTO tblTest( SFIRSTNAME, DTMUTATION, BSEX, FAMOUNT, SNAME, FDOUBLE ) VALUES ('Riese', TIMESTAMP('2002-02-01 10:00:00'), 1, 33, 'Adam', 1.2345678899999998900938180668163113296031951904296875 )";
         try {
-            final DomainObject lObject = data.getSimpleHome().create();
+            final DomainObject lObject = DataHouseKeeper.INSTANCE.getSimpleHome().create();
             lObject.set(Test2DomainObjectHomeImpl.KEY_NAME, "Adam");
             lObject.set(Test2DomainObjectHomeImpl.KEY_FIRSTNAME, "Riese");
-            lObject.set(Test2DomainObjectHomeImpl.KEY_SEX, new Integer(1));
+            lObject.set(Test2DomainObjectHomeImpl.KEY_SEX, Integer.valueOf(1));
             lObject.set(Test2DomainObjectHomeImpl.KEY_AMOUNT, new BigDecimal(33));
             lObject.set(Test2DomainObjectHomeImpl.KEY_DOUBLE, new BigDecimal(1.23456789));
 
-            final Calendar lCalender = GregorianCalendar.getInstance();
+            final Calendar lCalender = Calendar.getInstance();
             lCalender.set(2002, 1, 1, 10, 0, 0);
             lCalender.getTime();
             lObject.set(Test2DomainObjectHomeImpl.KEY_MUTATION, new Timestamp(lCalender.getTimeInMillis()));
@@ -74,7 +66,7 @@ public class DefaultDBAdapterSimpleTest {
         final String lExpected1 = "DELETE FROM tblTest WHERE tblTest.TESTID = 12";
         final String lExpected2 = "DELETE FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00')";
         try {
-            final DomainObjectHome lHome = data.getSimpleHome();
+            final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
             final DomainObject lObject = lHome.create();
             lObject.set("TestID", new BigDecimal(12));
 
@@ -93,10 +85,10 @@ public class DefaultDBAdapterSimpleTest {
     public void testCreateUpdateString() throws SQLException, VException {
         final String lExpected = "UPDATE tblTest SET BSEX = 1, FAMOUNT = 33, SFIRSTNAME = 'Nova', DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') WHERE tblTest.TESTID = ";
 
-        final Long lID = data.createTestEntry("Testing");
+        final Long lID = DataHouseKeeper.INSTANCE.createTestEntry("Testing");
         final KeyObject lKey = new KeyObjectImpl();
         lKey.setValue(Test2DomainObjectHomeImpl.KEY_ID, lID);
-        final DomainObject lObject = data.getSimpleHome().findByKey(lKey);
+        final DomainObject lObject = DataHouseKeeper.INSTANCE.getSimpleHome().findByKey(lKey);
 
         final String lTestID = ((BigDecimal) lObject.get("TestID")).toString();
 
@@ -104,7 +96,7 @@ public class DefaultDBAdapterSimpleTest {
         lObject.set(Test2DomainObjectHomeImpl.KEY_SEX, new Integer(1));
         lObject.set(Test2DomainObjectHomeImpl.KEY_AMOUNT, new BigDecimal(33));
 
-        final Calendar lCalender = GregorianCalendar.getInstance();
+        final Calendar lCalender = Calendar.getInstance();
         lCalender.set(2002, 1, 1, 10, 0, 0);
         lCalender.getTime();
         lObject.set(Test2DomainObjectHomeImpl.KEY_MUTATION, new Timestamp(lCalender.getTimeInMillis()));
@@ -145,7 +137,7 @@ public class DefaultDBAdapterSimpleTest {
     public void testCreateUpdateString3() throws SQLException, VException {
         final String lExpected = "UPDATE tblTest SET tblTest.SSTREET = 'New 99', tblTest.SCITY = 'City 31' WHERE tblTest.TESTID = 23 AND tblTest.SNAME = 'Eva'";
 
-        final DomainObjectHome lHome = data.getSimpleHome();
+        final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
         final DomainObject lObject = lHome.create();
         final DBAdapterSimple lAdapter = new DefaultDBAdapterSimple(lObject.getObjectDef());
 
@@ -165,16 +157,16 @@ public class DefaultDBAdapterSimpleTest {
     public void testCreatePreparedUpdateString() throws SQLException, VException {
         final String lExpected = "UPDATE tblTest SET BSEX = ?, FAMOUNT = ?, SFIRSTNAME = ?, DTMUTATION = ? WHERE tblTest.TESTID = ?";
 
-        final Long lID = data.createTestEntry("Testing");
+        final Long lID = DataHouseKeeper.INSTANCE.createTestEntry("Testing");
         final KeyObject lKey = new KeyObjectImpl();
         lKey.setValue(Test2DomainObjectHomeImpl.KEY_ID, lID);
-        final DomainObject lObject = data.getSimpleHome().findByKey(lKey);
+        final DomainObject lObject = DataHouseKeeper.INSTANCE.getSimpleHome().findByKey(lKey);
 
         lObject.set(Test2DomainObjectHomeImpl.KEY_FIRSTNAME, "Seconda");
         lObject.set(Test2DomainObjectHomeImpl.KEY_SEX, new Integer(0));
         lObject.set(Test2DomainObjectHomeImpl.KEY_AMOUNT, new BigDecimal(24));
 
-        final Calendar lCalender = GregorianCalendar.getInstance();
+        final Calendar lCalender = Calendar.getInstance();
         lCalender.set(2002, 1, 1, 10, 0, 0);
         lCalender.getTime();
         lObject.set(Test2DomainObjectHomeImpl.KEY_MUTATION, new Timestamp(lCalender.getTimeInMillis()));
@@ -188,7 +180,7 @@ public class DefaultDBAdapterSimpleTest {
     public void testCreateCountAllString() {
         final String lExpected = "SELECT COUNT(tblTest.TESTID) FROM tblTest";
         try {
-            final DomainObjectHome lHome = data.getSimpleHome();
+            final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
             final DomainObject lObject = lHome.create();
             final DBAdapterSimple lAdapter = new DefaultDBAdapterSimple(lObject.getObjectDef());
             final String lSQL = lAdapter.createCountAllString(lHome);
@@ -204,7 +196,7 @@ public class DefaultDBAdapterSimpleTest {
         final String lExpected2 = "SELECT COUNT(tblTest.TESTID) FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') GROUP BY tblTest.FAMOUNT";
         final String lExpected3 = "SELECT DISTINCT COUNT(tblTest.TESTID) FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00')";
 
-        final DomainObjectHome lHome = data.getSimpleHome();
+        final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
         final DomainObject lObject = lHome.create();
         final DBAdapterSimple lAdapter = new DefaultDBAdapterSimple(lObject.getObjectDef());
 
@@ -225,7 +217,7 @@ public class DefaultDBAdapterSimpleTest {
     public void testCreateMaxAllString() {
         final String lExpected = "SELECT MAX(tblTest.FAMOUNT) FROM tblTest";
         try {
-            final DomainObjectHome lHome = data.getSimpleHome();
+            final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
             final DomainObject lObject = lHome.create();
             final DBAdapterSimple lAdapter = new DefaultDBAdapterSimple(lObject.getObjectDef());
 
@@ -241,7 +233,7 @@ public class DefaultDBAdapterSimpleTest {
     public void testCreateMaxString() throws VException {
         final String lExpected = "SELECT MAX(tblTest.FAMOUNT) FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00')";
         final String lExpected2 = "SELECT MAX(tblTest.FAMOUNT), MAX(tblTest.FDOUBLE) FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00')";
-        final DomainObjectHome lHome = data.getSimpleHome();
+        final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
         final DomainObject lObject = lHome.create();
         final DBAdapterSimple lAdapter = new DefaultDBAdapterSimple(lObject.getObjectDef());
 
@@ -258,7 +250,7 @@ public class DefaultDBAdapterSimpleTest {
     public void testCreateSelectAllString() {
         final String lExpected = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest";
         try {
-            final DomainObjectHome lHome = data.getSimpleHome();
+            final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
             final DomainObject lObject = lHome.create();
             final DBAdapterSimple lAdapter = new DefaultDBAdapterSimple(lObject.getObjectDef());
             final String lSQL = lAdapter.createSelectAllString();
@@ -280,7 +272,7 @@ public class DefaultDBAdapterSimpleTest {
         final String lExpected8 = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00') LIMIT 10 OFFSET 60";
         final String lExpected9 = "SELECT DISTINCT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00')";
 
-        final DomainObjectHome lHome = data.getSimpleHome();
+        final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
         final DomainObject lObject = lHome.create();
         final DBAdapterSimple lAdapter = new DefaultDBAdapterSimple(lObject.getObjectDef());
         String lSQL = lAdapter.createSelectString(createKey(), lHome);
@@ -295,7 +287,7 @@ public class DefaultDBAdapterSimpleTest {
         lSQL = lAdapter.createSelectString(lOrder, lHome);
         assertEquals("select key 3", lExpected3, lSQL);
 
-        if (data.isDBMySQL()) {
+        if (DataHouseKeeper.INSTANCE.isDBMySQL()) {
             lSQL = lAdapter.createSelectString(createKey3(), lHome);
             assertEquals("select key 4", lExpected4, lSQL);
         }
@@ -327,7 +319,7 @@ public class DefaultDBAdapterSimpleTest {
     public void testCreatePreparedSelectString() {
         final String lExpected = "SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE tblTest.SFIRSTNAME = ? AND tblTest.BSEX = ? AND tblTest.FAMOUNT = ? AND tblTest.DTMUTATION = ?";
         try {
-            final DomainObjectHome lHome = data.getSimpleHome();
+            final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
             final DomainObject lObject = lHome.create();
             final DBAdapterSimple lAdapter = new DefaultDBAdapterSimple(lObject.getObjectDef());
             final String lSQL = lAdapter.createPreparedSelectString(createKey(), lHome);
@@ -341,7 +333,7 @@ public class DefaultDBAdapterSimpleTest {
     public void testCreatePreparedUpdate() throws VException {
         final String lExpected = "UPDATE tblTest SET tblTest.SSTREET = ?, tblTest.SCITY = ? WHERE tblTest.TESTID = ? AND tblTest.SNAME = ?";
 
-        final DomainObjectHome lHome = data.getSimpleHome();
+        final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
         final DomainObject lObject = lHome.create();
         final DBAdapterSimple lAdapter = new DefaultDBAdapterSimple(lObject.getObjectDef());
 
@@ -361,7 +353,7 @@ public class DefaultDBAdapterSimpleTest {
     public void testCreateKeyCountColumnList() {
         final String lExpected = "COUNT(tblTest.TESTID)";
         try {
-            final DomainObjectHome lHome = data.getSimpleHome();
+            final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
             final DomainObject lObject = lHome.create();
             final DBAdapterSimple lAdapter = new DefaultDBAdapterSimple(lObject.getObjectDef());
             final String lSQL = lAdapter.createKeyCountColumnList(lHome);
@@ -375,7 +367,7 @@ public class DefaultDBAdapterSimpleTest {
     public void testCreatePreparedInserts() {
         final String lExpected = "INSERT INTO tblTest( SLANGUAGE, SFIRSTNAME, DTMUTATION, SPLZ, SCITY, BSEX, SSTREET, FAMOUNT, TESTID, SNAME, FDOUBLE, SFAX, STEL, SPASSWORD, SMAIL ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
         try {
-            final DomainObjectHome lHome = data.getSimpleHome();
+            final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
             final DomainObject lObject = lHome.create();
             final DBAdapterSimple lAdapter = new DefaultDBAdapterSimple(lObject.getObjectDef());
             // String lSQL = (String)lAdapter.createPreparedInserts().elementAt(0);
@@ -390,7 +382,7 @@ public class DefaultDBAdapterSimpleTest {
     public void testCreatePreparedUpdates() {
         final String lExpected = "UPDATE tblTest SET SLANGUAGE = ?, SFIRSTNAME = ?, DTMUTATION = ?, SPLZ = ?, SCITY = ?, BSEX = ?, SSTREET = ?, FAMOUNT = ?, SNAME = ?, FDOUBLE = ?, SFAX = ?, STEL = ?, SPASSWORD = ?, SMAIL = ? WHERE TESTID = ?";
         try {
-            final DomainObjectHome lHome = data.getSimpleHome();
+            final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
             final DomainObject lObject = lHome.create();
             final DBAdapterSimple lAdapter = new DefaultDBAdapterSimple(lObject.getObjectDef());
             // final String lSQL = lAdapter.createPreparedUpdates().elementAt(0);
@@ -410,7 +402,7 @@ public class DefaultDBAdapterSimpleTest {
             outKey.setValue(Test2DomainObjectHomeImpl.KEY_SEX, new Integer(0));
             outKey.setValue(Test2DomainObjectHomeImpl.KEY_AMOUNT, new BigDecimal(24));
 
-            final Calendar lCalender = GregorianCalendar.getInstance();
+            final Calendar lCalender = Calendar.getInstance();
             lCalender.set(2002, 1, 1, 10, 0, 0);
             lCalender.getTime();
             outKey.setValue(Test2DomainObjectHomeImpl.KEY_MUTATION, new Timestamp(lCalender.getTimeInMillis()));
@@ -429,7 +421,7 @@ public class DefaultDBAdapterSimpleTest {
             outKey.setValue(lKey);
             outKey.setValue(Test2DomainObjectHomeImpl.KEY_AMOUNT, new BigDecimal(24), ">");
 
-            final Calendar lCalender = GregorianCalendar.getInstance();
+            final Calendar lCalender = Calendar.getInstance();
             lCalender.set(2002, 1, 1, 10, 0, 0);
             lCalender.getTime();
             outKey.setValue(Test2DomainObjectHomeImpl.KEY_MUTATION, new Timestamp(lCalender.getTimeInMillis()));

@@ -1,9 +1,10 @@
 package org.hip.kernel.servlet.test;
 
+import java.io.IOException;
 import java.util.Collection;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 
 /** Implementation of the HttpServletResponse for testing purpose.
  *
@@ -18,7 +19,7 @@ public class TestServletResponse implements HttpServletResponse {
 
     /** addCookie method comment. */
     @Override
-    public void addCookie(final javax.servlet.http.Cookie arg1) {
+    public void addCookie(final jakarta.servlet.http.Cookie arg1) {
     }
 
     /** addDateHeader method comment. */
@@ -42,11 +43,7 @@ public class TestServletResponse implements HttpServletResponse {
         return false;
     }
 
-    /** encodeRedirectUrl method comment. */
-    @Override
-    public String encodeRedirectUrl(final String arg1) {
-        return null;
-    }
+
 
     /** encodeRedirectURL method comment. */
     @Override
@@ -54,11 +51,6 @@ public class TestServletResponse implements HttpServletResponse {
         return null;
     }
 
-    /** encodeUrl method comment. */
-    @Override
-    public String encodeUrl(final String arg1) {
-        return null;
-    }
 
     /** encodeURL method comment. */
     @Override
@@ -97,10 +89,10 @@ public class TestServletResponse implements HttpServletResponse {
     /** getWriter method comment. */
     @Override
     public java.io.PrintWriter getWriter() throws java.io.IOException {
-        if (outWriter == null) {
-            outWriter = new TestPrintWriter();
+        if (this.outWriter == null) {
+            this.outWriter = new TestPrintWriter();
         }
-        return outWriter;
+        return this.outWriter;
     }
 
     /** isCommitted method comment. */
@@ -169,11 +161,6 @@ public class TestServletResponse implements HttpServletResponse {
     public void setStatus(final int arg1) {
     }
 
-    /** setStatus method comment. */
-    @Override
-    public void setStatus(final int arg1, final String arg2) {
-    }
-
     @Override
     public void resetBuffer() {
     }
@@ -192,7 +179,7 @@ public class TestServletResponse implements HttpServletResponse {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.http.HttpServletResponse#getStatus()
      */
     @Override
@@ -203,7 +190,7 @@ public class TestServletResponse implements HttpServletResponse {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.http.HttpServletResponse#getHeader(java.lang.String)
      */
     @Override
@@ -214,7 +201,7 @@ public class TestServletResponse implements HttpServletResponse {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.http.HttpServletResponse#getHeaders(java.lang.String)
      */
     @Override
@@ -225,12 +212,24 @@ public class TestServletResponse implements HttpServletResponse {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.servlet.http.HttpServletResponse#getHeaderNames()
      */
     @Override
     public Collection<String> getHeaderNames() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void setContentLengthLong(final long len) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void sendRedirect(final String location, final int sc, final boolean clearBuffer) throws IOException {
+        // TODO Auto-generated method stub
+
     }
 }

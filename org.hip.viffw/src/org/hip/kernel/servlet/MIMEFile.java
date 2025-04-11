@@ -21,7 +21,7 @@ package org.hip.kernel.servlet;
 
 import java.io.IOException;
 
-import javax.servlet.ServletOutputStream;
+import jakarta.servlet.ServletOutputStream;
 
 /** Represents a file with MIME-type other then html (e.g. DIF = data interchange format). This interface can be used to
  * export data from the server to the clients hard-disk in a format which depends on the used XSLT.

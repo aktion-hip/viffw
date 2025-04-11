@@ -18,58 +18,60 @@
  */
 package org.hip.kernel.servlet.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+
+import org.apache.commons.fileupload2.core.DiskFileItem;
 
 /** Wrapper class for the file upload's <code>FileItem</code> object.
  *
  * @author Luthiger Created: 22.09.2010
- * @see org.apache.commons.fileupload.FileItem */
+ * @see org.apache.commons.fileupload2.core.FileItem */
 public class FileItem {
-    private final transient org.apache.commons.fileupload.FileItem item;
+    private final transient org.apache.commons.fileupload2.core.FileItem<DiskFileItem> item;
 
     /** FileItem constructor.
      *
      * @param inItem {@link org.apache.commons.fileupload.FileItem} */
-    public FileItem(final org.apache.commons.fileupload.FileItem inItem) {
-        item = inItem;
+    public FileItem(final org.apache.commons.fileupload2.core.FileItem<DiskFileItem> inItem) {
+        this.item = inItem;
     }
 
     public InputStream getInputStream() throws IOException { // NOPMD
-        return item.getInputStream();
+        return this.item.getInputStream();
     }
 
     public String getContentType() { // NOPMD
-        return item.getContentType();
+        return this.item.getContentType();
     }
 
     public String getName() { // NOPMD
-        return item.getName();
+        return this.item.getName();
     }
 
     public boolean isInMemory() { // NOPMD
-        return item.isInMemory();
+        return this.item.isInMemory();
     }
 
     public long getSize() { // NOPMD
-        return item.getSize();
+        return this.item.getSize();
     }
 
     public byte[] get() { // NOPMD
-        return item.get();
+        return this.item.get();
     }
 
     public String getFieldName() { // NOPMD
-        return item.getFieldName();
+        return this.item.getFieldName();
     }
 
-    public void delete() { // NOPMD
-        item.delete();
+    public void delete() throws IOException { // NOPMD
+        this.item.delete();
     }
 
-    public void write(final File inFile) throws Exception { // NOPMD
-        item.write(inFile);
+    public void write(final Path file) throws IOException { // NOPMD
+        this.item.write(file);
     }
 
 }
