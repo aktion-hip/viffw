@@ -6,11 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.hip.kernel.bom.AlternativeModel;
 import org.hip.kernel.bom.AlternativeModelFactory;
 import org.hip.kernel.bom.DomainObject;
 import org.hip.kernel.bom.QueryResult;
+import org.hip.kernel.bom.impl.AlternativeQueryResult;
 import org.hip.kernel.sys.VObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 /**
  * @author Benno Luthiger
- * Created on Sep 22, 2004
  */
 public class AlternativeModellTest {
     private final String[] expected = {"AAAAAAAAAA", "BBBBBBBB", "CCCCC"};
@@ -46,26 +47,31 @@ public class AlternativeModellTest {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         populate();
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         DataHouseKeeper.INSTANCE.deleteAllFromSimple();
     }
 
     @Test
-    public void testDo() throws Exception {
-        final TestAlternativeHomeImpl lHome = DataHouseKeeper.INSTANCE.getAlternativeHome();
-        final QueryResult lResult = lHome.select();
-        final Collection<AlternativeModel> lSet = lResult.load(new TestAlternativeFactory());
+    void testDo() throws Exception {
+        final TestAlternativeHomeImpl home = DataHouseKeeper.INSTANCE.getAlternativeHome();
+        home.setFactory(new TestAlternativeFactory());
+        final QueryResult result = home.select();
 
-        assertEquals(this.expected.length, lSet.size());
+        Collection<AlternativeModel> results = Collections.emptyList();
+        if (result instanceof final AlternativeQueryResult altResult) {
+            results = altResult.getAlternativeModels();
+        }
+
+        assertEquals(this.expected.length, results.size());
 
         String lCheck = "";
-        for (final AlternativeModel lModel : lSet) {
-            lCheck += lModel + ";";
+        for (final AlternativeModel model : results) {
+            lCheck += model + ";";
         }
         for (int i = 0; i < this.expected.length; i++) {
             assertTrue(lCheck.indexOf(this.expected[i] + ":" + this.expected[i].toLowerCase()) >= 0);

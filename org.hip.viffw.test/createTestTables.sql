@@ -1,4 +1,4 @@
--- Creates tables for testing purposes in the database viftest.
+-- Creates tables for testing purposes in the database vif_test.
 
 -- drop tables
 DROP TABLE IF EXISTS `tbltest`;
@@ -11,8 +11,8 @@ DROP TABLE IF EXISTS `tblBlobTest`;
 -- tbltest
 CREATE TABLE `tbltest` (
 	`TestID` INT(11) NOT NULL AUTO_INCREMENT,
-	`sName` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_general_mysql500_ci',
-	`sFirstName` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_general_mysql500_ci',
+	`sName` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	`sFirstName` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
 	`sStreet` VARCHAR(255) NULL DEFAULT NULL,
 	`sPLZ` VARCHAR(255) NULL DEFAULT NULL,
 	`sCity` VARCHAR(255) NULL DEFAULT NULL,
@@ -24,10 +24,10 @@ CREATE TABLE `tbltest` (
 	`dtMutation` DATETIME NULL DEFAULT NULL,
 	`bSex` TINYINT(4) NULL DEFAULT NULL,
 	`fAmount` FLOAT(12) NULL DEFAULT NULL,
-	`fDouble` DOUBLE(22,0) NULL DEFAULT NULL,
+	`fDouble` DOUBLE(22,3) NULL DEFAULT NULL,
 	PRIMARY KEY (`TestID`) USING BTREE
 )
-COLLATE='utf8_general_mysql500_ci'
+COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB
 ;
 
@@ -37,7 +37,7 @@ CREATE TABLE `tblTestShort` (
 	`ShortID` INT NOT NULL DEFAULT '0',
 	PRIMARY KEY (`TestID`)
 )
-COLLATE='utf8_general_mysql500_ci'
+COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB
 ;
 
@@ -52,12 +52,12 @@ CREATE TABLE `tblGroup` (
 	`nState` INT NULL DEFAULT NULL,
 	PRIMARY KEY (`GroupID`)
 )
-COLLATE='utf8_general_mysql500_ci'
+COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB
 ;
 
 -- tblparticipant
-CREATE TABLE `viftest`.`tblparticipant` (
+CREATE TABLE `vif_test`.`tblparticipant` (
   `MemberID` INT NOT NULL,
   `GroupID` INT NULL,
   `dtSuspendFrom` DATETIME NULL,
@@ -66,12 +66,12 @@ CREATE TABLE `viftest`.`tblparticipant` (
   UNIQUE INDEX `MemberID_UNIQUE` (`MemberID` ASC),
   INDEX `GroupID_idx` (`GroupID` ASC)
 )
-COLLATE='utf8_general_mysql500_ci'
+COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB
 ;
 
 -- tblgroupadmin
-CREATE TABLE `viftest`.`tblgroupadmin` (
+CREATE TABLE `vif_test`.`tblgroupadmin` (
   `GroupAdminID` INT NOT NULL AUTO_INCREMENT,
   `MemberID` INT NULL,
   `GroupID` INT NULL,
@@ -80,17 +80,17 @@ CREATE TABLE `viftest`.`tblgroupadmin` (
   INDEX `MemberID_idx` (`MemberID` ASC),
   UNIQUE INDEX `GroupAdminID_UNIQUE` (`GroupAdminID` ASC)
 ) 
-COLLATE='utf8_general_mysql500_ci'
+COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB
 ;
 
 -- tblBlobTest
-CREATE TABLE `viftest`.`tblBlobTest` (
+CREATE TABLE `vif_test`.`tblBlobTest` (
   `BlobTestID` INT NOT NULL AUTO_INCREMENT,
   `sName` VARCHAR(255) NULL DEFAULT '',
   `xValue` BLOB,
   PRIMARY KEY (`BlobTestID`)
 ) 
-COLLATE='utf8_general_mysql500_ci'
+COLLATE='utf8mb4_unicode_ci'
 ENGINE=InnoDB
 ;

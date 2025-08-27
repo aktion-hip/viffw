@@ -43,7 +43,7 @@ public class DefaultExceptionWriterTest {
     }
 
     @Test
-    public void testPrintOut2() throws IOException {
+    void testPrintOut2() throws IOException {
         final PrintWriter lWriter = new PrintWriter(this.errorLog);
         try {
             new TestObject();
@@ -52,8 +52,8 @@ public class DefaultExceptionWriterTest {
             DefaultExceptionWriter.printOut(this, exc, true, lWriter);
             lWriter.close();
             final String lContent = getFileContent(this.errorLog);
-            assertEquals("exc msg", "java.io.IOException: Another test", lContent.substring(0, 33));
-            assertEquals("exc root", "at org.hip.kernel.exc.test.TestObject.<init>(TestObject.java:7)", lContent.substring(34, 97));
+            assertEquals("java.io.IOException: Another test", lContent.substring(0, 33));
+            assertEquals("at org.hip.kernel.exc.test.TestObject.<init>(TestObject.java:7)", lContent.substring(34, 97));
         }
         finally {
             lWriter.close();

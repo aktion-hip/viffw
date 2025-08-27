@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class XMLCharacterFilterTest {
 
     @Test
-    public void testFilter() {
+    void testFilter() {
 
         final String[][] lChars = new String[4][2];
 
@@ -29,6 +29,6 @@ public class XMLCharacterFilterTest {
 
         final String lTest = "Dies ist ein <Test> des \"&Filters\"";
         final String lExpected = "Dies ist ein &lt;Test&gt; des &quot;&amp;Filters&quot;";
-        assertEquals("filter", lExpected, lFilter.filter(lTest));
+        assertEquals(lExpected, lFilter.filter(lTest));
     }
 }

@@ -36,7 +36,7 @@ public class DBAccessConfiguration {
 
     /** Private constructor for empty configurations. */
     private DBAccessConfiguration() {
-        state = State.NEW;
+        this.state = State.NEW;
     }
 
     /** Constructor.
@@ -49,18 +49,18 @@ public class DBAccessConfiguration {
      * @param inPassword String <code>org.hip.vif.db.password</code> */
     public DBAccessConfiguration(final String inDBSourceID, final String inServer, final String inSchema,
             final String inUser, final String inPassword) {
-        dbSourceID = inDBSourceID;
-        server = inServer;
-        schema = inSchema;
-        user = inUser;
-        password = inPassword;
+        this.dbSourceID = inDBSourceID;
+        this.server = inServer;
+        this.schema = inSchema;
+        this.user = inUser;
+        this.password = inPassword;
 
-        state = State.NEW;
-        if (dbSourceID != null && !dbSourceID.isEmpty()) {
-            state = State.INITIALIZED;
-            if (server != null && !server.isEmpty() &&
-                    schema != null && !schema.isEmpty()) {
-                state = State.CONFIGURED;
+        this.state = State.NEW;
+        if (this.dbSourceID != null && !this.dbSourceID.isEmpty()) {
+            this.state = State.INITIALIZED;
+            if (this.server != null && !this.server.isEmpty() &&
+                    this.schema != null && !this.schema.isEmpty()) {
+                this.state = State.CONFIGURED;
             }
         }
     }
@@ -72,14 +72,15 @@ public class DBAccessConfiguration {
         return new DBAccessConfiguration();
     }
 
-    /** @return String the ID of the <code>DataSource</code> to configure with this configuration instance */
+    /** @return String the ID of the <code>DataSource</code> (i.e. the name of the driver class) to configure with this
+     *         configuration instance */
     public String getDBSourceID() {
-        return dbSourceID;
+        return this.dbSourceID;
     }
 
     /** @return {@link State} */
     public State getState() {
-        return state;
+        return this.state;
     }
 
     /** Checks whether the actual configuration is in the specified state.
@@ -87,7 +88,7 @@ public class DBAccessConfiguration {
      * @param inState {@link State} the state to check
      * @return boolean <code>true</code> if the configuration instance is in the specified state */
     public boolean checkState(final State inState) {
-        return state.equals(inState);
+        return this.state.equals(inState);
     }
 
     /** The <code>Properties</code> to retrieve a DB connection instance based on this configuration.
@@ -95,10 +96,10 @@ public class DBAccessConfiguration {
      * @return Properties */
     public Properties getProperties() {
         final Properties out = new Properties();
-        out.put(DataSourceFactory.JDBC_SERVER_NAME, server);
-        out.put(DataSourceFactory.JDBC_DATABASE_NAME, schema);
-        out.put(DataSourceFactory.JDBC_USER, user);
-        out.put(DataSourceFactory.JDBC_PASSWORD, password);
+        out.put(DataSourceFactory.JDBC_SERVER_NAME, this.server);
+        out.put(DataSourceFactory.JDBC_DATABASE_NAME, this.schema);
+        out.put(DataSourceFactory.JDBC_USER, this.user);
+        out.put(DataSourceFactory.JDBC_PASSWORD, this.password);
         return out;
     }
 
@@ -108,20 +109,20 @@ public class DBAccessConfiguration {
             return false;
         }
         // State.INITIALIZED
-        if (dbSourceID == null || dbSourceID.isEmpty()) {
+        if (this.dbSourceID == null || this.dbSourceID.isEmpty()) {
             return false;
         }
         if (!isEmbedded) {
-            if (server == null || server.isEmpty()) {
+            if (this.server == null || this.server.isEmpty()) {
                 return false;
             }
         }
-        return user == null ? true : user.length() == 0 && password == null ? true : password.length() == 0;
+        return this.user == null ? true : this.user.length() == 0 && this.password == null ? true : this.password.length() == 0;
     }
 
     @Override
     public String toString() { // NOPMD by lbenno
-        return String.format("DBAccessConfiguration[server=%s, schema=%s, user=%s]", server, schema, user);
+        return String.format("DBAccessConfiguration[server=%s, schema=%s, user=%s]", this.server, this.schema, this.user);
     }
 
     // ---

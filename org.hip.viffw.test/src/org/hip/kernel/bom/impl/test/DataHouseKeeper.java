@@ -74,24 +74,24 @@ public enum DataHouseKeeper {
         }
     }
 
-    public Long createTestEntry(final String inName) throws SQLException {
+    public Long createTestEntry(final String name) throws SQLException {
         guard();
-        return createTestEntry(inName, "Adam");
+        return createTestEntry(name, "Adam");
     }
 
-    public Long createTestEntry(final String inName, final String inFirstName) throws SQLException {
+    public Long createTestEntry(final String name, final String firstName) throws SQLException {
         guard();
         Long outID = null;
         try {
-            final DomainObject lNew = getSimpleHome().create();
-            lNew.set("Name", inName);
-            lNew.set("Firstname", inFirstName);
-            lNew.set("Mail", "dummy1@aktion-hip.ch");
-            lNew.set("Sex", Long.valueOf(1));
-            lNew.set("Amount", Float.valueOf(12.45f));
-            lNew.set("Double", Float.valueOf(13.11f));
-            outID = lNew.insert(true);
-            lNew.release();
+            final DomainObject newEntry = getSimpleHome().create();
+            newEntry.set("Name", name);
+            newEntry.set("Firstname", firstName);
+            newEntry.set("Mail", "dummy1@aktion-hip.ch");
+            newEntry.set("Sex", Long.valueOf(1));
+            newEntry.set("Amount", Float.valueOf(12.45f));
+            newEntry.set("Double", Float.valueOf(13.11f));
+            outID = newEntry.insert(true);
+            newEntry.release();
         } catch (final VException exc) {
             fail(exc.getMessage());
         }

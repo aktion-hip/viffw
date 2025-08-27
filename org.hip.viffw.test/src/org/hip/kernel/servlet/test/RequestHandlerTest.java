@@ -2,6 +2,7 @@ package org.hip.kernel.servlet.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -11,7 +12,6 @@ import java.util.Hashtable;
 import org.hip.kernel.servlet.Context;
 import org.hip.kernel.servlet.impl.AbstractContext;
 import org.hip.kernel.servlet.test.TestServletRequest.Builder;
-import org.hip.kernel.sys.AssertionFailedError;
 import org.junit.jupiter.api.Test;
 
 import jakarta.servlet.ServletException;
@@ -39,7 +39,7 @@ public class RequestHandlerTest {
     //		"</body></html>" + NL;
 
     @Test
-    public void testDoGet1() throws Exception {
+    void testDoGet1() throws Exception {
         final TestRequestHandler lRequestHandler = new TestRequestHandler();
 
         TestServletResponse lResponse = new TestServletResponse();
@@ -72,7 +72,7 @@ public class RequestHandlerTest {
     }
 
     @Test
-    public void testDoGet2() throws Exception {
+    void testDoGet2() throws Exception {
         final TestRequestHandler lRequestHandler = new TestRequestHandler();
         final TestServletResponse lResponse = new TestServletResponse();
 
@@ -80,47 +80,35 @@ public class RequestHandlerTest {
             lRequestHandler.doGet(null, lResponse);
             fail("shouldn't get here");
         }
-        catch (final ServletException exc) {
+        catch (ServletException | IOException exc) {
             fail(exc.getMessage());
         }
-        catch (final IOException exc) {
-            fail(exc.getMessage());
-        }
+
         catch (final Throwable t) {
             //left blank intentionally
         }
     }
 
     @Test
-    public void testDoGet3() throws Exception {
+    void testDoGet3() {
         final TestRequestHandler lRequestHandler = new TestRequestHandler();
         final TestServletResponse lResponse = new TestServletResponse();
-        try {
-            //request which doesn't exist
-            //we handled it by throwing an AssertionFailedError
-            final Builder lBuilder = new TestServletRequest.Builder();
-            final Hashtable<String, String[]> lParameters = new Hashtable<String, String[]>(4);
-            lParameters.put(AbstractContext.REQUEST_TYPE, new String[] {"test!!"});
-            lParameters.put("name", new String[] {"VIF"});
-            lParameters.put("version", new String[] {"1.0"});
-            lParameters.put("state", new String[] {"beta"});
-            final HttpServletRequest lRequest3 = lBuilder.setParameters(lParameters).build();
-            lRequestHandler.doGet(lRequest3, lResponse);
-            fail("shouldn't get here");
-        }
-        catch (final ServletException exc) {
-            fail(exc.getMessage());
-        }
-        catch (final IOException exc) {
-            fail(exc.getMessage());
-        }
-        catch (final AssertionFailedError exc) {
-            //left blank intentionally
-        }
+        //request which doesn't exist
+        //we handled it by throwing an AssertionFailedError
+        final Builder lBuilder = new TestServletRequest.Builder();
+        final Hashtable<String, String[]> lParameters = new Hashtable<String, String[]>(4);
+        lParameters.put(AbstractContext.REQUEST_TYPE, new String[] {"test!!"});
+        lParameters.put("name", new String[] {"VIF"});
+        lParameters.put("version", new String[] {"1.0"});
+        lParameters.put("state", new String[] {"beta"});
+        final HttpServletRequest lRequest3 = lBuilder.setParameters(lParameters).build();
+        final java.lang.AssertionError exc = assertThrows(java.lang.AssertionError.class,
+                () -> lRequestHandler.doGet(lRequest3, lResponse));
+        assertEquals("No task found for \"test!!\".", exc.getMessage());
     }
 
     @Test
-    public void testGetContext() {
+    void testGetContext() {
         final TestRequestHandler lRequestHandler = new TestRequestHandler();
         assertEquals(TestContext.class.getName(), lRequestHandler.getContextClassName());
 

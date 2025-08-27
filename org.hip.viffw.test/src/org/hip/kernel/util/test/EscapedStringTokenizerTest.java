@@ -12,14 +12,14 @@ import org.junit.jupiter.api.Test;
 public class EscapedStringTokenizerTest {
 
     @Test
-    public void testDo() {
+    void testDo() {
         String lTest = "This is a test!";
         final String[] lTestArr = {"This", "is", "a", "test!"};
         EscapedStringTokenizer lTokenizer = new EscapedStringTokenizer(lTest, " ", false);
 
         int i = 0;
         while (lTokenizer.hasMoreElements()) {
-            assertEquals("token 1." + i, lTestArr[i], lTokenizer.nextElement());
+            assertEquals(lTestArr[i], lTokenizer.nextElement());
             i++;
         }
 
@@ -28,11 +28,11 @@ public class EscapedStringTokenizerTest {
         boolean lRegularToken = true;
         while (lTokenizer.hasMoreElements()) {
             if (lRegularToken) {
-                assertEquals("token 2." + i, lTestArr[i], lTokenizer.nextElement());
+                assertEquals(lTestArr[i], lTokenizer.nextElement());
                 i++;
             }
             else {
-                assertEquals("delimiter token 2." + i, " ", lTokenizer.nextElement());
+                assertEquals(" ", lTokenizer.nextElement());
             }
             lRegularToken = !lRegularToken;
         }
@@ -42,7 +42,7 @@ public class EscapedStringTokenizerTest {
         lTokenizer = new EscapedStringTokenizer(lTest, " ", false, '?');
         i = 0;
         while (lTokenizer.hasMoreElements()) {
-            assertEquals("token 3." + i, lTestArr2[i], lTokenizer.nextElement());
+            assertEquals(lTestArr2[i], lTokenizer.nextElement());
             i++;
         }
 
@@ -51,11 +51,11 @@ public class EscapedStringTokenizerTest {
         lRegularToken = true;
         while (lTokenizer.hasMoreElements()) {
             if (lRegularToken) {
-                assertEquals("token 4." + i, lTestArr2[i], lTokenizer.nextElement());
+                assertEquals(lTestArr2[i], lTokenizer.nextElement());
                 i++;
             }
             else {
-                assertEquals("delimiter token 4." + i, " ", lTokenizer.nextElement());
+                assertEquals(" ", lTokenizer.nextElement());
             }
             lRegularToken = !lRegularToken;
         }
@@ -64,7 +64,7 @@ public class EscapedStringTokenizerTest {
         lTokenizer = new EscapedStringTokenizer(lTest, " ", false, '?', true);
         i = 0;
         while (lTokenizer.hasMoreElements()) {
-            assertEquals("token 5." + i, lTestArr3[i], lTokenizer.nextElement());
+            assertEquals(lTestArr3[i], lTokenizer.nextElement());
             i++;
         }
 

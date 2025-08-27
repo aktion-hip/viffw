@@ -291,7 +291,5 @@ public class XSLQueryResultViewTest {
         assertTrue(lStreamed.indexOf("<Name>test 9</Name>") >= 0);
         assertEquals(-1, lStreamed.indexOf("<Name>test 11</Name>"));
         assertEquals(-1, lStreamed.indexOf("<Name>test 2</Name>"));
-
-        lResultView.finalize();
     }
 }

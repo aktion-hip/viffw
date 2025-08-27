@@ -1,6 +1,6 @@
 /**
  This package is part of the servlet framework used for the application VIF.
- Copyright (C) 2001, Benno Luthiger
+ Copyright (C) 2001-2025, Benno Luthiger
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -31,11 +31,11 @@ import org.hip.kernel.bom.QueryStatement;
 public class DefaultQueryResult extends AbstractQueryResult {
     /** DefaultQueryResult default constructor.
      *
-     * @param inHome org.hip.kernel.bom.GeneralDomainObjectHome
-     * @param inResult java.sql.ResultSet
-     * @param inStatement org.hip.kernel.bom.QueryStatement */
-    public DefaultQueryResult(final GeneralDomainObjectHome inHome, final ResultSet inResult,
-            final QueryStatement inStatement) {
-        super(inHome, inResult, inStatement);
+     * @param home org.hip.kernel.bom.GeneralDomainObjectHome
+     * @param result java.sql.ResultSet
+     * @param statement org.hip.kernel.bom.QueryStatement */
+    public DefaultQueryResult(final GeneralDomainObjectHome home, final ResultSet result,
+            final QueryStatement statement) {
+        super(home, result, statement);
     }
 }

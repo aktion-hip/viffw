@@ -71,14 +71,12 @@ public class HelperTableDefTest {
         final Iterator<HelperTableDef> iter1 = lHelperTableDefs.values().iterator();
         while (iter1.hasNext()) {
             final HelperTableDef lHelperTableDef = iter1.next();
-            assertEquals("tableName 0", lTableNameExpected, lHelperTableDef.getTableName());
+            assertEquals(lTableNameExpected, lHelperTableDef.getTableName());
 
-            int i = 0;
             final Iterator<MappingDef> iter2 = lHelperTableDef.getMappingDefs2().iterator();
             while (iter2.hasNext()) {
-                i++;
                 final MappingDef lMappingDef = iter2.next();
-                assertEquals("tableName " + i, lTableNameExpected, lMappingDef.getTableName());
+                assertEquals(lTableNameExpected, lMappingDef.getTableName());
                 assertTrue(lVExpected.contains(lMappingDef.getColumnName()));
             }
         }
@@ -106,7 +104,7 @@ public class HelperTableDefTest {
         final Iterator<?> iter = lRetrieved.values().iterator();
         while (iter.hasNext()) {
             final HelperTableDef lHelperTableDef = (HelperTableDef) iter.next();
-            assertEquals("tableName", lTableNameExpected, lHelperTableDef.getTableName());
+            assertEquals(lTableNameExpected, lHelperTableDef.getTableName());
         }
     }
 

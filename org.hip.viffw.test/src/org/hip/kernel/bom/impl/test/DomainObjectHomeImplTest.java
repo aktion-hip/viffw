@@ -12,10 +12,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -90,7 +93,7 @@ public class DomainObjectHomeImplTest {
     }
 
     @Test
-    public void testCreate() {
+    void testCreate() {
         try {
             int lCount = DataHouseKeeper.INSTANCE.getSimpleHome().getCount();
             assertEquals(0, lCount);
@@ -124,13 +127,13 @@ public class DomainObjectHomeImplTest {
             lNew.set(KEY_NAME, lName);
             lNew.set("Firstname", lFirstname);
             lNew.set("Mail", "dummy1@aktion-hip.ch");
-            lNew.set("Sex", new Integer(1));
+            lNew.set("Sex", Integer.valueOf(1));
             lNew.set("Amount", lAmount);
             lNew.insert(true);
 
             lFound = DataHouseKeeper.INSTANCE.getSimpleHome().findByKey(lKey);
             final BigDecimal lReturned = (BigDecimal) lFound.get("Amount");
-            assertEquals(lAmount.setScale(2, 2), lReturned);
+            assertEquals(lAmount.setScale(3, RoundingMode.DOWN), lReturned);
             lFound.delete();
         } catch (final org.hip.kernel.exc.VException exc) {
             fail("testCreate f1 " + exc.getMessage());
@@ -147,7 +150,7 @@ public class DomainObjectHomeImplTest {
 
         String lText = "String with apostroph: Here\'s one (1).";
         lModel.set(Test2DomainObjectHomeImpl.KEY_NAME, lText);
-        lModel.set(Test2DomainObjectHomeImpl.KEY_SEX, new Integer(1));
+        lModel.set(Test2DomainObjectHomeImpl.KEY_SEX, Integer.valueOf(1));
         final Long lID = lModel.insert(true);
         assertEquals(1, lHome.getCount());
 
@@ -183,13 +186,13 @@ public class DomainObjectHomeImplTest {
             lNew.set(KEY_NAME, lName);
             lNew.set("Firstname", lFirstname);
             lNew.set("Mail", "dummy1@aktion-hip.ch");
-            lNew.set("Sex", new Integer(1));
+            lNew.set("Sex", Integer.valueOf(1));
 
             final DomainObject lNew2 = DataHouseKeeper.INSTANCE.getSimpleHome().create();
             lNew2.set(KEY_NAME, lName2);
             lNew2.set("Firstname", lFirstname2);
             lNew2.set("Mail", "dummy2@aktion-hip.ch");
-            lNew2.set("Sex", new Integer(2));
+            lNew2.set("Sex", Integer.valueOf(2));
 
             assertTrue(lNew2.equals(lNew));
             assertEquals(lNew2.hashCode(), lNew.hashCode());
@@ -253,7 +256,6 @@ public class DomainObjectHomeImplTest {
         final PropertyDef lDef = home.getPropertyDef("MemberID");
         assertEquals("simple", lDef.getPropertyType());
         assertEquals("Number", lDef.getValueType());
-        final int i = 0;
         for (final String lName : lDef.getPropertyNames2()) {
             assertTrue(lContainsExpected.contains(lName));
         }
@@ -266,13 +268,12 @@ public class DomainObjectHomeImplTest {
     public void testGetPropertyDefFor() {
         final String[] lExpected = { "propertyType", "valueType", "propertyName", "mappingDef", "formatPattern",
         "relationshipDef" };
-        final Vector<String> lContainsExpected = new Vector<String>(Arrays.asList(lExpected));
+        final List<String> lContainsExpected = new ArrayList<>(Arrays.asList(lExpected));
 
         final PropertyDef lDef = home.getPropertyDefFor("DTMUTATION");
         assertEquals("simple", lDef.getPropertyType());
         assertEquals("Timestamp", lDef.getValueType());
         assertEquals("Mutation", lDef.getName());
-        final int i = 0;
         for (final String lName : lDef.getPropertyNames2()) {
             assertTrue(lContainsExpected.contains(lName));
         }
@@ -337,7 +338,7 @@ public class DomainObjectHomeImplTest {
         try {
             lNew.set(KEY_NAME, lName);
             lNew.set("Firstname", lFirstname);
-            lNew.set("Double", new Float(13.11));
+            lNew.set("Double", Float.valueOf((float) 13.11));
         } catch (final org.hip.kernel.bom.SettingException exc) {
             fail("testSetCheck set " + exc.getMessage());
         }
@@ -370,7 +371,7 @@ public class DomainObjectHomeImplTest {
     }
 
     @Test
-    public void testMax() throws VException, SQLException {
+    void testMax() throws VException, SQLException {
         final double[] lExpected = { 12.45, 112.331967 };
 
         final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
@@ -380,9 +381,9 @@ public class DomainObjectHomeImplTest {
         lNew.set("Name", "Test1");
         lNew.set("Firstname", "1");
         lNew.set("Mail", "dummy1@aktion-hip.ch");
-        lNew.set("Sex", new Integer(1));
-        lNew.set("Amount", new Float(lExpected[0]));
-        lNew.set("Double", new Float(13.11));
+        lNew.set("Sex", Integer.valueOf(1));
+        lNew.set("Amount", Float.valueOf((float) lExpected[0]));
+        lNew.set("Double", Float.valueOf((float) 13.11));
         lNew.insert(true);
         lNew.release();
 
@@ -390,9 +391,9 @@ public class DomainObjectHomeImplTest {
         lNew.set("Name", "Test2");
         lNew.set("Firstname", "2");
         lNew.set("Mail", "dummy2@aktion-hip.ch");
-        lNew.set("Sex", new Integer(1));
-        lNew.set("Amount", new Float(10));
-        lNew.set("Double", new Float(lExpected[1]));
+        lNew.set("Sex", Integer.valueOf(1));
+        lNew.set("Amount", Float.valueOf(10));
+        lNew.set("Double", Float.valueOf((float) lExpected[1]));
         lNew.insert(true);
         lNew.release();
 
@@ -400,9 +401,9 @@ public class DomainObjectHomeImplTest {
         lNew.set("Name", "Test3");
         lNew.set("Firstname", "3");
         lNew.set("Mail", "dummy3@aktion-hip.ch");
-        lNew.set("Sex", new Integer(1));
-        lNew.set("Amount", new Float(5.4451));
-        lNew.set("Double", new Float(89.4));
+        lNew.set("Sex", Integer.valueOf(1));
+        lNew.set("Amount", Float.valueOf((float) 5.4451));
+        lNew.set("Double", Float.valueOf((float) 89.4));
         lNew.insert(true);
         lNew.release();
 
@@ -420,7 +421,7 @@ public class DomainObjectHomeImplTest {
     }
 
     @Test
-    public void testCreateSelectUnion() throws VException {
+    void testCreateSelectUnion() throws VException {
         final String lExpectedName = "Test_Name";
         final String lExpected = "(SELECT tblTestMember.TESTMEMBERID, tblTestMember.SFIRSTNAME, tblTestMember.DTMUTATION, tblTestMember.SNAME, tblTestMember.SPASSWORD FROM tblTestMember WHERE tblTestMember.SNAME = 'Test_Name')";
         final UnionHomeSub lUnionHome = new UnionHomeSub();
@@ -433,13 +434,13 @@ public class DomainObjectHomeImplTest {
     }
 
     @Test
-    public void testSerialization() throws IOException, ClassNotFoundException, VException, SQLException {
+    void testSerialization() throws IOException, ClassNotFoundException, VException, SQLException {
         DomainObjectHome lHome = (Test2DomainObjectHomeImpl) VSys.homeManager
                 .getHome("org.hip.kernel.bom.impl.test.Test2DomainObjectHomeImpl");
         assertEquals(0, lHome.getCount());
         DomainObject lNew = lHome.create();
         lNew.set(Test2DomainObjectHomeImpl.KEY_NAME, "Test 1");
-        lNew.set(Test2DomainObjectHomeImpl.KEY_SEX, new Integer(1));
+        lNew.set(Test2DomainObjectHomeImpl.KEY_SEX, Integer.valueOf(1));
         lNew.insert(true);
         assertEquals(1, lHome.getCount());
 
@@ -460,14 +461,14 @@ public class DomainObjectHomeImplTest {
         assertEquals(1, lRetrieved.getCount());
         lNew = lRetrieved.create();
         lNew.set(Test2DomainObjectHomeImpl.KEY_NAME, "Test 2");
-        lNew.set(Test2DomainObjectHomeImpl.KEY_SEX, new Integer(0));
+        lNew.set(Test2DomainObjectHomeImpl.KEY_SEX, Integer.valueOf(0));
         lNew.insert(true);
         assertEquals(2, lRetrieved.getCount());
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testSerialization2() throws IOException, ClassNotFoundException {
+    void testSerialization2() throws IOException, ClassNotFoundException {
         DomainObjectHome lHome1 = (Test2DomainObjectHomeImpl) VSys.homeManager
                 .getHome("org.hip.kernel.bom.impl.test.Test2DomainObjectHomeImpl");
         DomainObjectHome lHome2 = (Test2DomainObjectHomeImpl) VSys.homeManager

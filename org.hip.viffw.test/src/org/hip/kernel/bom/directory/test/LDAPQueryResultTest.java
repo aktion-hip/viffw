@@ -1,14 +1,8 @@
 package org.hip.kernel.bom.directory.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Vector;
@@ -17,9 +11,7 @@ import javax.naming.NamingException;
 
 import org.hip.kernel.bom.GeneralDomainObject;
 import org.hip.kernel.bom.directory.DirContextWrapper;
-import org.hip.kernel.bom.directory.LDAPObjectHome;
 import org.hip.kernel.bom.directory.LDAPQueryResult;
-import org.hip.kernel.bom.directory.LDAPQueryStatement;
 import org.hip.kernel.exc.VException;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +31,7 @@ public class LDAPQueryResultTest {
     "Output: cn=tenth, uid=1010, name=Tenth, sn=Tenth's sn, mail=tenth@my.org" };
 
     @Test
-    public void testDo() throws NamingException, VException, SQLException {
+    void testDo() throws NamingException, VException, SQLException {
         final DirContextWrapper lContext = new TestDirContext();
         final LDAPQueryResult lResult = new LDAPQueryResult(new TestLDAPObjectHome(),
                 lContext.search("(cn=test)", null), EXPECTED.length, null);
@@ -66,7 +58,7 @@ public class LDAPQueryResultTest {
     }
 
     @Test
-    public void testDoAsXML() throws NamingException, VException, SQLException {
+    void testDoAsXML() throws NamingException, VException, SQLException {
         final String lExpected = "<Member>" + NL +
                 "    <propertySet>" + NL +
                 "        <Firstname>First's sn</Firstname>" + NL +
@@ -87,70 +79,6 @@ public class LDAPQueryResultTest {
         }
 
         assertTrue(lTest.indexOf(lExpected) >= 0);
-    }
-
-    @Test
-    public void testSerialization() throws NamingException, SQLException, IOException, ClassNotFoundException,
-    VException {
-        final DirContextWrapper lContext = new TestDirContext();
-
-        final String lFilter = "(cn=test)";
-        final LDAPObjectHome lHome = new TestLDAPObjectHome();
-        final LDAPQueryStatement lStatement = new TestLDAPQueryStatement(lHome);
-        lStatement.setSQLString(lFilter);
-
-        // 1. test: setting cursor two steps ahead
-        LDAPQueryResult lResult = new LDAPQueryResult(lHome, lContext.search(lFilter, null), EXPECTED.length,
-                lStatement);
-        lResult.next();
-        lResult.next();
-
-        LDAPQueryResult lRetrieved = serDes(lResult);
-        lResult = null;
-
-        Collection<String> lContents = new Vector<String>();
-        while (lRetrieved.hasMoreElements()) {
-            lContents.add(getContent(lRetrieved.next()));
-        }
-
-        assertEquals(8, lContents.size());
-        for (int i = 2; i < EXPECTED.length; i++) {
-            assertTrue(lContents.contains(EXPECTED[i]));
-        }
-        assertFalse(lContents.contains(EXPECTED[0]));
-        assertFalse(lContents.contains(EXPECTED[1]));
-
-        // 2. test: setting cursor one steps ahead
-        lResult = new LDAPQueryResult(lHome, lContext.search(lFilter, null), EXPECTED.length, lStatement);
-        lResult.next();
-
-        lRetrieved = serDes(lResult);
-        lResult = null;
-
-        lContents = new Vector<String>();
-        while (lRetrieved.hasMoreElements()) {
-            lContents.add(getContent(lRetrieved.next()));
-        }
-
-        assertEquals(9, lContents.size());
-    }
-
-    private LDAPQueryResult serDes(LDAPQueryResult inResult) throws IOException, ClassNotFoundException {
-        final ByteArrayOutputStream lBytesOut = new ByteArrayOutputStream();
-        final ObjectOutputStream lObjectOut = new ObjectOutputStream(lBytesOut);
-        lObjectOut.writeObject(inResult);
-        final byte[] lSerialized = lBytesOut.toByteArray();
-        lObjectOut.close();
-        lBytesOut.close();
-        inResult = null;
-
-        final ByteArrayInputStream lBytesIn = new ByteArrayInputStream(lSerialized);
-        final ObjectInputStream lObjectIn = new ObjectInputStream(lBytesIn);
-        final LDAPQueryResult outRetrieved = (LDAPQueryResult) lObjectIn.readObject();
-        lObjectIn.close();
-        lBytesIn.close();
-
-        return outRetrieved;
     }
 
 }

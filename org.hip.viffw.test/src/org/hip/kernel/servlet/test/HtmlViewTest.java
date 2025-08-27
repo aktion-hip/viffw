@@ -40,11 +40,11 @@ public class HtmlViewTest {
     }
 
     @Test
-    public void testReadHTML() {
+    void testReadHTML() {
         final Context lContext = new TestContext();
         final TestHtmlView lView = new TestHtmlView(lContext);
         final String lExpected = FileReadWriteUtility.readFile(new File("de/VIFTest.html"));
-        assertEquals("html-file", lExpected.substring(0, lExpected.length()-2), lView.getReadHTML());
+        assertEquals(lExpected.substring(0, lExpected.length() - 2), lView.getReadHTML());
     }
 
     @Test

@@ -30,7 +30,7 @@ public class KeyDefImplTest {
     }
 
     @Test
-    public void testCreationWithInitialValues() {
+    void testCreationWithInitialValues() {
 
         final String[] lValues = { "codeSchemaId", "codeId" };
 
@@ -46,7 +46,7 @@ public class KeyDefImplTest {
         final Iterator<String> iter = lDef.getKeyNames2().iterator();
         while (iter.hasNext()) {
             final String lName = iter.next();
-            assertEquals("testCreationWithInitialValues " + i, lValues[i++], lName);
+            assertEquals(lValues[i++], lName);
         }
         assertEquals(i, lValues.length);
 
@@ -92,8 +92,7 @@ public class KeyDefImplTest {
     }
 
     @Test
-    public void testToString() {
-
+    void testToString() {
         final String[] lValues = { "codeSchemaId", "codeId" };
 
         final Vector<String> lKeyItems = new Vector<String>(Arrays.asList(lValues));
@@ -104,7 +103,6 @@ public class KeyDefImplTest {
         final KeyDef lDef = new PrimaryKeyDefImpl(lInitValues);
         assertNotNull(lDef);
         assertEquals(
-                "toString",
                 "< org.hip.kernel.bom.model.impl.PrimaryKeyDefImpl keyPropertyName=\"codeSchemaId\" keyPropertyName=\"codeId\"  />",
                 lDef.toString());
     }

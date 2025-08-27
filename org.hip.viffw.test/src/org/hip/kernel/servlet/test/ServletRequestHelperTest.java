@@ -53,7 +53,7 @@ public class ServletRequestHelperTest {
         final String[] lValueArray = lContext.getParameterValueArray("multi");
         assertEquals(lExpected.length, lValueArray.length);
         for (int i = 0; i < lExpected.length; i++) {
-            assertEquals("array value "+i, lExpected[i], lValueArray[i]);
+            assertEquals(lExpected[i], lValueArray[i]);
         }
     }
 

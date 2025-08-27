@@ -42,16 +42,16 @@ public class InlineStructuredText2HTMLTest {
         final String lInput10 = "xx 'this is literal' xx";
         final String lExpected10 = "xx <code>this is literal</code> xx";
 
-        assertEquals("convert 1", lExpected1, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput1)));
-        assertEquals("convert 2", lExpected2, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput2)));
-        assertEquals("convert 3", lExpected3, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput3)));
-        assertEquals("convert 4", lExpected4, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput4)));
-        assertEquals("convert 5", lExpected5, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput5)));
-        assertEquals("convert 6", lExpected6, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput6)));
-        assertEquals("convert 7", lExpected7, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput7)));
-        assertEquals("convert 8", lExpected8, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput8)));
-        assertEquals("convert 9", lExpected9, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput9)));
-        assertEquals("convert 10", lExpected10, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput10)));
+        assertEquals(lExpected1, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput1)));
+        assertEquals(lExpected2, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput2)));
+        assertEquals(lExpected3, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput3)));
+        assertEquals(lExpected4, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput4)));
+        assertEquals(lExpected5, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput5)));
+        assertEquals(lExpected6, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput6)));
+        assertEquals(lExpected7, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput7)));
+        assertEquals(lExpected8, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput8)));
+        assertEquals(lExpected9, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput9)));
+        assertEquals(lExpected10, new String(InlineStructuredText2HTML.getSingleton().convertToHTML(lInput10)));
     }
 
 }

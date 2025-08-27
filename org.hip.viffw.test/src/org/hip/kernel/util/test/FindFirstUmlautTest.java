@@ -17,19 +17,19 @@ public class FindFirstUmlautTest {
         FindFirstUmlaut lUmlauts = new FindFirstUmlaut(lString);
         assertTrue(lUmlauts.hasUmlauts());
         assertEquals(1, lUmlauts.getPosition());
-        assertEquals("Found Umlaut: ", "Ä", lUmlauts.getFoundUmlaut());
-        assertEquals("Found Corresponding: ", "AE", lUmlauts.getFoundCorresponding());
-        assertEquals("Starting: ", "B", lUmlauts.getStarting());
-        assertEquals("Endifn: ", "R", lUmlauts.getEnding());
+        assertEquals("Ä", lUmlauts.getFoundUmlaut());
+        assertEquals("AE", lUmlauts.getFoundCorresponding());
+        assertEquals("B", lUmlauts.getStarting());
+        assertEquals("R", lUmlauts.getEnding());
 
         lString = "BAERENB�BCHEN";
         lUmlauts = new FindFirstUmlaut(lString);
         assertTrue(lUmlauts.hasUmlauts());
         assertEquals(1, lUmlauts.getPosition());
-        assertEquals("Found Umlaut: ", "Ä", lUmlauts.getFoundUmlaut());
-        assertEquals("Found Corresponding: ", "AE", lUmlauts.getFoundCorresponding());
-        assertEquals("Starting: ", "B", lUmlauts.getStarting());
-        assertEquals("Endifn: ", "RENB�BCHEN", lUmlauts.getEnding());
+        assertEquals("Ä", lUmlauts.getFoundUmlaut());
+        assertEquals("AE", lUmlauts.getFoundCorresponding());
+        assertEquals("B", lUmlauts.getStarting());
+        assertEquals("RENB�BCHEN", lUmlauts.getEnding());
 
         lString = "NO UMLAUTS AT ALL";
         lUmlauts = new FindFirstUmlaut(lString);

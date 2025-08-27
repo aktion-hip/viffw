@@ -13,66 +13,67 @@ import org.junit.jupiter.api.Test;
 
 /**
  * @author Luthiger
- * Created: 15.10.2006
  */
 public class ValueForSQLTest {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
-    public void testGetValueAsString() {
+    void testGetValueAsString() {
         ValueForSQL lValue = new ValueForSQL("What's the purpose of the decimal ID?");
-        assertEquals("string 1", "What\\'s the purpose of the decimal ID?", lValue.getValueAsString());
+        assertEquals("What\\'s the purpose of the decimal ID?", lValue.getValueAsString());
 
         lValue = new ValueForSQL("This is a quote: \"Hallo World\"");
-        assertEquals("string 2", "This is a quote: \"Hallo World\"", lValue.getValueAsString());
+        assertEquals("This is a quote: \"Hallo World\"", lValue.getValueAsString());
 
         lValue = new ValueForSQL(new BigDecimal("9876.5432"));
-        assertEquals("number", "9876.5432", lValue.getValueAsString());
+        assertEquals("9876.5432", lValue.getValueAsString());
 
         final Date lDate = Date.valueOf("1989-01-20");
         lValue = new ValueForSQL(lDate);
-        assertEquals("date", "DATE('1989-01-20')", lValue.getValueAsString());
+        assertEquals("DATE('1989-01-20')", lValue.getValueAsString());
 
         lValue = new ValueForSQL(new Timestamp(lDate.getTime()));
-        assertEquals("timestamp", "TIMESTAMP('1989-01-20 00:00:00')", lValue.getValueAsString());
+        assertEquals("TIMESTAMP('1989-01-20 00:00:00')", lValue.getValueAsString());
 
         final Date lTo = Date.valueOf("1996-02-21");
         final BetweenObjectImpl lBetween = new BetweenObjectImpl(lDate, lTo);
         lValue = new ValueForSQL(lBetween);
-        assertEquals("between", "BETWEEN DATE('1989-01-20') AND DATE('1996-02-21')", lValue.getValueAsString());
+        assertEquals("BETWEEN DATE('1989-01-20') AND DATE('1996-02-21')", lValue.getValueAsString());
 
-        final InObjectImpl lInObject = new InObjectImpl(new Object[] {new Integer(55), new Integer(57), new Integer(78)});
+        final InObjectImpl lInObject = new InObjectImpl(
+                new Object[] { Integer.valueOf(55), Integer.valueOf(57), Integer.valueOf(78) });
         lValue = new ValueForSQL(lInObject);
-        assertEquals("in", "IN (55, 57, 78)", lValue.getValueAsString());
+        assertEquals("IN (55, 57, 78)", lValue.getValueAsString());
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
-    public void testGetValueForPrepared() {
+    void testGetValueForPrepared() {
         ValueForSQL lValue = new ValueForSQL("What's the purpose of the decimal ID?");
-        assertEquals("string 1", "?", lValue.getValueForPrepared());
+        assertEquals("?", lValue.getValueForPrepared());
 
         lValue = new ValueForSQL("This is a quote: \"Hallo World\"");
-        assertEquals("string 2", "?", lValue.getValueForPrepared());
+        assertEquals("?", lValue.getValueForPrepared());
 
         lValue = new ValueForSQL(new BigDecimal("9876.5432"));
-        assertEquals("number", "?", lValue.getValueForPrepared());
+        assertEquals("?", lValue.getValueForPrepared());
 
         final Date lDate = Date.valueOf("1989-01-20");
         lValue = new ValueForSQL(lDate);
-        assertEquals("date", "?", lValue.getValueForPrepared());
+        assertEquals("?", lValue.getValueForPrepared());
 
         lValue = new ValueForSQL(new Timestamp(lDate.getTime()));
-        assertEquals("timestamp", "?", lValue.getValueForPrepared());
+        assertEquals("?", lValue.getValueForPrepared());
 
         final Date lTo = Date.valueOf("1996-02-21");
         final BetweenObjectImpl lBetween = new BetweenObjectImpl(lDate, lTo);
         lValue = new ValueForSQL(lBetween);
-        assertEquals("between", "BETWEEN ? AND ?", lValue.getValueForPrepared());
+        assertEquals("BETWEEN ? AND ?", lValue.getValueForPrepared());
 
-        final InObjectImpl lInObject = new InObjectImpl(new Object[] {new Integer(55), new Integer(57), new Integer(78)});
+        final InObjectImpl lInObject = new InObjectImpl(
+                new Object[] { Integer.valueOf(55), Integer.valueOf(57), Integer.valueOf(78) });
         lValue = new ValueForSQL(lInObject);
-        assertEquals("in", "IN (?, ?, ?)", lValue.getValueForPrepared());
+        assertEquals("IN (?, ?, ?)", lValue.getValueForPrepared());
     }
 
 }

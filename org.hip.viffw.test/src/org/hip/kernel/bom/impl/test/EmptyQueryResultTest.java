@@ -34,13 +34,6 @@ public class EmptyQueryResultTest {
 
     @Test
     public void testClose() {
-        try {
-            final QueryResult lResult = new EmptyQueryResult(this.lHome);
-            lResult.close();
-        }
-        catch (final Exception exc) {
-            fail(exc.getMessage());
-        }
     }
 
     @Test

@@ -7,21 +7,20 @@ import org.junit.jupiter.api.Test;
 
 /**
  * @author Luthiger
- * Created: 04.08.2010
  */
 public class JoinDefOperandTest {
 
     @Test
-    public void testRender() throws Exception {
+    void testRender() throws Exception {
         JoinDefOperand lOperand = new JoinDefOperand();
         lOperand.setJoinOperand("TableLeft.Field1");
         lOperand.setJoinOperand("TableRight.Field1");
-        assertEquals("simple", "TableLeft.Field1 = TableRight.Field1", lOperand.renderSQL());
+        assertEquals("TableLeft.Field1 = TableRight.Field1", lOperand.renderSQL());
 
         lOperand = new JoinDefOperand("AND");
         lOperand.setJoinOperand("TableLeft.Field1");
         lOperand.setJoinOperand("TableRight.Field1");
-        assertEquals("additional", " AND TableLeft.Field1 = TableRight.Field1", lOperand.renderSQL());
+        assertEquals(" AND TableLeft.Field1 = TableRight.Field1", lOperand.renderSQL());
     }
 
 }

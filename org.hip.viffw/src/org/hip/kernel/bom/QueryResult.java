@@ -19,7 +19,6 @@
 package org.hip.kernel.bom;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Locale;
 
 /** The QueryResult is a kind of iterator. It is the return object of the DomainHome.query method.
@@ -30,10 +29,7 @@ public interface QueryResult { // NOPMD
     // Class variables
     int DEFAULT_PAGE_LENGTH = 20;
 
-    /** Propagates the close to the internally hold ResulSet. See JDBC documentation for further informations. */
-    void close() throws SQLException;
-
-    /** @return org.hip.kernel.bom.GeneralDomainObject */
+    /** @return org.hip.kernel.bom.GeneralDomainObject may be <code>null</code> */
     GeneralDomainObject getCurrent();
 
     /** @return org.hip.kernel.bom.Page */
@@ -100,7 +96,7 @@ public interface QueryResult { // NOPMD
      * @throws SQLException
      * @throws BOMException */
     String nextAsXMLString(String inSerializerName, boolean inUseFilter, Locale inLocale) throws SQLException,
-            BOMException;
+    BOMException;
 
     /** Returns a DomainObjectCollection containing the specified amount of DomainObjects.
      *
@@ -142,7 +138,7 @@ public interface QueryResult { // NOPMD
      * @exception java.sql.SQLException
      * @exception org.hip.kernel.bom.BOMException */
     String nextnAsXMLString(int inHowMany, String inSerializerName, boolean inUseFilter) throws SQLException,
-            BOMException;
+    BOMException;
 
     /** @see QueryResult#nextnAsXMLString(int inHowMany, String inSerializerName, boolean inUseFilter)
      *
@@ -158,21 +154,5 @@ public interface QueryResult { // NOPMD
 
     /** @param org.hip.kernel.bom.Page */
     void setCurrentPage(Page inPage);
-
-    /** Loads the query result into a Collection, using the specified model factory.
-     *
-     * @param inModelFactory AlternativeModelFactory
-     * @return Collection<AlternativeModel>
-     * @throws SQLException */
-    Collection<AlternativeModel> load(AlternativeModelFactory inModelFactory) throws SQLException;
-
-    /** Loads a limited number of entries of the query result into a Collection, using the specified model factory.
-     *
-     * @param inModelFactory AlternativeModelFactory
-     * @param inMaxEntries int maximal number of elements loaded
-     * @return Collection<AlternativeModel>
-     * @throws SQLException */
-    Collection<AlternativeModel> load(AlternativeModelFactory inModelFactory, int inMaxEntries)
-            throws SQLException;
 
 }

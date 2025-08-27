@@ -35,13 +35,13 @@ public class JoinedDomainObjectHomeImplTest {
     private static TestJoinedDomainObjectHomeImpl home;
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         home = (TestJoinedDomainObjectHomeImpl) VSys.homeManager
                 .getHome("org.hip.kernel.bom.impl.test.TestJoinedDomainObjectHomeImpl");
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         DataHouseKeeper.INSTANCE.deleteAllFromSimple();
         DataHouseKeeper.INSTANCE.deleteAllFromLink();
         System.out.println("Deleted all entries in tblTest and tblGroupAdmin.");
@@ -74,7 +74,7 @@ public class JoinedDomainObjectHomeImplTest {
     }
 
     @Test
-    public void testGetObjectDef() throws VException {
+    void testGetObjectDef() throws VException {
         final ObjectDef lObjectDef = home.getObjectDef();
         assertNotNull(lObjectDef);
 
@@ -100,7 +100,7 @@ public class JoinedDomainObjectHomeImplTest {
     }
 
     @Test
-    public void testObjects() {
+    void testObjects() {
         final String[] lObtained = new String[4];
 
         final String[] lExpectedCols = { "tblTestMember.TESTMEMBERID", "tblTestMember.SNAME",
@@ -166,7 +166,7 @@ public class JoinedDomainObjectHomeImplTest {
     }
 
     @Test
-    public void testSelect() throws SQLException, VException {
+    void testSelect() throws SQLException, VException {
         // select all testIDs which are member of the specified group
         final String[][] lNames = { { "first", "1" }, { "second", "2" }, { "third", "3" }, { "forth", "4" } };
         final Long[] lKeys = new Long[4];
@@ -183,7 +183,7 @@ public class JoinedDomainObjectHomeImplTest {
         DataHouseKeeper.INSTANCE.createTestLinkEntry(lKeys[0].intValue(), 2);
 
         KeyObject lKey = new KeyObjectImpl();
-        lKey.setValue("GroupID", new Integer(1));
+        lKey.setValue("GroupID", Integer.valueOf(1));
 
         Test2JoinedDomainObjectHomeImpl lHome = (Test2JoinedDomainObjectHomeImpl) VSys.homeManager
                 .getHome("org.hip.kernel.bom.impl.test.Test2JoinedDomainObjectHomeImpl");
@@ -191,7 +191,7 @@ public class JoinedDomainObjectHomeImplTest {
         assertEquals(4, setBOF(lQueryResult));
 
         lKey = new KeyObjectImpl();
-        lKey.setValue("GroupID", new Integer(2));
+        lKey.setValue("GroupID", Integer.valueOf(2));
 
         lHome = (Test2JoinedDomainObjectHomeImpl) VSys.homeManager
                 .getHome("org.hip.kernel.bom.impl.test.Test2JoinedDomainObjectHomeImpl");
@@ -200,7 +200,7 @@ public class JoinedDomainObjectHomeImplTest {
     }
 
     @Test
-    public void testSerialization() throws IOException, ClassNotFoundException, SQLException, VException {
+    void testSerialization() throws IOException, ClassNotFoundException, SQLException, VException {
         // first, we set up some relevant data in the tables
         final String[][] lNames = { { "first", "1" }, { "second", "2" }, { "third", "3" }, { "forth", "4" } };
         final Long[] lKeys = new Long[4];
@@ -220,10 +220,10 @@ public class JoinedDomainObjectHomeImplTest {
 
         // second, we test the joins we expect
         final KeyObject lKey1 = new KeyObjectImpl();
-        lKey1.setValue("GroupID", new Integer(1));
+        lKey1.setValue("GroupID", Integer.valueOf(1));
 
         final KeyObject lKey2 = new KeyObjectImpl();
-        lKey2.setValue("GroupID", new Integer(2));
+        lKey2.setValue("GroupID", Integer.valueOf(2));
 
         QueryResult lResult = lHome.select(lKey1);
         assertEquals(4, setBOF(lResult));

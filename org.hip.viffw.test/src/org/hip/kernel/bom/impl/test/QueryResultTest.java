@@ -2,15 +2,12 @@ package org.hip.kernel.bom.impl.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 
 import javax.naming.NamingException;
 
@@ -18,11 +15,9 @@ import org.hip.kernel.bom.AlternativeModel;
 import org.hip.kernel.bom.AlternativeModelFactory;
 import org.hip.kernel.bom.DomainObjectHome;
 import org.hip.kernel.bom.GeneralDomainObject;
-import org.hip.kernel.bom.GeneralDomainObjectHome;
 import org.hip.kernel.bom.OrderObject;
 import org.hip.kernel.bom.QueryResult;
-import org.hip.kernel.bom.QueryStatement;
-import org.hip.kernel.bom.impl.AbstractQueryResult;
+import org.hip.kernel.bom.impl.AlternativeQueryResult;
 import org.hip.kernel.bom.impl.DefaultQueryResult;
 import org.hip.kernel.bom.impl.OrderObjectImpl;
 import org.hip.kernel.exc.VException;
@@ -45,7 +40,7 @@ public class QueryResultTest {
     }
 
     @Test
-    public void testDo() throws SQLException, NamingException, VException {
+    void testDo() throws SQLException, NamingException, VException {
         final String[] lNames = {"1 eins", "2 zwei", "3 drei"};
 
         DataHouseKeeper.INSTANCE.createTestEntry(lNames[2]);
@@ -62,42 +57,53 @@ public class QueryResultTest {
         int i = 0;
         while (lQueryResult.hasMoreElements()) {
             lDomainObject = lQueryResult.nextAsDomainObject();
-            assertEquals("nextAsDomainObject " + i, lNames[i], (String)lDomainObject.get("Name"));
+            assertEquals(lNames[i], lDomainObject.get("Name"));
             i++;
         }
         assertEquals(lNames.length, i);
     }
 
     @Test
-    public void testLoad() throws Exception {
+    void testLoad() throws Exception {
         final String[] lNames = {"1 eins", "2 zwei", "3 drei"};
 
         DataHouseKeeper.INSTANCE.createTestEntry(lNames[2]);
         DataHouseKeeper.INSTANCE.createTestEntry(lNames[1]);
         DataHouseKeeper.INSTANCE.createTestEntry(lNames[0]);
 
-        ResultSet lResult = DataHouseKeeper.INSTANCE.executeQuery("SELECT tblTest.SNAME FROM tblTest ORDER BY sName");
-        QueryResult lQueryResult = new AlternativeQueryResult(DataHouseKeeper.INSTANCE.getSimpleHome(), lResult, null);
-        Collection<AlternativeModel> lEntries = lQueryResult.load(new TestModelFactory());
-        assertEquals(3, lEntries.size());
-        int i = 0;
-        for (final AlternativeModel lAlternativeModel : lEntries) {
-            assertEquals("entry 1." + i, lNames[i++], ((TestModel)lAlternativeModel).name);
+        ResultSet result = DataHouseKeeper.INSTANCE.executeQuery("SELECT tblTest.SNAME FROM tblTest ORDER BY sName");
+        QueryResult queryResult = new AlternativeQueryResult(DataHouseKeeper.INSTANCE.getSimpleHome(), result, null,
+                new TestModelFactory());
+        if (queryResult instanceof final AlternativeQueryResult altResult) {
+            final Collection<AlternativeModel> entries = altResult.getAlternativeModels();
+            assertEquals(3, entries.size());
+            int i = 0;
+            for (final AlternativeModel lAlternativeModel : entries) {
+                assertEquals(lNames[i++], ((TestModel) lAlternativeModel).name);
+            }
+        } else {
+            fail("Unexpected result");
         }
 
-        final int lExpectedSize = 2;
-        lResult = DataHouseKeeper.INSTANCE.executeQuery("SELECT tblTest.SNAME FROM tblTest ORDER BY sName");
-        lQueryResult = new AlternativeQueryResult(DataHouseKeeper.INSTANCE.getSimpleHome(), lResult, null);
-        lEntries = lQueryResult.load(new TestModelFactory(), lExpectedSize);
-        assertEquals(lExpectedSize, lEntries.size());
-        i = 0;
-        for (final AlternativeModel lAlternativeModel : lEntries) {
-            assertEquals("entry 2." + i, lNames[i++], ((TestModel)lAlternativeModel).name);
+        // test limit
+        final int expectedSize = 2;
+        result = DataHouseKeeper.INSTANCE.executeQuery("SELECT tblTest.SNAME FROM tblTest ORDER BY sName");
+        queryResult = new AlternativeQueryResult(DataHouseKeeper.INSTANCE.getSimpleHome(), result, null,
+                new TestModelFactory());
+        if (queryResult instanceof final AlternativeQueryResult altResult) {
+            final List<AlternativeModel> entries = altResult.getAlternativeModels(expectedSize);
+            assertEquals(expectedSize, entries.size());
+            int i = 0;
+            for (final AlternativeModel lAlternativeModel : entries) {
+                assertEquals(lNames[i++], ((TestModel) lAlternativeModel).name);
+            }
+        } else {
+            fail("Unexpected result");
         }
     }
 
     @Test
-    public void testSerialize() throws SQLException, NamingException, VException {
+    void testSerialize() throws SQLException, NamingException, VException {
         final String[] lNames = {"1 eins", "2 zwei", "3 drei"};
         final String lSerializerName = "org.hip.kernel.bom.impl.XMLSerializer";
 
@@ -132,64 +138,6 @@ public class QueryResultTest {
         assertEquals(lXML, lXML2);
     }
 
-    @Test
-    public void testSerialization() throws SQLException, NamingException, IOException, ClassNotFoundException, VException {
-        final String[] lNames = {"1 eins", "2 zwei", "3 drei"};
-        QueryResult lQueryResult = createQueryResult(lNames);
-
-        final ByteArrayOutputStream lBytesOut = new ByteArrayOutputStream();
-        final ObjectOutputStream lObjectOut = new ObjectOutputStream(lBytesOut);
-        lObjectOut.writeObject(lQueryResult);
-        final byte[] lSerialized = lBytesOut.toByteArray();
-        lObjectOut.close();
-        lBytesOut.close();
-        lQueryResult = null;
-
-        final ByteArrayInputStream lBytesIn = new ByteArrayInputStream(lSerialized);
-        final ObjectInputStream lObjectIn = new ObjectInputStream(lBytesIn);
-        final QueryResult lRetrieved = (QueryResult)lObjectIn.readObject();
-        lObjectIn.close();
-        lBytesIn.close();
-
-        //serialization happened at the beginning of the QueryResult
-        int i = 0;
-        while(lRetrieved.hasMoreElements()) {
-            assertEquals(lNames[i], lRetrieved.next().get(Test2DomainObjectHomeImpl.KEY_NAME));
-            i++;
-        }
-        assertEquals(i, DataHouseKeeper.INSTANCE.getSimpleHome().getCount());
-    }
-
-    @Test
-    public void testSerialization2() throws SQLException, VException, IOException, ClassNotFoundException {
-        final String[] lNames = {"1 eins", "2 zwei", "3 drei"};
-        QueryResult lQueryResult = createQueryResult(lNames);
-        //set cursor two steps ahead
-        lQueryResult.next();
-        lQueryResult.next();
-
-        final ByteArrayOutputStream lBytesOut = new ByteArrayOutputStream();
-        final ObjectOutputStream lObjectOut = new ObjectOutputStream(lBytesOut);
-        lObjectOut.writeObject(lQueryResult);
-        final byte[] lSerialized = lBytesOut.toByteArray();
-        lObjectOut.close();
-        lBytesOut.close();
-        lQueryResult = null;
-
-        final ByteArrayInputStream lBytesIn = new ByteArrayInputStream(lSerialized);
-        final ObjectInputStream lObjectIn = new ObjectInputStream(lBytesIn);
-        final QueryResult lRetrieved = (QueryResult)lObjectIn.readObject();
-        lObjectIn.close();
-        lBytesIn.close();
-
-        //now, we expect the retrieved QueryResult positioned two steps ahead
-        int i = 2;
-        while(lRetrieved.hasMoreElements()) {
-            assertEquals(lNames[i], lRetrieved.next().get(Test2DomainObjectHomeImpl.KEY_NAME));
-            i++;
-        }
-    }
-
     private QueryResult createQueryResult(final String[] inNames) throws SQLException, VException {
         DataHouseKeeper.INSTANCE.createTestEntry(inNames[2]);
         DataHouseKeeper.INSTANCE.createTestEntry(inNames[1]);
@@ -204,17 +152,6 @@ public class QueryResultTest {
     }
 
     //	--- private classes ---
-
-    @SuppressWarnings("serial")
-    private class AlternativeQueryResult extends AbstractQueryResult {
-        public AlternativeQueryResult(final GeneralDomainObjectHome inHome, final ResultSet inResult, final QueryStatement inStatement) {
-            super(inHome, inResult, inStatement);
-        }
-        @Override
-        protected boolean isCollectionLoading() {
-            return true;
-        }
-    }
 
     private class TestModelFactory implements AlternativeModelFactory {
 

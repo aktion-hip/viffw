@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
  */
 public class UmlautChangeTest {
     @Test
-    public void testConvert() {
-        assertEquals("convert 1", "Jaemmerlich", UmlautChange.convert("Jämmerlich"));
-        assertEquals("convert 2", "Aebuemaekkoele", UmlautChange.convert("Äbümäkköle")) ;
-        assertEquals("convert 3", "Ueberzaehlig", UmlautChange.convert("Überzählig")) ;
+    void testConvert() {
+        assertEquals("Jaemmerlich", UmlautChange.convert("Jämmerlich"));
+        assertEquals("Aebuemaekkoele", UmlautChange.convert("Äbümäkköle"));
+        assertEquals("Ueberzaehlig", UmlautChange.convert("Überzählig"));
     }
 }

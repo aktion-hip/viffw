@@ -23,8 +23,6 @@ import java.text.MessageFormat;
 import org.hip.kernel.bom.Page;
 import org.hip.kernel.bom.QueryResult;
 import org.hip.kernel.bom.impl.PageImpl;
-import org.hip.kernel.exc.DefaultExceptionHandler;
-import org.hip.kernel.exc.VException;
 import org.hip.kernel.servlet.Context;
 import org.hip.kernel.servlet.Pageable;
 import org.hip.kernel.util.XMLRepresentation;
@@ -59,18 +57,7 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
      * @param inResult org.hip.kernel.bom.QueryResult */
     public AbstractXSLQueryResultView(final Context inContext, final QueryResult inResult) {
         super(inContext);
-        result = inResult;
-    }
-
-    /** Destructor which closes the QueryResult. */
-    @Override
-    public void finalize() throws VException { // NOPMD by lbenno
-        try { // NOPMD by lbenno
-            this.getQueryResult().close();
-            super.finalize();
-        } catch (final Throwable exc) { // NOPMD by lbenno
-            throw (VException) DefaultExceptionHandler.instance().convert(exc);
-        }
+        this.result = inResult;
     }
 
     /** Returns the number of the last page according to the current page size
@@ -78,21 +65,21 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
      * @return int */
     protected int getLastPageNumber() {
 
-        if (lastPageNr > 0) {
-            return lastPageNr;
+        if (this.lastPageNr > 0) {
+            return this.lastPageNr;
         }
 
-        if (pageSize == 0) {
+        if (this.pageSize == 0) {
             return 0;
         }
 
-        lastPageNr = Math.abs(numberOfRows / pageSize);
+        this.lastPageNr = Math.abs(this.numberOfRows / this.pageSize);
 
-        if (numberOfRows % pageSize != 0) {
-            lastPageNr++;
+        if (this.numberOfRows % this.pageSize != 0) {
+            this.lastPageNr++;
         }
 
-        return lastPageNr;
+        return this.lastPageNr;
     }
 
     /** Returns the number of rows (of the QueryResult)
@@ -101,14 +88,14 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
      * @see setNumberOfRows() */
     @Override
     public int getNumberOfRows() {
-        return numberOfRows;
+        return this.numberOfRows;
     }
 
     /** Returns the page
      *
      * @param org.hip.kernel.bom.Page */
     protected Page getPage() {
-        return page;
+        return this.page;
     }
 
     /** Returns the key for to read a page from the context or to write a page to the context.
@@ -121,7 +108,7 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
      * @return int */
     @Override
     public int getPageSize() {
-        return pageSize;
+        return this.pageSize;
     }
 
     /** Returns the query-result-object.
@@ -129,7 +116,7 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
      * @return org.hip.kernel.bom.QueryResult
      * @see org.hip.kernel.bom.QueryResult */
     protected QueryResult getQueryResult() {
-        return result;
+        return this.result;
     }
 
     /** Switches to the next page of entries */
@@ -144,17 +131,17 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
     @Override
     public void nextPage(final int inJump) {
         for (int i = 0; i < inJump; i++) {
-            page = page.getNextPage();
+            this.page = this.page.getNextPage();
         }
 
         String lXmlString = "";
-        if (page.getSerialized() == null || page.getSerialized().equals("")) {
-            setSerialized(page, getLastPageNumber());
+        if (this.page.getSerialized() == null || this.page.getSerialized().equals("")) {
+            setSerialized(this.page, getLastPageNumber());
         }
-        lXmlString = page.getSerialized();
+        lXmlString = this.page.getSerialized();
         prepareTransformation(new XMLRepresentation(lXmlString));
 
-        setPageToContext(page);
+        setPageToContext(this.page);
     }
 
     /** Switches to the previous page of entries */
@@ -169,22 +156,22 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
     @Override
     public void previousPage(final int inJump) {
         for (int i = 0; i < inJump; i++) {
-            page = page.getPreviousPage();
+            this.page = this.page.getPreviousPage();
         }
 
         String lXmlString = "";
-        if (page.getSerialized() == null || page.getSerialized().equals("")) {
-            setSerialized(page, getLastPageNumber());
+        if (this.page.getSerialized() == null || this.page.getSerialized().equals("")) {
+            setSerialized(this.page, getLastPageNumber());
         }
-        lXmlString = page.getSerialized();
+        lXmlString = this.page.getSerialized();
         prepareTransformation(new XMLRepresentation(lXmlString));
 
-        setPageToContext(page);
+        setPageToContext(this.page);
     }
 
     /** Lets the subclasses create a new page instance for paging the query result. */
     protected void setNewPage() {
-        page = new PageImpl(result, null, pageSize);
+        this.page = new PageImpl(this.result, null, this.pageSize);
     }
 
     /** Sets the number of rows the QueryResult has.
@@ -192,7 +179,7 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
      * @param inNumberOfRows int */
     @Override
     public void setNumberOfRows(final int inNumberOfRows) {
-        numberOfRows = inNumberOfRows;
+        this.numberOfRows = inNumberOfRows;
     }
 
     /** Sets the page size
@@ -200,7 +187,7 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
      * @param inPageSize int */
     @Override
     public void setPageSize(final int inPageSize) {
-        pageSize = inPageSize;
+        this.pageSize = inPageSize;
     }
 
     /** Sets the page to the context. */
@@ -219,15 +206,15 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
      * @param inSortedColumn String Number of the column that is sorted.
      * @param inSortDir boolean true if the column is sorted DESC, false if ASC. */
     protected void setSortedInfo(final String inSortedColumn, final boolean inSortDir) {
-        sortedColumn = inSortedColumn;
-        sortDirection = inSortDir ? "1" : "0";
+        this.sortedColumn = inSortedColumn;
+        this.sortDirection = inSortDir ? "1" : "0";
     }
 
     /** Returns the information about the sorted columns in the query as XML string.
      *
      * @return String */
     protected String getSortedInfoXML() {
-        return MessageFormat.format(SORTED_INFO_TEMPLATE, new Object[] { sortedColumn, sortDirection });
+        return MessageFormat.format(SORTED_INFO_TEMPLATE, new Object[] { this.sortedColumn, this.sortDirection });
     }
 
     /** Set the new page content with the given QueryResult and the modified information about the sorted column.
@@ -248,16 +235,16 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
     @Override
     public void setToCurrentPage(final QueryResult inNewQueryResult) {
 
-        int lCurrentPageNr = page.getPageNumber();
-        lastPageNr = 0;
+        int lCurrentPageNr = this.page.getPageNumber();
+        this.lastPageNr = 0;
 
         // create new Page for paging the query result
-        page = new PageImpl(inNewQueryResult, null, pageSize);
-        setSerialized(page, getLastPageNumber());
-        setPageToContext(page);
-        prepareTransformation(new XMLRepresentation(page.getSerialized()));
+        this.page = new PageImpl(inNewQueryResult, null, this.pageSize);
+        setSerialized(this.page, getLastPageNumber());
+        setPageToContext(this.page);
+        prepareTransformation(new XMLRepresentation(this.page.getSerialized()));
 
-        while (lCurrentPageNr > 1 && !(page.isLastPage())) {
+        while (lCurrentPageNr > 1 && !this.page.isLastPage()) {
             nextPage();
             lCurrentPageNr--;
         }
@@ -266,7 +253,7 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
     /** Loads the first data-page. */
     @Override
     public void setToFirstPage() {
-        final int lCurrent = page.getPageNumber();
+        final int lCurrent = this.page.getPageNumber();
         if (lCurrent > 1) { // NOPMD by lbenno
             previousPage(lCurrent - 1);
         }
@@ -275,7 +262,7 @@ abstract public class AbstractXSLQueryResultView extends AbstractXSLView impleme
     /** Loads the last data-page. */
     @Override
     public void setToLastPage() {
-        final int lJump = getLastPageNumber() - page.getPageNumber();
+        final int lJump = getLastPageNumber() - this.page.getPageNumber();
         if (lJump > 0) {
             nextPage(lJump);
         }

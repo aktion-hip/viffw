@@ -15,23 +15,23 @@ public class ViewTest {
     public void testDo() {
         final Context lContext = new TestContext();
         final TestView lView = new TestView(lContext);
-        assertEquals("language 1", "de", lView.getLanguage());
+        assertEquals("de", lView.getLanguage());
 
         lContext.setLanguage("en");
-        assertEquals("language 2", VSys.dftLanguage, lView.getLanguage());
+        assertEquals(VSys.dftLanguage, lView.getLanguage());
     }
 
     @Test
     public void testLocale() {
         TestView lView = new TestView();
-        assertEquals("locale 1", "en_US", lView.getLocale().toString());
+        assertEquals("en_US", lView.getLocale().toString());
 
         final Context lContext = new TestContext();
         lView = new TestView(lContext);
-        assertEquals("locale 2", "de_CH", lView.getLocale().toString());
+        assertEquals("de_CH", lView.getLocale().toString());
 
         lContext.setLanguage("en");
         lView = new TestView(lContext);
-        assertEquals("locale 3", "en_CH", lView.getLocale().toString());
+        assertEquals("en_CH", lView.getLocale().toString());
     }
 }

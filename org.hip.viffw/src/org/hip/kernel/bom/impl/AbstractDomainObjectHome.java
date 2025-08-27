@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.hip.kernel.bom.AlternativeModelFactory;
 import org.hip.kernel.bom.BOMException;
 import org.hip.kernel.bom.DomainObjectCache;
 import org.hip.kernel.bom.DomainObjectCollection;
@@ -86,17 +87,17 @@ abstract public class AbstractDomainObjectHome extends VObject implements Genera
      * @return org.hip.kernel.bom.DomainObjectCache */
     protected DomainObjectCache cache() {
         synchronized (this) {
-            if (cacheObj == null) {
-                cacheObj = new DomainObjectCacheImpl();
+            if (this.cacheObj == null) {
+                this.cacheObj = new DomainObjectCacheImpl();
             }
         }
-        return cacheObj;
+        return this.cacheObj;
     }
 
     /** Sets cache to null. */
     public void clearCache() {
-        synchronized (cacheObj) {
-            cacheObj = null; // NOPMD
+        synchronized (this.cacheObj) {
+            this.cacheObj = null; // NOPMD
         }
     }
 
@@ -360,7 +361,7 @@ abstract public class AbstractDomainObjectHome extends VObject implements Genera
      * @return boolean */
     @Override
     public boolean getUseCache() { // NOPMD
-        return useCache;
+        return this.useCache;
     }
 
     /** Returns an instance of the visitor named inKey. This visitor can be used to serialize the DomainObject managed
@@ -399,8 +400,8 @@ abstract public class AbstractDomainObjectHome extends VObject implements Genera
     /** Returns a GeneralDomainObject filled with the values of the inputed ResultSet
      *
      * @return org.hip.kernel.bom.GeneralDomainObject
-     * @param inResult java.sql.ResultSet */
-    protected abstract GeneralDomainObject newInstance(ResultSet inResult) throws BOMException;
+     * @param result java.sql.ResultSet */
+    protected abstract GeneralDomainObject newInstance(ResultSet result) throws BOMException;
 
     /** Use this method to release a DomainObject. Released objects can act as cache and, therefore, instead of creating
      * a new instance of a DomainObject from scratch, can improve performance.
@@ -417,10 +418,10 @@ abstract public class AbstractDomainObjectHome extends VObject implements Genera
      *
      * @return java.util.Vector */
     protected Collection<GeneralDomainObject> releasedObjects() {
-        if (releasedObjList == null) {
-            releasedObjList = new ArrayList<GeneralDomainObject>();
+        if (this.releasedObjList == null) {
+            this.releasedObjList = new ArrayList<GeneralDomainObject>();
         }
-        return releasedObjList;
+        return this.releasedObjList;
     }
 
     /** This method selects all domain objects of the corresponding table or tables (if join). The returned domain
@@ -431,25 +432,32 @@ abstract public class AbstractDomainObjectHome extends VObject implements Genera
      * @throws org.hip.kernel.bom.BOMException */
     @Override
     public QueryResult select() throws SQLException, BOMException {
-        final QueryStatement lStatement = this.createQueryStatement();
-        lStatement.setSQLString(this.createSelectAllString());
-        return this.select(lStatement);
+        final QueryStatement statement = this.createQueryStatement();
+        statement.setSQLString(this.createSelectAllString());
+        return this.select(statement);
+    }
+
+    @Override
+    public QueryResult select(final AlternativeModelFactory factory) throws SQLException, BOMException {
+        final QueryStatement statement = this.createQueryStatement();
+        statement.setSQLString(this.createSelectAllString()).setFactory(factory);
+        return this.select(statement);
     }
 
     /** This method allows to invoke a query. It's a normal version of a select. It takes as argument a SQL-string.
      *
      * @return org.hip.kernel.bom.QueryResult
-     * @param inSQL java.lang.String
+     * @param sql java.lang.String
      * @throws java.sql.SQLException */
     @Override
-    public QueryResult select(final String inSQL) throws SQLException {
-        if (VSys.assertNotNull(this, "select(String)", inSQL) == Assert.FAILURE) {
+    public QueryResult select(final String sql) throws SQLException {
+        if (VSys.assertNotNull(this, "select(String)", sql) == Assert.FAILURE) {
             return new DefaultQueryResult(null, null, null);
         }
 
-        final QueryStatement lStatement = this.createQueryStatement();
-        lStatement.setSQLString(inSQL);
-        return this.select(lStatement);
+        final QueryStatement statement = this.createQueryStatement();
+        statement.setSQLString(sql);
+        return this.select(statement);
     }
 
     /** This method selects all domain objects of the corresponding table matching the specified key. The returned
@@ -542,15 +550,15 @@ abstract public class AbstractDomainObjectHome extends VObject implements Genera
     /** This method allows to invoke a query. It's a normal version of a select. It takes as argument a QueryStatement.
      *
      * @return org.hip.kernel.bom.QueryResult
-     * @param inStatement org.hip.kernel.bom.QueryStatement
+     * @param statement org.hip.kernel.bom.QueryStatement
      * @exception java.sql.SQLException The exception description. */
     @Override
-    public QueryResult select(final QueryStatement inStatement) throws SQLException {
-        if (VSys.assertNotNull(this, "select(QueryStatement)", inStatement) == Assert.FAILURE) {
+    public QueryResult select(final QueryStatement statement) throws SQLException {
+        if (VSys.assertNotNull(this, "select(QueryStatement)", statement) == Assert.FAILURE) {
             return new DefaultQueryResult(null, null, null);
         }
 
-        return inStatement.executeQuery();
+        return statement.executeQuery();
     }
 
     /** This method fills a DomainObject with the data from a ResultSet.
@@ -558,7 +566,7 @@ abstract public class AbstractDomainObjectHome extends VObject implements Genera
      * @param inObject org.hip.kernel.bom.GeneralDomainObject
      * @param inResult java.sql.ResultSet */
     protected void setFromResultSet(final GeneralDomainObject inObject, final ResultSet inResult) throws SQLException, // NOPMD
-            SettingException {
+    SettingException {
 
         final ResultSetMetaData lMetaData = inResult.getMetaData();
 
@@ -599,35 +607,35 @@ abstract public class AbstractDomainObjectHome extends VObject implements Genera
      * @param inUseCache boolean */
     @Override
     public void setUseCache(final boolean inUseCache) {
-        useCache = inUseCache;
+        this.useCache = inUseCache;
     }
 
     /** @return {@link List} */
     private List<Object> testObjects() { // NOPMD
-        if (testObjList == null) {
+        if (this.testObjList == null) {
             synchronized (this) {
-                testObjList = createTestObjects();
+                this.testObjList = createTestObjects();
 
                 // Subclass has no implementation, we will not try again
-                if (testObjList == null) {
-                    testObjList = new ArrayList<Object>();
+                if (this.testObjList == null) {
+                    this.testObjList = new ArrayList<Object>();
                 }
             }
         }
-        return testObjList;
+        return this.testObjList;
     }
 
     /** Returns the visitors which can be used by the DomainObjects.
      *
      * @return java.util.Hashtable */
     private Map<String, XMLSerializer> visitors() {
-        if (visitorMap == null) {
-            visitorMap = new Hashtable<String, XMLSerializer>();
+        if (this.visitorMap == null) {
+            this.visitorMap = new Hashtable<String, XMLSerializer>();
 
             // Register the known vistors
-            visitorMap.put(GeneralDomainObjectHome.xmlSerializer, new XMLSerializer());
+            this.visitorMap.put(GeneralDomainObjectHome.xmlSerializer, new XMLSerializer());
         }
-        return visitorMap;
+        return this.visitorMap;
     }
 
     /** Creates a <code>SingleValueQueryStatement</code>. Subclasses may override, e.g. to provide a modified

@@ -1,6 +1,6 @@
 /**
 	This package is part of the framework used for the application VIF.
-	Copyright (C) 2006-2014, Benno Luthiger
+	Copyright (C) 2006-2025, Benno Luthiger
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -82,7 +82,7 @@ import org.xml.sax.SAXException;
 
 /** Abstract home class for LDAP objects, providing general functionality to retrieve entries from a LDAP server.
  *
- * @author Luthiger Created on 03.07.2007 */
+ * @author Luthiger */
 @SuppressWarnings("serial")
 public abstract class LDAPObjectHome implements DomainObjectHome, Serializable { // NOPMD by lbenno
     private static final Logger LOG = LoggerFactory.getLogger(LDAPObjectHome.class);
@@ -105,7 +105,7 @@ public abstract class LDAPObjectHome implements DomainObjectHome, Serializable {
     /** LDAPObjectHome constructor */
     public LDAPObjectHome() {
         super();
-        adapter = new LDAPAdapter();
+        this.adapter = new LDAPAdapter();
     }
 
     /** Returns the base directory where the objects of the LDAP server has to be retrieved.
@@ -152,14 +152,14 @@ public abstract class LDAPObjectHome implements DomainObjectHome, Serializable {
 
     /** @return String */
     protected String createSelectAllString() {
-        return adapter.createSelectAllString();
+        return this.adapter.createSelectAllString();
     }
 
     /** @param inKey {@link KeyObject}
      * @return String
      * @throws BOMException */
     protected String createSelectString(final KeyObject inKey) throws BOMException {
-        return adapter.createSelectString(inKey, this);
+        return this.adapter.createSelectString(inKey, this);
     }
 
     /** No implementation provided.
@@ -232,10 +232,10 @@ public abstract class LDAPObjectHome implements DomainObjectHome, Serializable {
 
     @Override
     public ObjectDef getObjectDef() { // NOPMD by lbenno
-        if (objectDef == null) {
-            objectDef = createObjectDef();
+        if (this.objectDef == null) {
+            this.objectDef = createObjectDef();
         }
-        return objectDef;
+        return this.objectDef;
     }
 
     /** @return org.hip.kernel.bom.model.ObjectDef */
@@ -304,15 +304,15 @@ public abstract class LDAPObjectHome implements DomainObjectHome, Serializable {
 
     /** @return java.util.Vector */
     private synchronized List<Object> testObjects() { // NOPMD by lbenno
-        if (testObjs == null) {
-            testObjs = createTestObjects();
+        if (this.testObjs == null) {
+            this.testObjs = createTestObjects();
 
             // Subclass has no implementation, we will not try again
-            if (testObjs == null) {
-                testObjs = new ArrayList<Object>();
+            if (this.testObjs == null) {
+                this.testObjs = new ArrayList<Object>();
             }
         }
-        return testObjs;
+        return this.testObjs;
     }
 
     /** This method can be implemented by concrete subclasses to create test objects.
@@ -324,7 +324,7 @@ public abstract class LDAPObjectHome implements DomainObjectHome, Serializable {
 
     @Override
     public boolean getUseCache() { // NOPMD by lbenno
-        return useCache;
+        return this.useCache;
     }
 
     @Override
@@ -336,13 +336,13 @@ public abstract class LDAPObjectHome implements DomainObjectHome, Serializable {
      *
      * @return java.util.Hashtable */
     private Map<String, XMLSerializer> visitors() {
-        if (visitorMap == null) {
-            visitorMap = new HashMap<String, XMLSerializer>();
+        if (this.visitorMap == null) {
+            this.visitorMap = new HashMap<String, XMLSerializer>();
 
             // Register the known vistors
-            visitorMap.put(GeneralDomainObjectHome.xmlSerializer, new XMLSerializer());
+            this.visitorMap.put(GeneralDomainObjectHome.xmlSerializer, new XMLSerializer());
         }
-        return visitorMap;
+        return this.visitorMap;
     }
 
     @Override
@@ -370,7 +370,6 @@ public abstract class LDAPObjectHome implements DomainObjectHome, Serializable {
         try {
             lResult = select(inKey);
             outDomainObject = (DomainObject) lResult.nextAsDomainObject();
-            lResult.close();
         } catch (final SQLException exc) {
             throw new BOMInvalidKeyException(exc.toString(), exc);
         } catch (final BOMException exc) {
@@ -493,10 +492,10 @@ public abstract class LDAPObjectHome implements DomainObjectHome, Serializable {
     }
 
     private List<GeneralDomainObject> releasedObjects() {
-        if (releasedObjs == null) {
-            releasedObjs = new ArrayList<GeneralDomainObject>();
+        if (this.releasedObjs == null) {
+            this.releasedObjs = new ArrayList<GeneralDomainObject>();
         }
-        return releasedObjs;
+        return this.releasedObjs;
     }
 
     @Override
@@ -648,20 +647,20 @@ public abstract class LDAPObjectHome implements DomainObjectHome, Serializable {
 
     @Override
     public Map<String, String> tableNames2() { // NOPMD by lbenno
-        if (tableNameMap == null) {
-            tableNameMap = new Hashtable<String, String>(7);
+        if (this.tableNameMap == null) {
+            this.tableNameMap = new Hashtable<String, String>(7);
             try {
                 for (final PropertyDef lPropertyDef : getObjectDef().getPropertyDefs2()) {
                     final String lTableName = (String) lPropertyDef.getMappingDef().get("");
-                    if (!tableNameMap.containsKey(lTableName)) {
-                        tableNameMap.put(lTableName, lTableName);
+                    if (!this.tableNameMap.containsKey(lTableName)) {
+                        this.tableNameMap.put(lTableName, lTableName);
                     }
                 }
             } catch (final GettingException exc) {
                 DefaultExceptionWriter.printOut(this, exc, true);
             } // try-catch
         } // if
-        return tableNameMap;
+        return this.tableNameMap;
     }
 
     /** Not applicable here.
@@ -683,15 +682,15 @@ public abstract class LDAPObjectHome implements DomainObjectHome, Serializable {
      *
      * @return org.hip.kernel.bom.DomainObjectCache */
     protected DomainObjectCache cache() {
-        if (cacheObj == null) {
-            cacheObj = new DomainObjectCacheImpl();
+        if (this.cacheObj == null) {
+            this.cacheObj = new DomainObjectCacheImpl();
         }
-        return cacheObj;
+        return this.cacheObj;
     }
 
     /** Sets cache to null. */
     public void clearCache() {
-        cacheObj = null; // NOPMD by lbenno
+        this.cacheObj = null; // NOPMD by lbenno
     }
 
     /** Loads cache with domainObject from the collection. This is a simple way to preload the cache.
@@ -712,19 +711,19 @@ public abstract class LDAPObjectHome implements DomainObjectHome, Serializable {
 
     @Override
     public void setUseCache(final boolean inUseCache) { // NOPMD by lbenno
-        useCache = inUseCache;
+        this.useCache = inUseCache;
     }
 
     private void writeObject(final ObjectOutputStream out) throws IOException {
-        out.writeObject(objectDef);
-        out.writeObject(tableNameMap);
+        out.writeObject(this.objectDef);
+        out.writeObject(this.tableNameMap);
     }
 
     @SuppressWarnings("unchecked")
     private void readObject(final ObjectInputStream inStream) throws IOException, ClassNotFoundException {
-        objectDef = (ObjectDef) inStream.readObject();
-        tableNameMap = (Map<String, String>) inStream.readObject();
-        adapter = new LDAPAdapter();
+        this.objectDef = (ObjectDef) inStream.readObject();
+        this.tableNameMap = (Map<String, String>) inStream.readObject();
+        this.adapter = new LDAPAdapter();
     }
 
     // ---

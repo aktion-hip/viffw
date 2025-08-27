@@ -25,11 +25,11 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.hip.kernel.bom.AlternativeModelFactory;
 import org.hip.kernel.bom.GeneralDomainObjectHome;
 import org.hip.kernel.bom.QueryResult;
 import org.hip.kernel.bom.QueryStatement;
@@ -37,8 +37,6 @@ import org.hip.kernel.dbaccess.DataSourceRegistry;
 import org.hip.kernel.exc.VException;
 import org.hip.kernel.sys.VObject;
 import org.hip.kernel.util.Debug;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** This is the abstract base implementation of the QueryStatment interface. The QueryStatement interface is a kind of
  * wrapper around the JDBC statement. The intention of this interface is the integration with the domain object
@@ -49,44 +47,24 @@ import org.slf4j.LoggerFactory;
  * @see org.hip.kernel.bom.QueryStatement
  * @see org.hip.kernel.bom.impl.CommittableStatement */
 @SuppressWarnings("serial")
-abstract public class AbstractQueryStatement extends VObject implements QueryStatement, Serializable {
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractQueryStatement.class);
+public abstract class AbstractQueryStatement extends VObject implements QueryStatement, Serializable {
 
     // Instance variables
     private GeneralDomainObjectHome home;
-
     private String sqlString;
-    private Connection connection;
-    private Statement statement;
+    private AlternativeModelFactory factory;
 
     /** AbstractQueryStatement constructor, initializing instance variables.
      *
-     * @param inHome org.hip.kernel.bom.GeneralDomainObjectHome */
-    public AbstractQueryStatement(final GeneralDomainObjectHome inHome) {
+     * @param home org.hip.kernel.bom.GeneralDomainObjectHome */
+    protected AbstractQueryStatement(final GeneralDomainObjectHome home) {
         super();
-        home = inHome;
+        this.home = home;
     }
 
     /** Constructor for statements without the need of a home. */
-    public AbstractQueryStatement() {
+    protected AbstractQueryStatement() {
         super();
-    }
-
-    /** @exception java.sql.SQLException */
-    @Override
-    public void close() throws SQLException {
-        if (statement != null) {
-            statement.close();
-        }
-        if (connection != null) {
-            if (!connection.isClosed()) {
-                for (SQLWarning lWarning = connection.getWarnings(); lWarning != null; lWarning = lWarning
-                        .getNextWarning()) {
-                    LOG.warn("SQL-Warning: {}: {}", lWarning.getMessage(), lWarning.getSQLState());
-                }
-                connection.close();
-            }
-        }
     }
 
     /** QueryStatements are equal if their SQL statements are equal.
@@ -126,13 +104,11 @@ abstract public class AbstractQueryStatement extends VObject implements QuerySta
     @Override
     public QueryResult executeQuery() throws SQLException {
         if (getSQLString() == null) {
-            return createQueryResult(home, null, this);
+            return createQueryResult(this.home, null, this);
         }
         else {
-            try {
-                connection = getConnection();
-                statement = connection.createStatement();
-                return createQueryResult(home, statement.executeQuery(getSQLString()), this);
+            try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
+                return createQueryResult(this.home, statement.executeQuery(getSQLString()), this);
             } catch (final VException exc) {
                 throw new SQLException(exc.getMessage(), exc);
             }
@@ -141,20 +117,16 @@ abstract public class AbstractQueryStatement extends VObject implements QuerySta
 
     /** Executes the given SQL statement, which may return multiple results.
      *
-     * @param inSQL String any SQL statement
+     * @param sql String any SQL statement
      * @return boolean <code>true</code> if the first result is a <code>ResultSet</code> object; <code>false</code> if
      *         it is an update count or there are no results
      * @throws SQLException
      * @see {@link Statement#execute(String)} */
-    protected boolean executeSQL(final String inSQL) throws SQLException {
-        try {
-            connection = getConnection();
-            statement = connection.createStatement();
-            return statement.execute(inSQL);
+    protected boolean executeSQL(final String sql) throws SQLException {
+        try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
+            return statement.execute(sql);
         } catch (final VException exc) {
             throw new SQLException(exc.getMessage(), exc);
-        } finally {
-            close();
         }
     }
 
@@ -168,9 +140,7 @@ abstract public class AbstractQueryStatement extends VObject implements QuerySta
             return null;
         }
 
-        try {
-            connection = getConnection();
-            statement = connection.createStatement();
+        try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
             return statement.executeQuery(getSQLString());
         } catch (final VException exc) {
             throw new SQLException(exc.getMessage(), exc);
@@ -179,13 +149,14 @@ abstract public class AbstractQueryStatement extends VObject implements QuerySta
 
     /** Creates the appropriate QueryResult. Subclasses may override this method.
      *
-     * @param inHome GeneralDomainObjectHome
-     * @param inResult ResultSet
-     * @param inStatement QueryStatement
+     * @param home GeneralDomainObjectHome
+     * @param result ResultSet
+     * @param statement QueryStatement
      * @return QueryResult */
-    protected QueryResult createQueryResult(final GeneralDomainObjectHome inHome, final ResultSet inResult,
-            final QueryStatement inStatement) {
-        return new DefaultQueryResult(inHome, inResult, inStatement);
+    protected QueryResult createQueryResult(final GeneralDomainObjectHome home, final ResultSet result,
+            final QueryStatement statement) {
+        return this.factory == null ? new DefaultQueryResult(home, result, statement)
+                : new AlternativeQueryResult(home, result, statement, this.factory);
     }
 
     /** Executes an SQL INSERT, UPDATE or DELETE statement.
@@ -200,42 +171,27 @@ abstract public class AbstractQueryStatement extends VObject implements QuerySta
             return 0;
         }
 
-        try {
-            connection = getConnection();
-            statement = connection.createStatement();
-            final int lExecuted = statement.executeUpdate(getSQLString());
-            if (inCommit) {
-                if (!connection.getAutoCommit()) {
-                    connection.commit();
-                }
+        try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
+            final int executed = statement.executeUpdate(getSQLString());
+            if (inCommit && !connection.getAutoCommit()) {
+                connection.commit();
             }
-
-            return lExecuted;
+            return executed;
         } catch (final SQLException exc) { // NOPMD by lbenno
             throw exc;
         } catch (final VException exc) {
             throw new SQLException(exc.getMessage(), exc);
-        } finally {
-            if (connection != null) {
-                for (SQLWarning lWarning = connection.getWarnings(); lWarning != null; lWarning = lWarning
-                        .getNextWarning()) {
-                    LOG.warn("SQL-Warning: {}: {}", lWarning.getMessage(), lWarning.getSQLState());
-
-                }
-                connection.close();
-            }
         }
     }
 
     /** This form of the query accepts as an input a valid SQL statement string. This is straightforward.
      *
      * @return org.hip.kernel.bom.QueryResult
-     * @param inSQL java.lang.String
+     * @param sql java.lang.String
      * @exception java.sql.SQLException */
     @Override
-    public QueryResult executeQuery(final String inSQL) throws SQLException {
-
-        setSQLString(inSQL);
+    public QueryResult executeQuery(final String sql) throws SQLException {
+        setSQLString(sql);
         return executeQuery();
 
     }
@@ -243,7 +199,7 @@ abstract public class AbstractQueryStatement extends VObject implements QuerySta
     /** @return java.lang.String */
     @Override
     public String getSQLString() {
-        return sqlString;
+        return this.sqlString;
     }
 
     /** Returns a hash code value for the QueryStatement.
@@ -259,19 +215,6 @@ abstract public class AbstractQueryStatement extends VObject implements QuerySta
         }
     }
 
-    /** Moves to a Statement's next result. It returns true if this result is a ResultSet. This method also implicitly
-     * closes any current ResultSet obtained with getResultSet.
-     *
-     * @return boolean */
-    @Override
-    public boolean hasMoreResults() {
-        try {
-            return (statement == null) ? false : statement.getMoreResults();
-        } catch (final SQLException exc) {
-            return false;
-        }
-    }
-
     /** Emits a <code>SHOW TABLES</code> call and returns a collection containing the table names of the database
      * catalog.
      *
@@ -279,11 +222,9 @@ abstract public class AbstractQueryStatement extends VObject implements QuerySta
      * @throws SQLException */
     @Override
     public Collection<String> showTables() throws SQLException {
-        final Collection<String> outTables = new ArrayList<String>();
+        final Collection<String> outTables = new ArrayList<>();
 
-        try {
-            connection = getConnection();
-            statement = connection.createStatement();
+        try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
             if (statement.execute("SHOW TABLES;")) {
                 try (ResultSet lResult = statement.getResultSet()) {
                     while (lResult.next()) {
@@ -293,18 +234,23 @@ abstract public class AbstractQueryStatement extends VObject implements QuerySta
             }
         } catch (final VException exc) {
             throw new SQLException(exc.getMessage(), exc);
-        } finally {
-            close();
         }
         return outTables;
     }
 
     /** Set a valid SQL statement string to this statement.
      *
-     * @param inSQL java.lang.String */
+     * @param sql java.lang.String */
     @Override
-    public void setSQLString(final String inSQL) {
-        sqlString = inSQL;
+    public QueryStatement setSQLString(final String sql) {
+        this.sqlString = sql;
+        return this;
+    }
+
+    @Override
+    public QueryStatement setFactory(final AlternativeModelFactory factory) {
+        this.factory = factory;
+        return this;
     }
 
     @Override
@@ -314,18 +260,13 @@ abstract public class AbstractQueryStatement extends VObject implements QuerySta
     }
 
     private void writeObject(final ObjectOutputStream out) throws IOException {
-        out.writeObject(home);
-        out.writeObject(sqlString);
-        try {
-            close();
-        } catch (final SQLException exc) {
-            throw new IOException(exc.getMessage(), exc);
-        }
+        out.writeObject(this.home);
+        out.writeObject(this.sqlString);
     }
 
     private void readObject(final ObjectInputStream inStream) throws IOException, ClassNotFoundException {
-        home = (GeneralDomainObjectHome) inStream.readObject();
-        sqlString = (String) inStream.readObject();
+        this.home = (GeneralDomainObjectHome) inStream.readObject();
+        this.sqlString = (String) inStream.readObject();
         // we don't initialize connection and statement here because we expect
         // that retrieveStatement() is called in the process of deserialization.
     }

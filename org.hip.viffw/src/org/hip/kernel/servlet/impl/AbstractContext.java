@@ -1,6 +1,6 @@
 /**
 	This package is part of the servlet framework used for the application VIF.
-	Copyright (C) 2001-2015, Benno Luthiger
+	Copyright (C) 2001-2025, Benno Luthiger
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -16,7 +16,7 @@
 	License along with this library; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.hip.kernel.servlet.impl; // NOPMD by lbenno 
+package org.hip.kernel.servlet.impl; // NOPMD by lbenno
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -95,7 +95,7 @@ public abstract class AbstractContext implements Context, Serializable { // NOPM
     /** @return java.lang.String */
     @Override
     public String getLanguage() {
-        return (get(LANGUAGE_KEY) == null) ? VSys.dftLanguage : get(LANGUAGE_KEY).toString();
+        return get(LANGUAGE_KEY) == null ? VSys.dftLanguage : get(LANGUAGE_KEY).toString();
     }
 
     /** Returns an enumeration of the parameternames set in the context. (Parameternames from the request to the servlet)
@@ -164,7 +164,7 @@ public abstract class AbstractContext implements Context, Serializable { // NOPM
     /** @return java.lang.String */
     @Override
     public String getUserID() {
-        return (get(USER_ID_KEY) == null) ? "" : get(USER_ID_KEY).toString();
+        return get(USER_ID_KEY) == null ? "" : get(USER_ID_KEY).toString();
     }
 
     /** @return org.hip.kernel.servlet.HtmlView */
@@ -194,28 +194,28 @@ public abstract class AbstractContext implements Context, Serializable { // NOPM
      *
      * @return java.util.Map Table of parameters */
     private Map<String, Object> parameters() {
-        if (params == null) {
-            params = new HashMap<String, Object>();
+        if (this.params == null) {
+            this.params = new HashMap<>();
         }
-        return params;
+        return this.params;
     }
 
     /** @return Map<String, FileItem> */
     private Map<String, FileItem> fileItems() {
-        if (files == null) {
-            files = new HashMap<String, FileItem>();
+        if (this.files == null) {
+            this.files = new HashMap<>();
         }
-        return files;
+        return this.files;
     }
 
     /** Returns properties.
      *
      * @return java.util.Map Table of properties */
     private Map<String, Object> properties() {
-        if (props == null) {
-            props = new HashMap<String, Object>();
+        if (this.props == null) {
+            this.props = new HashMap<>();
         }
-        return props;
+        return this.props;
     }
 
     /** Sets property <code>inValue</code> in context with key or name <code>inName</code>.
@@ -363,24 +363,24 @@ public abstract class AbstractContext implements Context, Serializable { // NOPM
     }
 
     private void writeObject(final ObjectOutputStream out) throws IOException {
-        props.remove(SESSION_NAME);
-        props.remove(RESPONSE_KEY);
-        props.remove(VIEW);
-        out.writeObject(props);
-        out.writeObject(params);
+        this.props.remove(SESSION_NAME);
+        this.props.remove(RESPONSE_KEY);
+        this.props.remove(VIEW);
+        out.writeObject(this.props);
+        out.writeObject(this.params);
     }
 
     @SuppressWarnings("unchecked")
     private void readObject(final ObjectInputStream inStream) throws IOException, ClassNotFoundException {
-        props = (Map<String, Object>) inStream.readObject();
-        params = (Map<String, Object>) inStream.readObject();
+        this.props = (Map<String, Object>) inStream.readObject();
+        this.params = (Map<String, Object>) inStream.readObject();
     }
 
     @Override
     public void dispose() { // NOPMD
-        props.clear();
-        params.clear();
-        props = null; // NOPMD
-        params = null; // NOPMD
+        this.props.clear();
+        this.params.clear();
+        this.props = null; // NOPMD
+        this.params = null; // NOPMD
     }
 }

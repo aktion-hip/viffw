@@ -49,22 +49,11 @@ public class HTMLSerializerTest {
             "<p>This is the end (of the first example).</p>" + NL;
 
     @Test
-    public void testDo() {
+    void testDo() {
         final StructuredText lStructuredText = StructuredTextGenerator.getSingleton().createStructuredText(INPUT1);
         final StructuredTextSerializer lSerializer = new HTMLSerializer();
         lStructuredText.accept(lSerializer);
-        assertEquals("simple paragraphs", EXPECTED1, lSerializer.toString());
+        assertEquals(EXPECTED1, lSerializer.toString());
     }
 
-    //	public void testVisitStructuredText() {
-    //	}
-    //
-    //	public void testVisitStructuredTextBullet() {
-    //	}
-    //
-    //	public void testVisitStructuredTextNumbered() {
-    //	}
-    //
-    //	public void testVisitStructuredTextPlain() {
-    //	}
 }

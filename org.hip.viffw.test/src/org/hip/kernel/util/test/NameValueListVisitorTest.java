@@ -38,7 +38,7 @@ public class NameValueListVisitorTest {
         lVisitor = new DefaultNameValueListVisitor();
         lNameValue3.accept(lVisitor);
         final String lExpected3 = "<org.hip.kernel.util.DefaultNameValue name='testValue3'>\n" +
-                "	< junit.framework.AssertionFailedError 'junit.framework.AssertionFailedError: Hallo Error' />\n" +
+                "	< org.hip.kernel.exc.VError 'org.hip.kernel.exc.VError: Hallo Error' />\n" +
                 "</org.hip.kernel.util.DefaultNameValue>";
         assertEquals(lExpected3, lVisitor.toString());
 
@@ -54,7 +54,7 @@ public class NameValueListVisitorTest {
                 "\t\t<value=?/>\n" +
                 "\t</org.hip.kernel.util.DefaultNameValue>";
         final String lExpectedV3 = "\t<org.hip.kernel.util.DefaultNameValue name='testValue3'>\n" +
-                "\t\t< junit.framework.AssertionFailedError 'junit.framework.AssertionFailedError: Hallo Error' />\n" +
+                "\t\t< org.hip.kernel.exc.VError 'org.hip.kernel.exc.VError: Hallo Error' />\n" +
                 "\t</org.hip.kernel.util.DefaultNameValue>";
         assertTrue(lVisitor.toString().indexOf(lExpectedV1) > 0);
         assertTrue(lVisitor.toString().indexOf(lExpectedV2) > 0);

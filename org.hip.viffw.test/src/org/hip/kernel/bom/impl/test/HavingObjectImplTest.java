@@ -15,18 +15,18 @@ import org.junit.jupiter.api.Test;
 public class HavingObjectImplTest {
 
     @Test
-    public void testCreate() throws Exception {
+    void testCreate() throws Exception {
         final String lExpected1 = "first:76";
         final String lExpected2 = "first:76, contained:55";
 
         final HavingObject lHaving1 = new HavingObjectImpl();
-        lHaving1.setValue("first", new Integer(76));
-        assertEquals("key value 1", lExpected1, evaluate(lHaving1));
+        lHaving1.setValue("first", Integer.valueOf(76));
+        assertEquals(lExpected1, evaluate(lHaving1));
 
         final HavingObject lHaving2 = new HavingObjectImpl();
-        lHaving2.setValue("contained", new Integer(55), ">=");
+        lHaving2.setValue("contained", Integer.valueOf(55), ">=");
         lHaving1.setValue(lHaving2);
-        assertEquals("key value 2", lExpected2, evaluate(lHaving1));
+        assertEquals(lExpected2, evaluate(lHaving1));
     }
 
     private String evaluate(final HavingObject inHaving) {

@@ -59,7 +59,7 @@ public class DomainObjectCollectionImplTest {
         int i = 0;
         while (lIterator.hasMoreElements()) {
             lDomainObject = (DomainObject)lIterator.nextElement();
-            assertEquals("nextElement " + i, lNames[i], (String)lDomainObject.get("Name"));
+            assertEquals(lNames[i], lDomainObject.get("Name"));
             i++;
         }
         assertEquals(lNames.length, i);
@@ -129,7 +129,7 @@ public class DomainObjectCollectionImplTest {
         int i = 0;
         while (lIterator.hasMoreElements()) {
             final DomainObject lDomainObject = (DomainObject)lIterator.nextElement();
-            assertEquals("nextElement " + i, lNames[i], (String)lDomainObject.get("Name"));
+            assertEquals(lNames[i], lDomainObject.get("Name"));
             i++;
         }
         assertEquals(lNames.length, i);

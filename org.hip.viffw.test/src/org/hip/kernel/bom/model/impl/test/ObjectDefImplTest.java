@@ -81,7 +81,7 @@ public class ObjectDefImplTest {
                     "</objectDef>			";
 
     @Test
-    public void testAddPropertyDef() {
+    void testAddPropertyDef() {
         final String[] lExpected1 = { "simple", "java.lang.String" };
         final String[] lExpected2 = { "lastName", "firstName" };
         final Vector<String> lVExpected2 = new Vector<String>(Arrays.asList(lExpected2));
@@ -141,9 +141,8 @@ public class ObjectDefImplTest {
         }
 
         // Test getProperties
-        final int i = 0;
         for (final PropertyDef lProperty : lDef.getPropertyDefs2(PropertyDefDef.propertyTypeSimple)) {
-            assertEquals("getPropertyType " + i, lProperty.getPropertyType(), PropertyDefDef.propertyTypeSimple);
+            assertEquals(lProperty.getPropertyType(), PropertyDefDef.propertyTypeSimple);
             assertTrue(lVExpected2.contains(lProperty.getName()));
         }
 
@@ -245,11 +244,10 @@ public class ObjectDefImplTest {
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         try {
             final ObjectDef lObjectDef = ObjectDefGenerator.getSingleton().createObjectDef(XML_OBJECT_DEF1);
             assertEquals(
-                    "toString 1",
                     "< org.hip.kernel.bom.model.impl.ObjectDefImpl objectName=\"TestDomainObject\" parent=\"org.hip.kernel.bom.DomainObject\" version=\"1.0\" />",
                     lObjectDef.toString());
         } catch (final org.xml.sax.SAXException exc) {

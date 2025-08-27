@@ -426,14 +426,14 @@ public class JoinedObjectDefImplTest {
     }
 
     @Test
-    public void testHidden() throws Exception {
+    void testHidden() throws Exception {
         final JoinedObjectDef lObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(
                 XML_OBJECT_DEF2);
         assertEquals("tblGroupAdmin.GROUPID", lObjectDef.getHidden("GroupID"));
     }
 
     @Test
-    public void testAddHidden() throws Exception {
+    void testAddHidden() throws Exception {
         final String lHidden = "MemberID";
         final DefaultNameValueList lList = new DefaultNameValueList();
         lList.setValue(HiddenDef.columnName, lHidden);
@@ -445,11 +445,10 @@ public class JoinedObjectDefImplTest {
     }
 
     @Test
-    public void testToString() throws Exception {
+    void testToString() throws Exception {
         final JoinedObjectDef lObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(
                 XML_OBJECT_DEF1);
         assertEquals(
-                "toString 1",
                 "< org.hip.kernel.bom.model.impl.JoinedObjectDefImpl objectName=\"TestJoin1\" parent=\"org.hip.kernel.bom.ReadOnlyDomainObject\" version=\"1.0\" />",
                 lObjectDef.toString());
     }

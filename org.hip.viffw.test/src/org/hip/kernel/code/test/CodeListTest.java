@@ -36,7 +36,7 @@ public class CodeListTest {
         String[] lActual = codeList.getElementIDs();
         assertEquals(lExpectedIDs.length, lActual.length);
         for (i = 0; i<lActual.length; i++) {
-            assertEquals("sorted ID " + i, lExpectedIDs[i], lActual[i]);
+            assertEquals(lExpectedIDs[i], lActual[i]);
         }
 
         lActual = codeList.getElementIDsUnsorted();
@@ -48,7 +48,7 @@ public class CodeListTest {
         lActual = codeList.getLabels();
         assertEquals(lExpectedLabels.length, lActual.length);
         for (i = 0; i<lActual.length; i++) {
-            assertEquals("sorted label " + i, lExpectedLabels[i], lActual[i]);
+            assertEquals(lExpectedLabels[i], lActual[i]);
         }
 
         lActual = codeList.getLabelsUnsorted();

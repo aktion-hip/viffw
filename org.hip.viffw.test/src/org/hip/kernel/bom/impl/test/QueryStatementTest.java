@@ -1,7 +1,6 @@
 package org.hip.kernel.bom.impl.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -10,8 +9,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
 
 import org.hip.kernel.bom.DomainObjectHome;
 import org.hip.kernel.bom.GeneralDomainObject;
@@ -30,13 +29,13 @@ import org.junit.jupiter.api.Test;
 public class QueryStatementTest {
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         DataHouseKeeper.INSTANCE.deleteAllFromSimple();
         System.out.println("Deleted all entries in tblTest.");
     }
 
     @Test
-    public void testDo() throws Exception {
+    void testDo() throws Exception {
         final String[] lNames = {"1 eins", "2 zwei", "3 drei"};
         DataHouseKeeper.INSTANCE.createTestEntry(lNames[2]);
         DataHouseKeeper.INSTANCE.createTestEntry(lNames[1]);
@@ -47,7 +46,6 @@ public class QueryStatementTest {
         final String lExpected2 = "< org.hip.kernel.bom.impl.DefaultQueryStatement SQL=\"SELECT TESTID, SNAME, SFIRSTNAME FROM tblTest ORDER BY sName\" />";
 
         final QueryStatement lStatement = new DefaultQueryStatement(DataHouseKeeper.INSTANCE.getSimpleHome());
-        assertFalse(lStatement.hasMoreResults());
         assertEquals(lExpected1, lStatement.toString());
 
         final QueryResult lResult = lStatement.executeQuery(lSQL);
@@ -63,7 +61,7 @@ public class QueryStatementTest {
     }
 
     @Test
-    public void testEquals() throws Exception {
+    void testEquals() throws Exception {
         final String lSQL = "SELECT * FROM tblTest ORDER BY sName";
 
         final QueryStatement lStatement1 = new DefaultQueryStatement(DataHouseKeeper.INSTANCE.getSimpleHome());
@@ -83,7 +81,7 @@ public class QueryStatementTest {
     }
 
     @Test
-    public void testDelete() throws Exception {
+    void testDelete() throws Exception {
         final String lExpectedName1 = "Test_Name_1";
         final String lExpectedName2 = "Test_Name_2";
 
@@ -107,7 +105,7 @@ public class QueryStatementTest {
     }
 
     @Test
-    public void testSerialization() throws SQLException, IOException, ClassNotFoundException {
+    void testSerialization() throws SQLException, IOException, ClassNotFoundException {
         final String[] lNames = {"1 eins", "2 zwei", "3 drei"};
         DataHouseKeeper.INSTANCE.createTestEntry(lNames[2]);
         DataHouseKeeper.INSTANCE.createTestEntry(lNames[1]);
@@ -135,22 +133,20 @@ public class QueryStatementTest {
     }
 
     @Test
-    public void testShowTables() throws Exception {
+    void testShowTables() throws Exception {
         final QueryStatement lStatement = new DefaultStatement();
         final Collection<String> lTables = lStatement.showTables();
-        assertTrue(lTables.size() > 20);
+        assertTrue(lTables.size() >= 6);
 
-        final Collection<String> lTablesLower = new Vector<String>();
+        final Collection<String> lTablesLower = new ArrayList<>();
         for (final String lTable : lTables) {
             lTablesLower.add(lTable.toLowerCase());
         }
-        assertTrue(lTablesLower.contains("tblquestion"));
-        assertTrue(lTablesLower.contains("tblmember"));
+        assertTrue(lTablesLower.contains("tblblobtest"));
         assertTrue(lTablesLower.contains("tblgroup"));
-        assertTrue(lTablesLower.contains("tblcompletion"));
         assertTrue(lTablesLower.contains("tblgroupadmin"));
         assertTrue(lTablesLower.contains("tblparticipant"));
-        assertTrue(lTablesLower.contains("tblpermission"));
-        assertTrue(lTablesLower.contains("tblrole"));
+        assertTrue(lTablesLower.contains("tbltest"));
+        assertTrue(lTablesLower.contains("tbltestshort"));
     }
 }

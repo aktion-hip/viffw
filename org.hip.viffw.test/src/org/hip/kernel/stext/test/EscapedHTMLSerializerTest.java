@@ -82,27 +82,16 @@ public class EscapedHTMLSerializerTest {
             "&lt;p&gt;This is the end (of the first example).&lt;/p&gt;" + NL;
 
     @Test
-    public void testDo() {
+    void testDo() {
         StructuredText lStructuredText = StructuredTextGenerator.getSingleton().createStructuredText(INPUT1);
         StructuredTextSerializer lSerializer = new EscapedHTMLSerializer();
         lStructuredText.accept(lSerializer);
-        assertEquals("simple paragraphs", EXPECTED1, lSerializer.toString());
+        assertEquals(EXPECTED1, lSerializer.toString());
 
         lStructuredText = StructuredTextGenerator.getSingleton().createStructuredText(INPUT2);
         lSerializer = new EscapedHTMLSerializer();
         lStructuredText.accept(lSerializer);
-        assertEquals("paragraphs with inline format", EXPECTED2, lSerializer.toString());
+        assertEquals(EXPECTED2, lSerializer.toString());
     }
 
-    //	public void testVisitStructuredText() {
-    //	}
-    //
-    //	public void testVisitStructuredTextBullet() {
-    //	}
-    //
-    //	public void testVisitStructuredTextNumbered() {
-    //	}
-    //
-    //	public void testVisitStructuredTextPlain() {
-    //	}
 }

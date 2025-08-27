@@ -47,10 +47,10 @@ public class IgnoringFormatSerializerTest {
             "This is the end (of the first example)." + NL;
 
     @Test
-    public void testDo() {
+    void testDo() {
         final StructuredText lStructuredText = StructuredTextGenerator.getSingleton().createStructuredText(INPUT);
         final StructuredTextSerializer lSerializer = new IgnoringFormatSerializer();
         lStructuredText.accept(lSerializer);
-        assertEquals("simple paragraphs", EXPECTED, lSerializer.toString());
+        assertEquals(EXPECTED, lSerializer.toString());
     }
 }

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 public class CheckValueForUmlautsTest {
 
     @Test
-    public void testElements() {
+    void testElements() {
         String lProcessed = "";
         String lOriginal = "";
         String lExpected = "";
@@ -22,7 +22,7 @@ public class CheckValueForUmlautsTest {
         while (lSearchStrings.hasNext()) {
             lProcessed += lSearchStrings.next();
         }
-        assertEquals("Test empty ", lExpected, lProcessed);
+        assertEquals(lExpected, lProcessed);
 
         lOriginal = "Bärner";
         lExpected = "BÄRNERBAERNER";
@@ -42,7 +42,7 @@ public class CheckValueForUmlautsTest {
         while (lSearchStrings.hasNext()) {
             lProcessed += lSearchStrings.next();
         }
-        assertEquals("Test Baerner ", lExpected, lProcessed);
+        assertEquals(lExpected, lProcessed);
 
         lOriginal = "Bärnerbuecher";
         lExpected = "BÄRNERBÜCHER BAERNERBÜCHER BÄRNERBUECHER BAERNERBUECHER ";
@@ -52,7 +52,7 @@ public class CheckValueForUmlautsTest {
         while (lSearchStrings.hasNext()) {
             lProcessed += lSearchStrings.next() + " ";
         }
-        assertEquals("Test Börnerbuecher ", lExpected, lProcessed);
+        assertEquals(lExpected, lProcessed);
 
         lOriginal = "no umlauts at all";
         lExpected = "NO UMLAUTS AT ALL";
@@ -62,6 +62,6 @@ public class CheckValueForUmlautsTest {
         while (lSearchStrings.hasNext()) {
             lProcessed += lSearchStrings.next();
         }
-        assertEquals("Test NO UMLAUTS AT ALL ", lExpected, lProcessed);
+        assertEquals(lExpected, lProcessed);
     }
 }

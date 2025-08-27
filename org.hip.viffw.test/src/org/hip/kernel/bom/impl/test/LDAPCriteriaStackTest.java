@@ -14,77 +14,77 @@ import org.junit.jupiter.api.Test;
 public class LDAPCriteriaStackTest {
 
     @Test
-    public void testRender() {
+    void testRender() {
         ICriteriaStack lStack = new LDAPCriteriaStack();
-        lStack.addCriterium(new StringBuffer("cn=A"));
+        lStack.addCriterium(new StringBuilder("cn=A"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        assertEquals("stack 0", "cn=A", lStack.render());
+        assertEquals("cn=A", lStack.render());
 
         lStack = new LDAPCriteriaStack();
-        lStack.addCriterium(new StringBuffer("cn=A"));
+        lStack.addCriterium(new StringBuilder("cn=A"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=B"));
+        lStack.addCriterium(new StringBuilder("cn=B"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        assertEquals("stack 1", "&(cn=A)(cn=B)", lStack.render());
+        assertEquals("&(cn=A)(cn=B)", lStack.render());
 
         lStack = new LDAPCriteriaStack();
-        lStack.addCriterium(new StringBuffer("cn=A"));
+        lStack.addCriterium(new StringBuilder("cn=A"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=B"));
+        lStack.addCriterium(new StringBuilder("cn=B"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=C"));
+        lStack.addCriterium(new StringBuilder("cn=C"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        assertEquals("stack 2", "&(cn=A)(cn=B)(cn=C)", lStack.render());
+        assertEquals("&(cn=A)(cn=B)(cn=C)", lStack.render());
 
         lStack = new LDAPCriteriaStack();
-        lStack.addCriterium(new StringBuffer("cn=A"));
+        lStack.addCriterium(new StringBuilder("cn=A"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=B"));
+        lStack.addCriterium(new StringBuilder("cn=B"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=C"));
+        lStack.addCriterium(new StringBuilder("cn=C"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=D"));
+        lStack.addCriterium(new StringBuilder("cn=D"));
         lStack.addOperator(BinaryBooleanOperator.OR);
-        assertEquals("stack 3", "|(&(cn=A)(cn=B)(cn=C))(cn=D)", lStack.render());
+        assertEquals("|(&(cn=A)(cn=B)(cn=C))(cn=D)", lStack.render());
 
         lStack = new LDAPCriteriaStack();
-        lStack.addCriterium(new StringBuffer("cn=A"));
+        lStack.addCriterium(new StringBuilder("cn=A"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=B"));
+        lStack.addCriterium(new StringBuilder("cn=B"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=C"));
+        lStack.addCriterium(new StringBuilder("cn=C"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=D"));
+        lStack.addCriterium(new StringBuilder("cn=D"));
         lStack.addOperator(BinaryBooleanOperator.OR);
-        lStack.addCriterium(new StringBuffer("cn=E"));
+        lStack.addCriterium(new StringBuilder("cn=E"));
         lStack.addOperator(BinaryBooleanOperator.OR);
-        assertEquals("stack 4", "|(|(&(cn=A)(cn=B)(cn=C))(cn=D))(cn=E)", lStack.render());
+        assertEquals("|(|(&(cn=A)(cn=B)(cn=C))(cn=D))(cn=E)", lStack.render());
 
         lStack = new LDAPCriteriaStack();
-        lStack.addCriterium(new StringBuffer("cn=A"));
+        lStack.addCriterium(new StringBuilder("cn=A"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=B"));
+        lStack.addCriterium(new StringBuilder("cn=B"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=C"));
+        lStack.addCriterium(new StringBuilder("cn=C"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=D"));
+        lStack.addCriterium(new StringBuilder("cn=D"));
         lStack.addOperator(BinaryBooleanOperator.OR);
-        lStack.addCriterium(new StringBuffer("cn=E"));
+        lStack.addCriterium(new StringBuilder("cn=E"));
         lStack.addOperator(BinaryBooleanOperator.OR);
-        lStack.addCriterium(new StringBuffer("cn=F"));
+        lStack.addCriterium(new StringBuilder("cn=F"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        assertEquals("stack 5", "&(|(|(&(cn=A)(cn=B)(cn=C))(cn=D))(cn=E))(cn=F)", lStack.render());
+        assertEquals("&(|(|(&(cn=A)(cn=B)(cn=C))(cn=D))(cn=E))(cn=F)", lStack.render());
 
         lStack = new LDAPCriteriaStack();
-        lStack.addCriterium(new StringBuffer("cn=A"));
+        lStack.addCriterium(new StringBuilder("cn=A"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=B"));
+        lStack.addCriterium(new StringBuilder("cn=B"));
         lStack.addOperator(BinaryBooleanOperator.OR);
-        lStack.addCriterium(new StringBuffer("cn=C"));
+        lStack.addCriterium(new StringBuilder("cn=C"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        lStack.addCriterium(new StringBuffer("cn=D"));
+        lStack.addCriterium(new StringBuilder("cn=D"));
         lStack.addOperator(BinaryBooleanOperator.AND);
-        assertEquals("stack 6", "&(&(|(cn=A)(cn=B))(cn=C))(cn=D)", lStack.render());
+        assertEquals("&(&(|(cn=A)(cn=B))(cn=C))(cn=D)", lStack.render());
     }
 
 }

@@ -36,7 +36,7 @@ public class SetOperatorHomeImplTest {
     }
 
     @Test
-    public void testSelect() {
+    void testSelect() {
         final String lExpected = "(SELECT tblTestMember.TESTMEMBERID, tblTestMember.SFIRSTNAME, tblTestMember.DTMUTATION, tblTestMember.SNAME, tblTestMember.SPASSWORD FROM tblTestMember WHERE tblTestMember.SNAME = 'NameOfFirstSelect')\n"
                 +
                 " UNION (SELECT tblTest.BSEX, tblTest.FAMOUNT, tblTest.SCITY, tblTest.FDOUBLE, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.TESTID, tblTest.SMAIL, tblTest.SLANGUAGE, tblTest.SSTREET, tblTest.STEL, tblTest.DTMUTATION, tblTest.SFAX, tblTest.SPLZ, tblTest.SPASSWORD FROM tblTest WHERE tblTest.SNAME = 'NameOfSecondSelect')";
@@ -56,14 +56,14 @@ public class SetOperatorHomeImplTest {
 
             lUnionHome.addSet(lHome2, lKey);
 
-            assertEquals("union select", lExpected, lUnionHome.getSQL());
+            assertEquals(lExpected, lUnionHome.getSQL());
         } catch (final Exception exc) {
             fail(exc.getMessage());
         }
     }
 
     @Test
-    public void testOrderBy() {
+    void testOrderBy() {
         final String lExpected = " ORDER BY SNAME, DTMUTATION";
         final TestDomainObjectHomeImpl lHome = (TestDomainObjectHomeImpl) VSys.homeManager
                 .getHome("org.hip.kernel.bom.impl.test.TestDomainObjectHomeImpl");
@@ -74,7 +74,7 @@ public class SetOperatorHomeImplTest {
 
             final UnionHomeSub lUnionHome = new UnionHomeSub();
             lUnionHome.addSet(lHome, lOrder);
-            assertEquals("order by", lExpected, lUnionHome.getOrderBy(lOrder));
+            assertEquals(lExpected, lUnionHome.getOrderBy(lOrder));
         } catch (final Exception exc) {
             fail(exc.getMessage());
         }

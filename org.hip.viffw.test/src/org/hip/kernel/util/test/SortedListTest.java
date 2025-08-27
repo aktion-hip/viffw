@@ -42,7 +42,7 @@ public class SortedListTest {
 
             int i = 0;
             for (final Iterator<?> lItems = lSortedList.getItems(); lItems.hasNext();) {
-                assertEquals("sorted position: " + i, lExpected[i], (String)((TestSortableItem)lItems.next()).getValue());
+                assertEquals(lExpected[i], ((TestSortableItem) lItems.next()).getValue());
                 i++;
             }
         }

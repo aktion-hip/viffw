@@ -51,7 +51,7 @@ public class ObjectDefGeneratorTest {
         final Iterator<String> iter1 = inObjectDef.getTableNames2().iterator();
         while (iter1.hasNext()) {
             final String lTableName = iter1.next();
-            assertEquals("testGenerate 5", "tblTestMember", lTableName);
+            assertEquals("tblTestMember", lTableName);
             System.out.println("\t\tMapping for table: " + lTableName);
             final Iterator<MappingDef> iter2 = inObjectDef.getMappingDefsForTable2(lTableName).iterator();
             while (iter2.hasNext()) {
@@ -73,7 +73,7 @@ public class ObjectDefGeneratorTest {
             final Iterator<String> iter = lPrimKeyDef.getKeyNames2().iterator();
             while (iter.hasNext()) {
                 final String lKey = iter.next();
-                assertEquals("testGenerate 4", "MemberID", lKey);
+                assertEquals("MemberID", lKey);
                 VSys.out.println("\t\t" + lKey);
             }
         } catch (final org.hip.kernel.bom.GettingException exc) {

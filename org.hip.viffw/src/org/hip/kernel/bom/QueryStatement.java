@@ -27,9 +27,6 @@ import java.util.Collection;
  * @author Benno Luthiger */
 public interface QueryStatement {
 
-    /** @exception java.sql.SQLException */
-    void close() throws SQLException;
-
     /** @return org.hip.kernel.bom.QueryResult
      * @exception java.sql.SQLException */
     QueryResult executeQuery() throws SQLException;
@@ -48,16 +45,21 @@ public interface QueryStatement {
      * @exception java.sql.SQLException */
     int executeUpdate(boolean inCommit) throws SQLException;
 
-    /** Moves to a Statement's next result. It returns true if this result is a ResultSet. This method also implicitly
-     * closes any current ResultSet obtained with getResultSet.
-     *
-     * @return boolean */
-    boolean hasMoreResults();
-
     /** Set a valid SQL statement string to this statement.
      *
-     * @param inSQL java.lang.String */
-    void setSQLString(String inSQL);
+     * @param sql java.lang.String
+     * @return {@link QueryStatement} */
+    default QueryStatement setSQLString(final String sql) {
+        return this;
+    }
+
+    /** Sets a model generation factory to the statement.
+     *
+     * @param factory {@link AlternativeModelFactory}
+     * @return {@link QueryStatement} */
+    default QueryStatement setFactory(final AlternativeModelFactory factory) {
+        return this;
+    }
 
     /** @return String this statement's SQL string. */
     String getSQLString();
