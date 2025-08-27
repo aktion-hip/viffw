@@ -1,88 +1,91 @@
 package org.hip.kernel.bom.impl.test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.hip.kernel.bom.AlternativeModel;
 import org.hip.kernel.bom.AlternativeModelFactory;
 import org.hip.kernel.bom.DomainObject;
 import org.hip.kernel.bom.QueryResult;
+import org.hip.kernel.bom.impl.AlternativeQueryResult;
 import org.hip.kernel.sys.VObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Benno Luthiger
- * Created on Sep 22, 2004
  */
 public class AlternativeModellTest {
-	private static DataHouseKeeper data;
-	private String[] expected = {"AAAAAAAAAA", "BBBBBBBB", "CCCCC"};
-	
-	private class TestAlternativeModel extends VObject implements AlternativeModel {
-		public String name = "";
-		public String firstName = "";
-		public String toString() {
-			return name + ":" + firstName;
-		}
-	}
+    private final String[] expected = {"AAAAAAAAAA", "BBBBBBBB", "CCCCC"};
 
-	private class TestAlternativeFactory extends VObject implements AlternativeModelFactory {
-		public TestAlternativeFactory() {
-			super();
-		}
-		public AlternativeModel createModel(ResultSet inResultSet) throws SQLException {
-			TestAlternativeModel outModel = new TestAlternativeModel();
-			outModel.name = inResultSet.getString("sName");
-			outModel.firstName = inResultSet.getString("sFirstname");
-			return outModel;
-		}
-	}
-	
-	@BeforeClass
-	public static void init() {
-		data = DataHouseKeeper.getInstance();
-	}
+    private class TestAlternativeModel extends VObject implements AlternativeModel {
+        public String name = "";
+        public String firstName = "";
+        @Override
+        public String toString() {
+            return this.name + ":" + this.firstName;
+        }
+    }
 
-	@Before
-	public void setUp() throws Exception {
-		populate();
-	}
+    private class TestAlternativeFactory extends VObject implements AlternativeModelFactory {
+        public TestAlternativeFactory() {
+            super();
+        }
+        @Override
+        public AlternativeModel createModel(final ResultSet inResultSet) throws SQLException {
+            final TestAlternativeModel outModel = new TestAlternativeModel();
+            outModel.name = inResultSet.getString("sName");
+            outModel.firstName = inResultSet.getString("sFirstname");
+            return outModel;
+        }
+    }
 
-	@After
-	public void tearDown() throws Exception {
-		data.deleteAllFromSimple();
-	}
-	
-	@Test
-	public void testDo() throws Exception {
-		TestAlternativeHomeImpl lHome = data.getAlternativeHome();
-		QueryResult lResult = lHome.select();
-		Collection<AlternativeModel> lSet = lResult.load(new TestAlternativeFactory());
-		
-		assertEquals("size", expected.length, lSet.size());
-		
-		String lCheck = "";
-		for (AlternativeModel lModel : lSet) {
-			lCheck += lModel + ";";
-		}
-		for (int i = 0; i < expected.length; i++) {
-			assertTrue("contains " + i, lCheck.indexOf(expected[i] + ":" + expected[i].toLowerCase()) >= 0);				
-		}
-	}
+    @BeforeEach
+    void setUp() throws Exception {
+        populate();
+    }
 
-	private void populate() throws Exception {
-		DomainObject lDomainObject;
-		for (int i = 0; i < expected.length; i++) {
-			lDomainObject = data.getSimpleHome().create();
-			lDomainObject.set("Name", expected[i]);
-			lDomainObject.set("Firstname", expected[i].toLowerCase());
-			lDomainObject.set("Sex", new Integer(1));
-			lDomainObject.insert(true);
-		}
-	}
+    @AfterEach
+    void tearDown() throws Exception {
+        DataHouseKeeper.INSTANCE.deleteAllFromSimple();
+    }
+
+    @Test
+    void testDo() throws Exception {
+        final TestAlternativeHomeImpl home = DataHouseKeeper.INSTANCE.getAlternativeHome();
+        home.setFactory(new TestAlternativeFactory());
+        final QueryResult result = home.select();
+
+        Collection<AlternativeModel> results = Collections.emptyList();
+        if (result instanceof final AlternativeQueryResult altResult) {
+            results = altResult.getAlternativeModels();
+        }
+
+        assertEquals(this.expected.length, results.size());
+
+        String lCheck = "";
+        for (final AlternativeModel model : results) {
+            lCheck += model + ";";
+        }
+        for (int i = 0; i < this.expected.length; i++) {
+            assertTrue(lCheck.indexOf(this.expected[i] + ":" + this.expected[i].toLowerCase()) >= 0);
+        }
+    }
+
+    private void populate() throws Exception {
+        DomainObject lDomainObject;
+        for (int i = 0; i < this.expected.length; i++) {
+            lDomainObject = DataHouseKeeper.INSTANCE.getSimpleHome().create();
+            lDomainObject.set("Name", this.expected[i]);
+            lDomainObject.set("Firstname", this.expected[i].toLowerCase());
+            lDomainObject.set("Sex", Integer.valueOf(1));
+            lDomainObject.insert(true);
+        }
+    }
 }

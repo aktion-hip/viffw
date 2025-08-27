@@ -39,9 +39,8 @@ import org.slf4j.LoggerFactory;
 
 /** Implementation of <code>QueryResult</code> for LDAP queries.
  *
- * @author Luthiger Created on 03.07.2007
+ * @author Luthiger
  * @see org.hip.kernel.bom.QueryResult */
-@SuppressWarnings("serial")
 public class LDAPQueryResult extends AbstractQueryResult {
     private static final Logger LOG = LoggerFactory.getLogger(LDAPQueryResult.class);
 
@@ -63,10 +62,10 @@ public class LDAPQueryResult extends AbstractQueryResult {
             final LDAPQueryStatement inStatement) {
         super(inHome);
 
-        home = inHome;
-        result = inResult;
-        count = inCount;
-        statement = inStatement;
+        this.home = inHome;
+        this.result = inResult;
+        this.count = inCount;
+        this.statement = inStatement;
 
         LOG.debug("count: {}", inCount);
         firstRead();
@@ -74,8 +73,8 @@ public class LDAPQueryResult extends AbstractQueryResult {
 
     private void firstRead() {
         try {
-            if (result.hasNext()) {
-                nextObj = home.newInstance(result.next());
+            if (this.result.hasNext()) {
+                this.nextObj = this.home.newInstance(this.result.next());
             }
         } catch (final VException exc) {
             DefaultExceptionHandler.instance().handle(exc);
@@ -83,67 +82,59 @@ public class LDAPQueryResult extends AbstractQueryResult {
     }
 
     @Override
-    public void close() throws SQLException { // NOPMD by lbenno
-        if (statement != null) {
-            statement.close();
-        }
-    }
-
-    @Override
     public GeneralDomainObject getCurrent() { // NOPMD by lbenno
-        return current;
+        return this.current;
     }
 
     @Override
     public KeyObject getKey() throws BOMNotFoundException { // NOPMD by lbenno
-        if (current == null) {
+        if (this.current == null) {
             throw new BOMNotFoundException();
         }
         else {
-            return current.getKey(); // NOPMD by lbenno
+            return this.current.getKey(); // NOPMD by lbenno
         }
     }
 
     @Override
     public boolean hasMoreElements() { // NOPMD by lbenno
-        return nextObj != null;
+        return this.nextObj != null;
     }
 
     @Override
     public GeneralDomainObject next() throws SQLException, BOMException { // NOPMD by lbenno
         GeneralDomainObject outModel = null;
-        if (result != null) {
-            current = nextObj;
-            outModel = current;
-            if (result.hasNext()) {
-                nextObj = home.newInstance(result.next());
+        if (this.result != null) {
+            this.current = this.nextObj;
+            outModel = this.current;
+            if (this.result.hasNext()) {
+                this.nextObj = this.home.newInstance(this.result.next());
             }
             else {
-                nextObj = null; // NOPMD by lbenno
-                this.close();
-                result = null; // NOPMD by lbenno
+                this.nextObj = null; // NOPMD by lbenno
+                this.result = null; // NOPMD by lbenno
             }
         }
         return outModel;
     }
 
     private void writeObject(final ObjectOutputStream out) throws IOException {
-        out.writeObject(home);
-        out.writeObject(current);
-        out.writeObject(nextObj);
-        out.writeObject(statement);
+        out.writeObject(this.home);
+        out.writeObject(this.current);
+        out.writeObject(this.nextObj);
+        out.writeObject(this.statement);
     }
 
     private void readObject(final ObjectInputStream inStream) throws IOException, ClassNotFoundException {
-        home = (LDAPObjectHome) inStream.readObject();
+        this.home = (LDAPObjectHome) inStream.readObject();
         final GeneralDomainObject lCurrent = (GeneralDomainObject) inStream.readObject();
-        nextObj = (GeneralDomainObject) inStream.readObject();
-        statement = (LDAPQueryStatement) inStream.readObject();
+        this.nextObj = (GeneralDomainObject) inStream.readObject();
+        this.statement = (LDAPQueryStatement) inStream.readObject();
 
         try {
             // we retrieve the NamingEnumeration backing this object using the LDAPQueryStatement
-            result = statement.retrieveStatement();
-            if (result == null) {
+            this.result = this.statement.retrieveStatement();
+            if (this.result == null) {
                 return;
             }
 
@@ -152,7 +143,7 @@ public class LDAPQueryResult extends AbstractQueryResult {
                 firstRead();
             }
             else {
-                while (!lCurrent.equals(current)) {
+                while (!lCurrent.equals(this.current)) {
                     next();
                     if (!hasMoreElements()) {
                         return;
@@ -168,7 +159,7 @@ public class LDAPQueryResult extends AbstractQueryResult {
      *
      * @return int the number of entries the result enumeration contains. */
     public int getCount() {
-        return count;
+        return this.count;
     }
 
 }

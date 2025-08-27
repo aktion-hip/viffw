@@ -1,8 +1,8 @@
 package org.hip.kernel.bom.model.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collection;
 import java.util.Set;
@@ -16,7 +16,7 @@ import org.hip.kernel.bom.model.PrimaryKeyDef;
 import org.hip.kernel.bom.model.PropertyDef;
 import org.hip.kernel.bom.model.impl.JoinedObjectDefGenerator;
 import org.hip.kernel.sys.VSys;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author: Benno Luthiger */
 public class JoinedObjectDefGeneratorTest {
@@ -158,7 +158,7 @@ public class JoinedObjectDefGeneratorTest {
             if (lPrimKeyDef != null) {
                 VSys.out.println("\tprimaryKey");
                 for (final String lKey : lPrimKeyDef.getKeyNames2()) {
-                    assertEquals("testGenerate 4", "MemberID", lKey);
+                    assertEquals("MemberID", lKey);
                     VSys.out.println("\t\t" + lKey);
                 }
             } else {
@@ -213,10 +213,10 @@ public class JoinedObjectDefGeneratorTest {
                 XML_OBJECT_DEF1);
 
         ObjectDef lSimpleObjectDef = lJoinedObjectDef.getDomainObjectDef();
-        assertEquals("testGenerate 1.1", "TestJoin1", lSimpleObjectDef.get("objectName"));
-        assertEquals("testGenerate 1.2", "org.hip.kernel.bom.ReadOnlyDomainObject", lSimpleObjectDef.get("parent"));
-        assertEquals("testGenerate 1.3", "1.0", lSimpleObjectDef.get("version"));
-        assertEquals("columns 1",
+        assertEquals("TestJoin1", lSimpleObjectDef.get("objectName"));
+        assertEquals("org.hip.kernel.bom.ReadOnlyDomainObject", lSimpleObjectDef.get("parent"));
+        assertEquals("1.0", lSimpleObjectDef.get("version"));
+        assertEquals(
                 "tblTestMember.TESTMEMBERID, tblTestMember.SNAME, tblTestMember.SFIRSTNAME, tblTestMember.DTMUTATION",
                 getColumns((Collection) lJoinedObjectDef.get(JoinedObjectDefDef.columnDefs)));
 
@@ -232,10 +232,10 @@ public class JoinedObjectDefGeneratorTest {
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(XML_OBJECT_DEF2);
 
         lSimpleObjectDef = lJoinedObjectDef.getDomainObjectDef();
-        assertEquals("testGenerate 2.1", "TestJoin2", lSimpleObjectDef.get("objectName"));
-        assertEquals("testGenerate 2.2", "org.hip.kernel.bom.ReadOnlyDomainObject", lSimpleObjectDef.get("parent"));
-        assertEquals("testGenerate 2.3", "1.0", lSimpleObjectDef.get("version"));
-        assertEquals("columns 2",
+        assertEquals("TestJoin2", lSimpleObjectDef.get("objectName"));
+        assertEquals("org.hip.kernel.bom.ReadOnlyDomainObject", lSimpleObjectDef.get("parent"));
+        assertEquals("1.0", lSimpleObjectDef.get("version"));
+        assertEquals(
                 "tblTestMember.TESTMEMBERID, tblTestMember.SNAME, tblQuestion.SQUESTIONID, tblQuestion.SQUESTION",
                 getColumns((Collection<String>) lJoinedObjectDef.get(JoinedObjectDefDef.columnDefs)));
 
@@ -250,8 +250,8 @@ public class JoinedObjectDefGeneratorTest {
 
         // third join with nested tables
         lJoinedObjectDef = JoinedObjectDefGenerator.getSingleton().createJoinedObjectDef(XML_OBJECT_DEF3);
-        assertEquals("columns 3", "tblGroup.SNAME, tblGroup.GROUPID, tblGroup.SDESCRIPTION, count.Registered",
+        assertEquals("tblGroup.SNAME, tblGroup.GROUPID, tblGroup.SDESCRIPTION, count.Registered",
                 getColumns((Collection) lJoinedObjectDef.get(JoinedObjectDefDef.columnDefs)));
-        assertEquals("hidden field mapping", "tblParticipant.GROUPID", lJoinedObjectDef.getHidden("GroupID"));
+        assertEquals("tblParticipant.GROUPID", lJoinedObjectDef.getHidden("GroupID"));
     }
 }

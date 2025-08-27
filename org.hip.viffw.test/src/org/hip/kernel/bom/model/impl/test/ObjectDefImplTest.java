@@ -1,9 +1,9 @@
 package org.hip.kernel.bom.model.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.Vector;
@@ -18,7 +18,7 @@ import org.hip.kernel.bom.model.impl.ObjectDefImpl;
 import org.hip.kernel.bom.model.impl.PropertyDefImpl;
 import org.hip.kernel.exc.VException;
 import org.hip.kernel.sys.VSys;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 /** @author: Benno Luthiger */
@@ -81,7 +81,7 @@ public class ObjectDefImplTest {
                     "</objectDef>			";
 
     @Test
-    public void testAddPropertyDef() {
+    void testAddPropertyDef() {
         final String[] lExpected1 = { "simple", "java.lang.String" };
         final String[] lExpected2 = { "lastName", "firstName" };
         final Vector<String> lVExpected2 = new Vector<String>(Arrays.asList(lExpected2));
@@ -129,10 +129,10 @@ public class ObjectDefImplTest {
 
         // Now let's test if all was fine
         final PropertyDef lPropertyDef = lDef.getPropertyDef("firstName");
-        assertNotNull("find property", lPropertyDef);
+        assertNotNull(lPropertyDef);
         try {
-            assertEquals("propertyType", lExpected1[0], lPropertyDef.get("propertyType"));
-            assertEquals("valueType", lExpected1[1], lPropertyDef.get("valueType"));
+            assertEquals(lExpected1[0], lPropertyDef.get("propertyType"));
+            assertEquals(lExpected1[1], lPropertyDef.get("valueType"));
 
             VSys.out.println("propertyType=" + lPropertyDef.get("propertyType"));
             VSys.out.println("valueType=" + lPropertyDef.get("valueType"));
@@ -141,15 +141,14 @@ public class ObjectDefImplTest {
         }
 
         // Test getProperties
-        final int i = 0;
         for (final PropertyDef lProperty : lDef.getPropertyDefs2(PropertyDefDef.propertyTypeSimple)) {
-            assertEquals("getPropertyType " + i, lProperty.getPropertyType(), PropertyDefDef.propertyTypeSimple);
-            assertTrue("getName " + i, lVExpected2.contains(lProperty.getName()));
+            assertEquals(lProperty.getPropertyType(), PropertyDefDef.propertyTypeSimple);
+            assertTrue(lVExpected2.contains(lProperty.getName()));
         }
 
         for (final PropertyDef lProperty : lDef.getPropertyDefs2(PropertyDefDef.propertyTypeObjectRef)) {
-            assertEquals("getPropertyType", lProperty.getPropertyType(), PropertyDefDef.propertyTypeObjectRef);
-            assertEquals("getName", lExpected3, lProperty.getName());
+            assertEquals(lProperty.getPropertyType(), PropertyDefDef.propertyTypeObjectRef);
+            assertEquals(lExpected3, lProperty.getName());
         }
     }
 
@@ -159,22 +158,22 @@ public class ObjectDefImplTest {
         final String[] lExpected = { "version", "keyDefs", "propertyDefs", "parent", "objectName", ObjectDefDef.baseDir };
         final Vector<String> lVExpected = new Vector<String>(Arrays.asList(lExpected));
         ObjectDef lDef = new ObjectDefImpl();
-        assertNotNull("testCreation", lDef);
+        assertNotNull(lDef);
 
         int i = 0;
         for (final String lName : lDef.getPropertyNames2()) {
-            assertTrue("testCreation 1." + i, lVExpected.contains(lName));
+            assertTrue(lVExpected.contains(lName));
         }
 
         lDef = ObjectDefGenerator.getSingleton().createObjectDef(XML_OBJECT_DEF1);
         i = 0;
         for (final String lName : lDef.getPropertyNames2()) {
-            assertTrue("testCreation 2." + i, lVExpected.contains(lName));
+            assertTrue(lVExpected.contains(lName));
         }
 
-        assertEquals("objectName", "TestDomainObject", lDef.get(ObjectDefDef.objectName));
-        assertEquals("parent", "org.hip.kernel.bom.DomainObject", lDef.get(ObjectDefDef.parent));
-        assertEquals("version", "1.0", lDef.get(ObjectDefDef.version));
+        assertEquals("TestDomainObject", lDef.get(ObjectDefDef.objectName));
+        assertEquals("org.hip.kernel.bom.DomainObject", lDef.get(ObjectDefDef.parent));
+        assertEquals("1.0", lDef.get(ObjectDefDef.version));
     }
 
     @Test
@@ -189,7 +188,7 @@ public class ObjectDefImplTest {
         };
 
         final ObjectDef lDef = new ObjectDefImpl(lInitValues);
-        assertNotNull("testCreationWithInitialValues", lDef);
+        assertNotNull(lDef);
 
         final int i = 0;
         for (final String lName : lDef.getPropertyNames2()) {
@@ -209,10 +208,10 @@ public class ObjectDefImplTest {
             final ObjectDef lObjectDef2 = ObjectDefGenerator.getSingleton().createObjectDef(XML_OBJECT_DEF2);
             final ObjectDef lObjectDef3 = ObjectDefGenerator.getSingleton().createObjectDef(XML_OBJECT_DEF1);
 
-            assertTrue("equals", lObjectDef1.equals(lObjectDef3));
-            assertEquals("equal hash code", lObjectDef1.hashCode(), lObjectDef3.hashCode());
-            assertTrue("not equals", !lObjectDef1.equals(lObjectDef2));
-            assertTrue("not equal hash code", lObjectDef1.hashCode() != lObjectDef2.hashCode());
+            assertTrue(lObjectDef1.equals(lObjectDef3));
+            assertEquals(lObjectDef1.hashCode(), lObjectDef3.hashCode());
+            assertTrue(!lObjectDef1.equals(lObjectDef2));
+            assertTrue(lObjectDef1.hashCode() != lObjectDef2.hashCode());
         } catch (final org.xml.sax.SAXException exc) {
             fail(exc.getMessage());
         }
@@ -221,7 +220,7 @@ public class ObjectDefImplTest {
     @Test
     public void testSet() {
         final ObjectDef lDef = new ObjectDefImpl();
-        assertNotNull("testSet", lDef);
+        assertNotNull(lDef);
 
         // correct set
         try {
@@ -245,11 +244,10 @@ public class ObjectDefImplTest {
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         try {
             final ObjectDef lObjectDef = ObjectDefGenerator.getSingleton().createObjectDef(XML_OBJECT_DEF1);
             assertEquals(
-                    "toString 1",
                     "< org.hip.kernel.bom.model.impl.ObjectDefImpl objectName=\"TestDomainObject\" parent=\"org.hip.kernel.bom.DomainObject\" version=\"1.0\" />",
                     lObjectDef.toString());
         } catch (final org.xml.sax.SAXException exc) {

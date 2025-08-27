@@ -1,8 +1,8 @@
 package org.hip.kernel.bom.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.sql.SQLException;
 import java.util.Vector;
@@ -13,22 +13,15 @@ import org.hip.kernel.bom.KeyObject;
 import org.hip.kernel.bom.impl.KeyObjectImpl;
 import org.hip.kernel.bom.impl.UpdateStatement;
 import org.hip.kernel.exc.VException;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /** @author: Benno Luthiger */
 public class UpdateStatementTest {
-    private static DataHouseKeeper data;
 
-    @BeforeClass
-    public static void init() {
-        data = DataHouseKeeper.getInstance();
-    }
-
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
-        data.deleteAllFromSimple();
+        DataHouseKeeper.INSTANCE.deleteAllFromSimple();
         System.out.println("Deleted all entries in tblTest.");
     }
 
@@ -37,15 +30,15 @@ public class UpdateStatementTest {
         final String lName = "Dummy";
         final String lFirstName = "Fi";
         final String lFirstName2 = "Adam";
-        assertEquals("number before insert", 0, data.getSimpleHome().getCount());
-        data.createTestEntry(lName, lFirstName);
-        data.createTestEntry("Adam", "Pfiff");
-        assertEquals("number after insert", 2, data.getSimpleHome().getCount());
+        assertEquals(0, DataHouseKeeper.INSTANCE.getSimpleHome().getCount());
+        DataHouseKeeper.INSTANCE.createTestEntry(lName, lFirstName);
+        DataHouseKeeper.INSTANCE.createTestEntry("Adam", "Pfiff");
+        assertEquals(2, DataHouseKeeper.INSTANCE.getSimpleHome().getCount());
 
         KeyObject lKey = new KeyObjectImpl();
         lKey.setValue("Name", lName);
         lKey.setValue("Firstname", lFirstName);
-        DomainObject lFound = data.getSimpleHome().findByKey(lKey);
+        DomainObject lFound = DataHouseKeeper.INSTANCE.getSimpleHome().findByKey(lKey);
         final int lKeyValue = ((Number) lFound.get("TestID")).intValue();
 
         final String lSQL = "UPDATE TBLTEST SET SFIRSTNAME = '" + lFirstName2 + "' WHERE TESTID=" + lKeyValue;
@@ -59,7 +52,7 @@ public class UpdateStatementTest {
 
         // test find updated
         try {
-            lFound = data.getSimpleHome().findByKey(lKey);
+            lFound = DataHouseKeeper.INSTANCE.getSimpleHome().findByKey(lKey);
             fail("Should not find object with Firstname=" + lFirstName);
         } catch (final BOMNotFoundException exc) {
         }
@@ -67,7 +60,7 @@ public class UpdateStatementTest {
         lKey = new KeyObjectImpl();
         lKey.setValue("Name", lName);
         lKey.setValue("Firstname", lFirstName2);
-        lFound = data.getSimpleHome().findByKey(lKey);
-        assertNotNull("found updated", lFound);
+        lFound = DataHouseKeeper.INSTANCE.getSimpleHome().findByKey(lKey);
+        assertNotNull(lFound);
     }
 }

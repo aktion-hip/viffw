@@ -31,33 +31,33 @@ public enum VSysHelper {
 
     private int counter;
 
-    /** Call this method in a suite's or class' <code>@BeforeClass</code> method. */
+    /** Call this method in a suite's or class' <code>@BeforeAll</code> method. */
     public void copyToRunning() {
         this.counter++;
-        final File lDir = new File("./bin");
-        final File lWaiting = new File(lDir, NAME_WAITING);
-        final File lRunning = new File(lDir, NAME_RUNNING);
-        if (lWaiting.exists() && !lRunning.exists()) {
+        final File dir = new File("./bin");
+        final File waiting = new File(dir, NAME_WAITING);
+        final File running = new File(dir, NAME_RUNNING);
+        if (waiting.exists() && !running.exists()) {
             try {
-                Files.copy(lWaiting.toPath(), lRunning.toPath());
-                System.out.println("Successfully copied properties to " + lRunning.getAbsolutePath());
+                Files.copy(waiting.toPath(), running.toPath());
+                System.out.println("Successfully copied properties to " + running.getAbsolutePath());
             } catch (final IOException exc) {
                 // intentionally left empty
             }
         }
     }
 
-    /** Call this method in a suite's or class' <code>@AfterClass</code> method. */
+    /** Call this method in a suite's or class' <code>@AfterAll</code> method. */
     public void deleteRunning() {
         this.counter--;
-        final File lDir = new File("./bin");
-        final File lRunning = new File(lDir, NAME_RUNNING);
-        if (lRunning.exists() && this.counter <= 0) {
-            if (lRunning.delete()) {
-                System.out.println("Successfully deleted properties " + lRunning.getAbsolutePath());
+        final File dir = new File("./bin");
+        final File running = new File(dir, NAME_RUNNING);
+        if (running.exists() && this.counter <= 0) {
+            if (running.delete()) {
+                System.out.println("Successfully deleted properties " + running.getAbsolutePath());
             }
             else {
-                lRunning.deleteOnExit();
+                running.deleteOnExit();
             }
         }
     }

@@ -26,20 +26,20 @@ import org.osgi.service.jdbc.DataSourceFactory;
  * This component registers the available data sources (i.e. JDBC drivers).
  *
  * @author Luthiger Created: 26.01.2012 */
-public class DataAccessComponent { // NOPMD by lbenno 
+public class DataAccessComponent { // NOPMD by lbenno
 
     /** Binding method.
-     * 
-     * @param inFactory {@link DataSourceFactory} */
-    public void registerDataSource(final DataSourceFactory inFactory) {
-        DataSourceRegistry.INSTANCE.register(inFactory);
+     *
+     * @param factory {@link DataSourceFactory} */
+    public void registerDataSource(final DataSourceFactory factory) {
+        DataSourceRegistry.INSTANCE.register(factory);
     }
 
     /** Unbinding method.
-     * 
-     * @param inFactory {@link DataSourceFactory} */
-    public void unregisterDataSource(final DataSourceFactory inFactory) {
-        DataSourceRegistry.INSTANCE.unregister(inFactory);
+     *
+     * @param factory {@link DataSourceFactory} */
+    public void unregisterDataSource(final DataSourceFactory factory) {
+        DataSourceRegistry.INSTANCE.unregister(factory);
     }
 
 }

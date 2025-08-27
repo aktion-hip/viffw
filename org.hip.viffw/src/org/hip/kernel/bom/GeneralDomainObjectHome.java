@@ -135,6 +135,17 @@ public interface GeneralDomainObjectHome extends Home { // NOPMD
      * @throws org.hip.kernel.bom.BOMException */
     QueryResult select() throws SQLException, BOMException;
 
+    /** This method allows to invoke a query. It selects all entries in the table. The returned domain objects are
+     * ordered by the table's natural order.<br>
+     * The passed model factory is used to create alternative models retrieved from the result set.
+     *
+     * @param factory {@link AlternativeModelFactory} the factory to create alternative models
+     * @return {@link QueryResult} the query result containing the collection of alternative models retrieved from the
+     *         result set
+     * @throws SQLException
+     * @throws BOMException */
+    QueryResult select(AlternativeModelFactory factory) throws SQLException, BOMException;
+
     /** This method allows to invoke a query. It's a normal version of a select. It takes as argument a SQL-string.
      *
      * @return org.hip.kernel.bom.QueryResult

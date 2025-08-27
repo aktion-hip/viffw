@@ -1,7 +1,7 @@
 package org.hip.kernel.bom.model.impl.test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -12,7 +12,7 @@ import org.hip.kernel.bom.impl.PropertySetImpl;
 import org.hip.kernel.bom.model.JoinedObjectDefDef;
 import org.hip.kernel.bom.model.MetaModelHome;
 import org.hip.kernel.bom.model.impl.JoinedObjectDefDefImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author: Benno Luthiger */
 public class JoinedObjectDefDefImplTest {
@@ -26,11 +26,11 @@ public class JoinedObjectDefDefImplTest {
         final Vector<String> lVExpected = new Vector<String>(Arrays.asList(lExpected));
 
         final JoinedObjectDefDef lDef = MetaModelHome.singleton.getJoinedObjectDefDef();
-        assertNotNull("testCreation not null", lDef);
+        assertNotNull(lDef);
 
         final int i = 0;
         for (final Iterator<?> lNames = lDef.getPropertyNames(); lNames.hasNext();) {
-            assertTrue("testCreation " + i, lVExpected.contains(lNames.next()));
+            assertTrue(lVExpected.contains(lNames.next()));
         }
     }
 
@@ -48,7 +48,7 @@ public class JoinedObjectDefDefImplTest {
         final int i = 0;
         final Iterator<String> iter = lPropertySet.getNames2().iterator();
         while (iter.hasNext()) {
-            assertTrue("testInitialization " + i, lVExpected.contains(iter.next()));
+            assertTrue(lVExpected.contains(iter.next()));
         }
 
         final String lTest1 = "";

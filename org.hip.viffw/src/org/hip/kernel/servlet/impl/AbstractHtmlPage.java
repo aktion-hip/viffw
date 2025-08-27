@@ -24,13 +24,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletOutputStream;
-
 import org.hip.kernel.exc.VError;
 import org.hip.kernel.servlet.Context;
 import org.hip.kernel.servlet.HtmlView;
 import org.hip.kernel.servlet.IPage;
 import org.hip.kernel.servlet.RequestException;
+
+import jakarta.servlet.ServletOutputStream;
 
 /** <p>
  * Baseclass of all html pages. A html page is a container of html views. You can add different html-views or pages (->
@@ -96,7 +96,7 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
     protected String createBegin() {
         final StringBuilder outBegin = new StringBuilder(150).append(HTML_BEGIN);
         outBegin.append(HEAD_BEGIN).append(getTitle()).append(getHtmlHead()).append(cssLinks()).append(scriptLinks())
-                .append(HEAD_END).append(BODY_BEGIN_1).append('"').append(getOnLoad()).append('"').append(BODY_BEGIN_2);
+        .append(HEAD_END).append(BODY_BEGIN_1).append('"').append(getOnLoad()).append('"').append(BODY_BEGIN_2);
         return new String(outBegin);
     }
 
@@ -112,27 +112,27 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
      *
      * @return CssLinkList */
     protected CssLinkList cssLinks() {
-        if (cssLinkList == null) {
-            cssLinkList = new CssLinkList();
+        if (this.cssLinkList == null) {
+            this.cssLinkList = new CssLinkList();
         }
-        return cssLinkList;
+        return this.cssLinkList;
     }
 
     /** Returns a list of ScriptLink.
      *
      * @return ScriptLinkList */
     protected ScriptLinkList scriptLinks() {
-        if (scriptLinkList == null) {
-            scriptLinkList = new ScriptLinkList();
+        if (this.scriptLinkList == null) {
+            this.scriptLinkList = new ScriptLinkList();
         }
-        return scriptLinkList;
+        return this.scriptLinkList;
     }
 
     /** Returns additional html code for this page's html head.
      *
      * @return java.lang.String */
     protected String getHtmlHead() {
-        return htmlHead;
+        return this.htmlHead;
     }
 
     /** Sets the style definitions for the page.
@@ -141,14 +141,14 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
      * @deprecated Use method setHeadHtml(String) instead. */
     @Deprecated
     public void setCssStyle(final String inCssStyle) {
-        htmlHead = inCssStyle;
+        this.htmlHead = inCssStyle;
     }
 
     /** The html code passed will be added to the <head/> part of the page's html.
      *
      * @param inHtml java.lang.String The html code to be written in the page's html. */
     public void setHeadHtml(final String inHtml) {
-        htmlHead = inHtml;
+        this.htmlHead = inHtml;
     }
 
     /** Returns the title of the page.
@@ -166,10 +166,10 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
      *
      * @return java.util.List */
     protected List<HtmlView> getViews() {
-        if (views == null) {
-            views = new ArrayList<HtmlView>(3);
+        if (this.views == null) {
+            this.views = new ArrayList<HtmlView>(3);
         }
-        return views;
+        return this.views;
     }
 
     /** Returns a list of CssLink.
@@ -190,21 +190,21 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
      *
      * @return java.lang.String */
     public String getErrorMessage() {
-        return errorMessage.trim();
+        return this.errorMessage.trim();
     }
 
     /** Returns script set for the onLoad-call in the body of this pages html representation.
      *
      * @return java.lang.String */
     public String getOnLoad() {
-        return onLoad;
+        return this.onLoad;
     }
 
     /** Returns the status message set to this page. Returns an empty string if not set.
      *
      * @return java.lang.String */
     public String getStatusMessage() {
-        return statusMessage.trim();
+        return this.statusMessage.trim();
     }
 
     private boolean hasMessages() {
@@ -252,7 +252,7 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
      * <b>Note:</b> Use this method to output bit streams.<br/>
      * To render the view with the correct encodings set, use <code>renderToWriter(PrintWriter, String)</code> instead.
      *
-     * @param inStream javax.servlet.ServletOutputStream
+     * @param inStream jakarta.servlet.ServletOutputStream
      * @param inSessionID java.lang.String
      * @throws org.hip.kernel.servlet.RequestException */
     @Override
@@ -296,8 +296,8 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
             }
         }
         // clear messages
-        errorMessage = "";
-        statusMessage = "";
+        this.errorMessage = "";
+        this.statusMessage = "";
 
         inWriter.println(createEnd());
     }
@@ -323,7 +323,7 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
         if (inCssLinks == null) {
             return;
         }
-        cssLinkList = inCssLinks;
+        this.cssLinkList = inCssLinks;
     }
 
     /** Sets a javascript link to this html page.
@@ -347,7 +347,7 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
         if (inScriptLinks == null) {
             return;
         }
-        scriptLinkList = inScriptLinks;
+        this.scriptLinkList = inScriptLinks;
     }
 
     /** Sets ErrorMessage which will be added to the content of this page. After sending the html-representation of this
@@ -363,7 +363,7 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
             return;
         }
 
-        errorMessage = inErrorMessage;
+        this.errorMessage = inErrorMessage;
     }
 
     /** Sets a command in the onLoad-tag of this pages body.
@@ -376,7 +376,7 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
             return;
         }
 
-        onLoad = inOnLoadCmd;
+        this.onLoad = inOnLoadCmd;
     }
 
     /** Sets status-message which will be added to the content of this page. After sending the html-representation of
@@ -392,7 +392,7 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
             return;
         }
 
-        statusMessage = inMessage;
+        this.statusMessage = inMessage;
     }
 
     /** Clears all status messages from the views. */
@@ -419,7 +419,7 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
     public int hashCode() { // NOPMD
         final int prime = 31; // NOPMD
         int result = 1;
-        result = prime * result + ((views == null) ? 0 : views.hashCode());
+        result = prime * result + (this.views == null ? 0 : this.views.hashCode());
         return result;
     }
 
@@ -436,7 +436,7 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
             return false;
         }
         final AbstractHtmlPage lOther = (AbstractHtmlPage) inObject;
-        if (views == null) {
+        if (this.views == null) {
             if (lOther.views != null) {
                 return false;
             }
@@ -446,12 +446,12 @@ abstract public class AbstractHtmlPage extends AbstractHtmlView implements IPage
                 return false;
             }
 
-            if (views.size() != lOtherViews.size()) {
+            if (this.views.size() != lOtherViews.size()) {
                 return false;
             }
 
             int i = 0; // NOPMD
-            for (final HtmlView lView : views) {
+            for (final HtmlView lView : this.views) {
                 if (!lView.equals(lOtherViews.get(i++))) { // NOPMD
                     return false;
                 }

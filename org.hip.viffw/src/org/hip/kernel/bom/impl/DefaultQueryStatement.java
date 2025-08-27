@@ -29,8 +29,8 @@ public class DefaultQueryStatement extends AbstractQueryStatement {
 
     /** DefaultQueryStatement default constructor.
      *
-     * @param inHome org.hip.kernel.bom.GeneralDomainObjectHome */
-    public DefaultQueryStatement(final GeneralDomainObjectHome inHome) {
-        super(inHome);
+     * @param home org.hip.kernel.bom.GeneralDomainObjectHome */
+    public DefaultQueryStatement(final GeneralDomainObjectHome home) {
+        super(home);
     }
 }

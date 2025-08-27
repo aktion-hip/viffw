@@ -1,6 +1,6 @@
 /**
  This package is part of the servlet framework used for the application VIF.
- Copyright (C) 2004, Benno Luthiger
+ Copyright (C) 2004-2025, Benno Luthiger
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,7 @@ package org.hip.kernel.bom.impl;
 
 import java.sql.ResultSet;
 
+import org.hip.kernel.bom.AlternativeModelFactory;
 import org.hip.kernel.bom.GeneralDomainObjectHome;
 import org.hip.kernel.bom.QueryResult;
 import org.hip.kernel.bom.QueryStatement;
@@ -28,24 +29,27 @@ import org.hip.kernel.bom.QueryStatement;
  * AlternativeQueryResult in the method createQueryResult().
  *
  * @see AlternativeQueryResult
- * @author Benno Luthiger Created on Sep 23, 2004 */
+ * @author Benno Luthiger */
 @SuppressWarnings("serial")
 public class AlternativeQueryStatement extends AbstractQueryStatement {
 
-    /** @param inHome GeneralDomainObjectHome */
-    public AlternativeQueryStatement(final GeneralDomainObjectHome inHome) {
-        super(inHome);
+    private final transient AlternativeModelFactory factory;
+
+    /** @param home GeneralDomainObjectHome */
+    public AlternativeQueryStatement(final GeneralDomainObjectHome home, final AlternativeModelFactory factory) {
+        super(home);
+        this.factory = factory;
     }
 
     /** Creates an AlternativeQueryResult.
      *
-     * @param inHome GeneralDomainObjectHome
-     * @param inResult ResultSet
-     * @param inStatement QueryStatement
+     * @param home GeneralDomainObjectHome
+     * @param result ResultSet
+     * @param statement QueryStatement
      * @return QueryResult */
     @Override
-    protected QueryResult createQueryResult(final GeneralDomainObjectHome inHome, final ResultSet inResult,
-            final QueryStatement inStatement) {
-        return new AlternativeQueryResult(inHome, inResult, inStatement);
+    protected QueryResult createQueryResult(final GeneralDomainObjectHome home, final ResultSet result,
+            final QueryStatement statement) {
+        return new AlternativeQueryResult(home, result, statement, this.factory);
     }
 }

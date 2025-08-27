@@ -20,9 +20,9 @@ package org.hip.kernel.servlet;
 
 import java.io.PrintWriter;
 
-import javax.servlet.ServletOutputStream;
-
 import org.hip.kernel.util.TransformerProxy;
+
+import jakarta.servlet.ServletOutputStream;
 
 /** Represents an view based on html.
  *
@@ -42,19 +42,19 @@ public interface HtmlView extends View {
     /** Writes the view as html-String to the passed servlet's response writer.<br />
      * Using the servlet's writer to stream the view, you can use
      * <code>ServletResponse.setCharacterEncoding(ENCODING)</code> to set the view's encoding correctly.
-     * 
+     *
      * @param inWriter PrintWriter
      * @param inSessionID String
      * @throws RequestException */
     void renderToWriter(PrintWriter inWriter, String inSessionID) throws RequestException;
 
     /** Sets the Transformer to generate this view.
-     * 
+     *
      * @param inTransformer org.hip.kernel.util.TransformerProxy */
     void setTransformer(TransformerProxy inTransformer);
 
     /** Returns the Transformer which generates this view. If it wasn't set the method returns null.
-     * 
+     *
      * @return org.hip.kernel.util.TransformerProxy */
     TransformerProxy getTransformer();
 }

@@ -62,7 +62,7 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
     /** JoinedDomainObjectHomeImpl default constructor. */
     protected JoinedDomainObjectHomeImpl() {
         super();
-        dbAdapter = getDBAdapter();
+        this.dbAdapter = getDBAdapter();
     }
 
     /** This method can be implemented by concrete subclasses to create test objects.
@@ -89,7 +89,7 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
      * @throws org.hip.kernel.bom.BOMException */
     @Override
     protected String createSelectAllString() throws BOMException {
-        return dbAdapter.createSelectAllSQL();
+        return this.dbAdapter.createSelectAllSQL();
     }
 
     /** Creates the select string to fetch all domain objects matching the specified key.
@@ -99,7 +99,7 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
      * @throws org.hip.kernel.bom.BOMException */
     @Override
     protected String createSelectString(final KeyObject inKey) throws BOMException {
-        return dbAdapter.createSelectSQL(inKey, this);
+        return this.dbAdapter.createSelectSQL(inKey, this);
     }
 
     /** Creates the select string to fetch all domain objects matching the specified key ordered by the specified object.
@@ -110,7 +110,7 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
      * @throws org.hip.kernel.bom.BOMException */
     @Override
     protected String createSelectString(final KeyObject inKey, final OrderObject inOrder) throws BOMException {
-        return dbAdapter.createSelectSQL(inKey, inOrder, this);
+        return this.dbAdapter.createSelectSQL(inKey, inOrder, this);
     }
 
     /** Creates the select string to fetch all domain objects matching the specified key and meeting the specified having
@@ -125,7 +125,7 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
     @Override
     protected String createSelectString(final KeyObject inKey, final OrderObject inOrder, final HavingObject inHaving)
             throws BOMException {
-        return dbAdapter.createSelectSQL(inKey, inOrder, inHaving, this);
+        return this.dbAdapter.createSelectSQL(inKey, inOrder, inHaving, this);
     }
 
     /** @param inKey org.hip.kernel.bom.KeyObject
@@ -136,7 +136,7 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
     @Override
     protected String createSelectString(final KeyObject inKey, final OrderObject inOrder, final HavingObject inHaving,
             final GroupByObject inGroupBy) throws BOMException {
-        return dbAdapter.createSelectSQL(inKey, inOrder, inHaving, inGroupBy, this);
+        return this.dbAdapter.createSelectSQL(inKey, inOrder, inHaving, inGroupBy, this);
     }
 
     /** Creates the select string to fetch all domain objects ordered by the specified object.
@@ -146,7 +146,7 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
      * @throws org.hip.kernel.bom.BOMException */
     @Override
     protected String createSelectString(final OrderObject inOrder) throws BOMException {
-        return dbAdapter.createSelectSQL(inOrder, this);
+        return this.dbAdapter.createSelectSQL(inOrder, this);
     }
 
     /** Creates the select string to fetch all domain objects matching the specified key limitied by the specified limit.
@@ -157,7 +157,7 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
      * @throws BOMException */
     @Override
     protected String createSelectString(final KeyObject inKey, final LimitObject inLimit) throws BOMException {
-        return dbAdapter.createSelectSQL(inKey, inLimit, this);
+        return this.dbAdapter.createSelectSQL(inKey, inLimit, this);
     }
 
     /** Creates the select sql string counting all table entries corresponding to this home.
@@ -166,7 +166,7 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
      * @throws org.hip.kernel.bom.BOMException */
     @Override
     protected String createCountAllString() throws BOMException {
-        return dbAdapter.createCountAllSQL();
+        return this.dbAdapter.createCountAllSQL();
     }
 
     /** Creates the select sql string counting all table entries corresponding to this home and the specified key.
@@ -176,7 +176,7 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
      * @throws org.hip.kernel.bom.BOMException */
     @Override
     protected String createCountString(final KeyObject inKey) throws BOMException {
-        return dbAdapter.createCountSQL(inKey, this);
+        return this.dbAdapter.createCountSQL(inKey, this);
     }
 
     @Override
@@ -184,7 +184,7 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
             // by
             // lbenno
             throws BOMException {
-        return dbAdapter.createCountSQL(inKey, inHaving, inGroupBy, this);
+        return this.dbAdapter.createCountSQL(inKey, inHaving, inGroupBy, this);
     }
 
     /** This method looks for all key columns of the table mapped to the DomainObject managed by this home and creates a
@@ -236,7 +236,6 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
             try {
                 lResult = this.select(inKey);
                 outDomainObject = (ReadOnlyDomainObject) lResult.nextAsDomainObject();
-                lResult.close();
                 if (outDomainObject == null) {
                     throw new BOMNotFoundException();
                 }
@@ -257,10 +256,10 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
      *
      * @return org.hip.kernel.bom.model.JoinedObjectDef */
     private JoinedObjectDef getJoinedObjectDef() {
-        if (joinedObjectDef == null) {
-            joinedObjectDef = createObjectDef();
+        if (this.joinedObjectDef == null) {
+            this.joinedObjectDef = createObjectDef();
         }
-        return joinedObjectDef;
+        return this.joinedObjectDef;
     }
 
     /** Returns the object definition for the class managed by this home.
@@ -268,10 +267,10 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
      * @return ObjectDef */
     @Override
     public ObjectDef getObjectDef() {
-        if (objectDef == null) {
-            objectDef = getJoinedObjectDef().getDomainObjectDef();
+        if (this.objectDef == null) {
+            this.objectDef = getJoinedObjectDef().getDomainObjectDef();
         }
-        return objectDef;
+        return this.objectDef;
     }
 
     /** Returns the mappings of hidden fields or an empty String.
@@ -287,17 +286,17 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
      *
      * @return org.hip.kernel.bom.ReadOnlyDomainObject */
     protected ReadOnlyDomainObject getTemporary() throws BOMException {
-        if (temporary == null) {
-            temporary = newInstance();
+        if (this.temporary == null) {
+            this.temporary = newInstance();
         }
-        return temporary;
+        return this.temporary;
     }
 
     private DBAdapterJoin getDBAdapter() {
-        if (dbAdapter == null) {
-            dbAdapter = retrieveDBAdapterType().getJoinDBAdapter(getJoinedObjectDef());
+        if (this.dbAdapter == null) {
+            this.dbAdapter = retrieveDBAdapterType().getJoinDBAdapter(getJoinedObjectDef());
         }
-        return dbAdapter;
+        return this.dbAdapter;
     }
 
     /** Returns an empty DomainObject. An empty object is initialized but does not contain any values. The object goes
@@ -365,13 +364,13 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
             final StringBuilder lSQL = new StringBuilder("(");
             lSQL.append(((AbstractDomainObjectHome) lPlacefiller.home).createSelectString(lPlacefiller.key))
                     .append(") AS ").append(lAlias);
-            final JoinDef lPlaceholdersDef = traverseJoinDefs(joinedObjectDef.getJoinDef(), lAlias);
+            final JoinDef lPlaceholdersDef = traverseJoinDefs(this.joinedObjectDef.getJoinDef(), lAlias);
             if (lPlaceholdersDef != null) {
                 lPlaceholdersDef.fillPlaceholder(lAlias, new String(lSQL));
             }
         }
         if (inPlacefillers.size() > 0) {
-            dbAdapter.reset();
+            this.dbAdapter.reset();
         }
     }
 
@@ -389,16 +388,16 @@ abstract public class JoinedDomainObjectHomeImpl extends AbstractDomainObjectHom
     }
 
     private void writeObject(final ObjectOutputStream out) throws IOException {
-        out.writeObject(objectDef);
-        out.writeObject(joinedObjectDef);
-        out.writeObject(temporary);
+        out.writeObject(this.objectDef);
+        out.writeObject(this.joinedObjectDef);
+        out.writeObject(this.temporary);
     }
 
     private void readObject(final ObjectInputStream inStream) throws IOException, ClassNotFoundException {
-        objectDef = (ObjectDef) inStream.readObject();
-        joinedObjectDef = (JoinedObjectDef) inStream.readObject();
-        temporary = (ReadOnlyDomainObject) inStream.readObject();
-        dbAdapter = getDBAdapter();
+        this.objectDef = (ObjectDef) inStream.readObject();
+        this.joinedObjectDef = (JoinedObjectDef) inStream.readObject();
+        this.temporary = (ReadOnlyDomainObject) inStream.readObject();
+        this.dbAdapter = getDBAdapter();
     }
 
 }

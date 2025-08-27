@@ -1,36 +1,29 @@
 package org.hip.kernel.bom.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.hip.kernel.bom.KeyObject;
 import org.hip.kernel.bom.impl.KeyObjectImpl;
 import org.hip.kernel.bom.impl.PlacefillerCollection;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /** @author Benno Luthiger Created on Nov 8, 2004 */
 public class PlaceholderHomeTest {
-    private static DataHouseKeeper data;
 
-    @BeforeClass
-    public static void init() {
-        data = DataHouseKeeper.getInstance();
-    }
-
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
-        data.deleteAllFromSimple();
+        DataHouseKeeper.INSTANCE.deleteAllFromSimple();
         System.out.println("Deleted all entries in tblTest.");
     }
 
     @Test
     public void testDo() {
         String lExpected = "";
-        if (data.isDBMySQL()) {
+        if (DataHouseKeeper.INSTANCE.isDBMySQL()) {
             lExpected = "SELECT tblTest.TESTID, tblTest.SNAME, tblTest.SFIRSTNAME, tblTest.DTMUTATION FROM tblTest LEFT JOIN (SELECT tblTestMember.TESTMEMBERID, tblTestMember.SFIRSTNAME, tblTestMember.DTMUTATION, tblTestMember.SNAME, tblTestMember.SPASSWORD FROM tblTestMember WHERE tblTestMember.SNAME = 'Foo') AS Admins ON tblTest.SNAME = Admins.SNAME WHERE tblTest.TESTID = 69";
-        } else if (data.isDBOracle()) {
+        } else if (DataHouseKeeper.INSTANCE.isDBOracle()) {
             lExpected = "";
         }
         try {
@@ -45,7 +38,7 @@ public class PlaceholderHomeTest {
             lKey.setValue(Test2DomainObjectHomeImpl.KEY_ID, new Integer(69));
 
             lPlaceholderHome.select(lKey, lPlacefillers);
-            assertEquals("placeholders", lExpected, lPlaceholderHome.getTestObjects().next());
+            assertEquals(lExpected, lPlaceholderHome.getTestObjects().next());
         } catch (final Exception exc) {
             fail(exc.getMessage());
         }

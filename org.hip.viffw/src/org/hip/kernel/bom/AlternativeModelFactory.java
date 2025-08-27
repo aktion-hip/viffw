@@ -1,11 +1,6 @@
-package org.hip.kernel.bom;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 /*
  This package is part of the framework used for the application VIF.
- Copyright (C) 2004, Benno Luthiger
+ Copyright (C) 2004-2025, Benno Luthiger
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -21,20 +16,21 @@ import java.sql.SQLException;
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package org.hip.kernel.bom;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Factory to create alternative models.
- * 
+ *
  * @author Benno Luthiger
- * Created on Sep 22, 2004
  */
 public interface AlternativeModelFactory {
-	/**
-	 * Method creating the alternative model.
-	 * 
-	 * @param inResultSet ResultSet
-	 * @return AlternativeModel
-	 * @throws SQLException
-	 */
-	AlternativeModel createModel(ResultSet inResultSet) throws SQLException;
+    /** Method creating the alternative model.
+     *
+     * @param resultSet {@link ResultSet}
+     * @return {@link AlternativeModel}
+     * @throws SQLException */
+    AlternativeModel createModel(ResultSet resultSet) throws SQLException;
 }

@@ -1,8 +1,8 @@
 package org.hip.kernel.bom.model.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,8 +18,8 @@ import org.hip.kernel.bom.model.MappingDef;
 import org.hip.kernel.bom.model.ObjectDef;
 import org.hip.kernel.bom.model.impl.HelperTableDef;
 import org.hip.kernel.bom.model.impl.ObjectDefGenerator;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 /** @author: Benno Luthiger */
@@ -55,7 +55,7 @@ public class HelperTableDefTest {
                     "	</propertyDefs>			\n" +
                     "</objectDef>			";
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws SAXException {
         objectDef = ObjectDefGenerator.getSingleton().createObjectDef(XML_OBJECT_DEF);
     }
@@ -71,15 +71,13 @@ public class HelperTableDefTest {
         final Iterator<HelperTableDef> iter1 = lHelperTableDefs.values().iterator();
         while (iter1.hasNext()) {
             final HelperTableDef lHelperTableDef = iter1.next();
-            assertEquals("tableName 0", lTableNameExpected, lHelperTableDef.getTableName());
+            assertEquals(lTableNameExpected, lHelperTableDef.getTableName());
 
-            int i = 0;
             final Iterator<MappingDef> iter2 = lHelperTableDef.getMappingDefs2().iterator();
             while (iter2.hasNext()) {
-                i++;
                 final MappingDef lMappingDef = iter2.next();
-                assertEquals("tableName " + i, lTableNameExpected, lMappingDef.getTableName());
-                assertTrue("getMappingDefs " + i, lVExpected.contains(lMappingDef.getColumnName()));
+                assertEquals(lTableNameExpected, lMappingDef.getTableName());
+                assertTrue(lVExpected.contains(lMappingDef.getColumnName()));
             }
         }
     }
@@ -106,7 +104,7 @@ public class HelperTableDefTest {
         final Iterator<?> iter = lRetrieved.values().iterator();
         while (iter.hasNext()) {
             final HelperTableDef lHelperTableDef = (HelperTableDef) iter.next();
-            assertEquals("tableName", lTableNameExpected, lHelperTableDef.getTableName());
+            assertEquals(lTableNameExpected, lHelperTableDef.getTableName());
         }
     }
 

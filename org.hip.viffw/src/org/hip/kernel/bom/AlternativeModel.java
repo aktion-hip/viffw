@@ -1,8 +1,6 @@
-package org.hip.kernel.bom;
-
 /*
  This package is part of the framework used for the application VIF.
- Copyright (C) 2004, Benno Luthiger
+ Copyright (C) 2004-2025, Benno Luthiger
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -18,13 +16,13 @@ package org.hip.kernel.bom;
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package org.hip.kernel.bom;
 
 /**
  * This interface defines an alternative model, which can be used instead
- * of the DOM. A possible use is a lightweight model. 
- * 
+ * of the DOM. A possible use is a lightweight model.
+ *
  * @author Benno Luthiger
- * Created on Sep 22, 2004
  */
 public interface AlternativeModel {
 

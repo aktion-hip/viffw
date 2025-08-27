@@ -1,5 +1,7 @@
 package org.hip.kernel.bom.impl.test;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -7,8 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
-
-import junit.framework.TestCase;
 
 import org.hip.kernel.bom.DomainObject;
 import org.hip.kernel.bom.impl.DBAdapterType;
@@ -27,11 +27,11 @@ import org.slf4j.LoggerFactory;
  * </p>
  *
  * @author: Benno Luthiger */
-public class DataHouseKeeper {
+public enum DataHouseKeeper {
+    INSTANCE;
+
     private static final Logger LOG = LoggerFactory.getLogger(DataHouseKeeper.class);
     private static final int SLEEP_PERIOD = 100; // milliseconds
-
-    private static DataHouseKeeper singleton = new DataHouseKeeper();
 
     // constants
     private static final String PROPERTIES_FILE = "vif_db.properties";
@@ -48,80 +48,100 @@ public class DataHouseKeeper {
     private Test2DomainObjectHomeImpl simpleHome = null;
     private LinkGroupMemberHomeImpl linkHome = null;
     private Test2JoinedDomainObjectHomeImpl joinHome = null;
-    private DBAccessConfiguration dbConfiguration = null;
 
     /** DataHouseKeeper default constructor. */
-    private DataHouseKeeper() {
-        try {
+    DataHouseKeeper() {
+    }
+
+    private void guard() {
+        if (!DataSourceRegistry.INSTANCE.isInitialized()) {
             DataSourceRegistry.INSTANCE.setFactory(new TestDataSourceFactory());
-            DataSourceRegistry.INSTANCE.setActiveConfiguration(getDBAccessConfiguration());
-        } catch (final IOException exc) {
-            LOG.error("Could not initialize the DataHouseKeeper!", exc);
+            try (InputStream stream = DataHouseKeeper.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
+                final Properties properties = new Properties();
+                properties.load(stream);
+                final DBAccessConfiguration config = new DBAccessConfiguration(
+                        properties.getProperty("org.hip.vif.db.driver"),
+                        properties.getProperty("org.hip.vif.db.server"),
+                        properties.getProperty("org.hip.vif.db.schema"),
+                        properties.getProperty("org.hip.vif.db.userId"),
+                        properties.getProperty("org.hip.vif.db.password"));
+                DataSourceRegistry.INSTANCE.setActiveConfiguration(config);
+                return;
+            } catch (final IOException exc) {
+                LOG.error("Could not create the DBAccessConfiguration!", exc);
+            }
+            throw new RuntimeException("Unable to initialize DataHouseKeeper!");
         }
     }
 
-    public static DataHouseKeeper getInstance() {
-        return singleton;
+    public Long createTestEntry(final String name) throws SQLException {
+        guard();
+        return createTestEntry(name, "Adam");
     }
 
-    public Long createTestEntry(final String inName) throws SQLException {
-        return createTestEntry(inName, "Adam");
-    }
-
-    public Long createTestEntry(final String inName, final String inFirstName) throws SQLException {
+    public Long createTestEntry(final String name, final String firstName) throws SQLException {
+        guard();
         Long outID = null;
         try {
-            final DomainObject lNew = getSimpleHome().create();
-            lNew.set("Name", inName);
-            lNew.set("Firstname", inFirstName);
-            lNew.set("Mail", "dummy1@aktion-hip.ch");
-            lNew.set("Sex", new Long(1));
-            lNew.set("Amount", new Float(12.45));
-            lNew.set("Double", new Float(13.11));
-            outID = lNew.insert(true);
-            lNew.release();
+            final DomainObject newEntry = getSimpleHome().create();
+            newEntry.set("Name", name);
+            newEntry.set("Firstname", firstName);
+            newEntry.set("Mail", "dummy1@aktion-hip.ch");
+            newEntry.set("Sex", Long.valueOf(1));
+            newEntry.set("Amount", Float.valueOf(12.45f));
+            newEntry.set("Double", Float.valueOf(13.11f));
+            outID = newEntry.insert(true);
+            newEntry.release();
         } catch (final VException exc) {
-            TestCase.fail(exc.getMessage());
+            fail(exc.getMessage());
         }
         return outID;
     }
 
     public void createTestLinkEntry(final int inMebmerID, final int inGroupID) throws SQLException, VException {
+        guard();
         final DomainObject lNew = getLinkHome().create();
-        lNew.set("MemberID", new Long(inMebmerID));
-        lNew.set("GroupID", new Long(inGroupID));
+        lNew.set("MemberID", Long.valueOf(inMebmerID));
+        lNew.set("GroupID", Long.valueOf(inGroupID));
         lNew.insert();
         lNew.release();
     }
 
     public void deleteAllFromLink() throws SQLException, VException, InterruptedException {
+        guard();
         deleteAllFrom("tblGroupAdmin");
     }
 
     public void deleteAllFromSimple() throws SQLException, VException, InterruptedException {
+        guard();
         deleteAllFrom("tblTest");
     }
 
     public void deleteAllFromGroup() throws SQLException, VException, InterruptedException {
+        guard();
         deleteAllFrom("tblGroup");
     }
 
     public void deleteAllFromParticipant() throws SQLException, VException, InterruptedException {
+        guard();
         deleteAllFrom("tblParticipant");
     }
 
     @SuppressWarnings("static-access")
     void deleteAllFrom(final String inTableName) throws SQLException, VException, InterruptedException {
+        guard();
         final Connection lConnection = DataSourceRegistry.INSTANCE.getConnection();
         final Statement lStatement = lConnection.createStatement();
         lStatement.execute("DELETE FROM " + inTableName);
         // lConnection.commit();
         lStatement.close();
         lConnection.close();
-        Thread.currentThread().sleep(SLEEP_PERIOD);
+        Thread.currentThread();
+        Thread.sleep(SLEEP_PERIOD);
     }
 
     public ResultSet executeQuery(final String inSQL) throws SQLException, VException {
+        guard();
         final Connection lConnection = DataSourceRegistry.INSTANCE.getConnection();
         final Statement lStatement = lConnection.createStatement();
         final ResultSet lResultSet = lStatement.executeQuery(inSQL);
@@ -131,92 +151,80 @@ public class DataHouseKeeper {
     }
 
     public LinkGroupMemberHomeImpl getLinkHome() {
-        if (linkHome == null)
-            linkHome = (LinkGroupMemberHomeImpl) VSys.homeManager.getHome(LINK_HOME_NAME);
+        guard();
+        if (this.linkHome == null) {
+            this.linkHome = (LinkGroupMemberHomeImpl) VSys.homeManager.getHome(LINK_HOME_NAME);
+        }
 
-        return linkHome;
+        return this.linkHome;
     }
 
     // public int getNumberOfConnections() throws SQLException {
+    // guard();
     // return PersistencyManager.singleton.getDefaultConnectionDriver().getNumberOfConnections();
     // }
 
     public Test2DomainObjectHomeImpl getSimpleHome() {
-        if (simpleHome == null)
-            simpleHome = (Test2DomainObjectHomeImpl) VSys.homeManager.getHome(SIMPLE_HOME_NAME);
+        guard();
+        if (this.simpleHome == null) {
+            this.simpleHome = (Test2DomainObjectHomeImpl) VSys.homeManager.getHome(SIMPLE_HOME_NAME);
+        }
 
-        return simpleHome;
+        return this.simpleHome;
     }
 
     public TestAlternativeHomeImpl getAlternativeHome() {
+        guard();
         return (TestAlternativeHomeImpl) VSys.homeManager.getHome(ALTERNATIVE_HOME);
     }
 
     public Test2JoinedDomainObjectHomeImpl getJoinHome() {
-        if (joinHome == null) {
-            joinHome = (Test2JoinedDomainObjectHomeImpl) VSys.homeManager.getHome(JOIN_HOME_NAME);
+        guard();
+        if (this.joinHome == null) {
+            this.joinHome = (Test2JoinedDomainObjectHomeImpl) VSys.homeManager.getHome(JOIN_HOME_NAME);
         }
-        return joinHome;
+        return this.joinHome;
     }
 
     public TestGroupHomeImpl getGroupHome() {
+        guard();
         return (TestGroupHomeImpl) VSys.homeManager.getHome(GROUP_HOME_NAME);
     }
 
     public TestParticipantHomeImpl getParticipantHome() {
+        guard();
         return (TestParticipantHomeImpl) VSys.homeManager.getHome(PARTICIPANT_HOME_NAME);
     }
 
     public TestNestedDomainObjectHomeImpl getNestedDomainObjectHomeImpl() {
+        guard();
         return (TestNestedDomainObjectHomeImpl) VSys.homeManager.getHome(NESTED_HOME_NAME);
     }
 
     public Statement getStatement() throws SQLException, VException {
+        guard();
         final Connection lConnection = DataSourceRegistry.INSTANCE.getConnection();
         return lConnection.createStatement();
     }
 
     public void insertTestEntry(final DomainObject inDomainObject) throws SQLException, VException {
+        guard();
         inDomainObject.insert(true);
     }
 
     public boolean isDBMySQL() {
+        guard();
         return DataSourceRegistry.INSTANCE.getAdapterType().isOfType(DBAdapterType.DB_TYPE_MYSQL.getType());
     }
 
     public boolean isDBOracle() {
+        guard();
         return DataSourceRegistry.INSTANCE.getAdapterType().isOfType(DBAdapterType.DB_TYPE_ORACLE.getType());
     }
 
     public boolean isDBPostgreSQL() {
+        guard();
         return DataSourceRegistry.INSTANCE.getAdapterType().isOfType(DBAdapterType.DB_TYPE_POSTGRESQL.getType());
     }
 
-    private DBAccessConfiguration createDBAccessConfiguration() throws IOException {
-        InputStream lStream = null;
-        try {
-            lStream = DataHouseKeeper.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE);
-            final Properties lProperties = new Properties();
-            lProperties.load(lStream);
-            lStream.close();
-            return new DBAccessConfiguration(lProperties.getProperty("org.hip.vif.db.driver"),
-                    lProperties.getProperty("org.hip.vif.db.server"),
-                    lProperties.getProperty("org.hip.vif.db.schema"),
-                    lProperties.getProperty("org.hip.vif.db.userId"),
-                    lProperties.getProperty("org.hip.vif.db.password"));
-        } finally {
-            if (lStream != null) {
-                lStream.close();
-            }
-        }
-    }
-
-    /** @return {@link DBAccessConfiguration} the db access configuration for testing purposes
-     * @throws IOException */
-    public DBAccessConfiguration getDBAccessConfiguration() throws IOException {
-        if (dbConfiguration == null) {
-            dbConfiguration = createDBAccessConfiguration();
-        }
-        return dbConfiguration;
-    }
 }

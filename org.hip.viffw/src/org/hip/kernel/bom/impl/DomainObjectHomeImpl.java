@@ -21,6 +21,7 @@ package org.hip.kernel.bom.impl; // NOPMD
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -81,7 +82,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     /** DomainObjectHomeImpl: default constructor */
     protected DomainObjectHomeImpl() {
         super();
-        dbAdapter = getDBAdapter(); // NOPMD by lbenno
+        this.dbAdapter = getDBAdapter(); // NOPMD by lbenno
     }
 
     /** @return org.hip.kernel.bom.model.ObjectDef */
@@ -111,7 +112,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @return java.lang.String */
     @Override
     protected String createCountAllString() {
-        return dbAdapter.createCountAllString(this);
+        return this.dbAdapter.createCountAllString(this);
     }
 
     /** Creates select sql string counting all table entries corresponding to this home.
@@ -120,13 +121,13 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @return java.lang.String */
     @Override
     protected String createCountString(final KeyObject inKey) {
-        return dbAdapter.createCountString(inKey, this);
+        return this.dbAdapter.createCountString(inKey, this);
     }
 
     @Override
     protected String createCountString(final KeyObject inKey, final HavingObject inHaving, final GroupByObject inGroupBy) // NOPMD
             throws BOMException {
-        return dbAdapter.createCountString(inKey, inHaving, inGroupBy, this);
+        return this.dbAdapter.createCountString(inKey, inHaving, inGroupBy, this);
     }
 
     /** Returns the maximum value of the specified column corresponding to this home.
@@ -139,7 +140,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     public BigDecimal getMax(final String inColumnName) throws SQLException, BOMException {
         final SingleValueQueryStatement lStatement = createSingleValueQueryStatement();
         final ModifierStrategy lStrategy = new ModifierStrategy(inColumnName, ModifierStrategy.MAX);
-        return lStatement.executeQuery(dbAdapter.createModifiedString(lStrategy, this));
+        return lStatement.executeQuery(this.dbAdapter.createModifiedString(lStrategy, this));
     }
 
     /** Returns a collection of calculated values according to the modifiers strategy passed.
@@ -150,7 +151,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     @Override
     public Collection<Object> getModified(final ModifierStrategy inStrategy) throws SQLException {
         final SingleValueQueryStatement lStatement = createSingleValueQueryStatement();
-        return lStatement.executeQuery2(dbAdapter.createModifiedString(inStrategy, this));
+        return lStatement.executeQuery2(this.dbAdapter.createModifiedString(inStrategy, this));
     }
 
     /** Returns the maximum value of the specified column corresponding to this home and the specified key.
@@ -164,7 +165,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     public BigDecimal getMax(final String inColumnName, final KeyObject inKey) throws SQLException, BOMException {
         final SingleValueQueryStatement lStatement = createSingleValueQueryStatement();
         final ModifierStrategy lStrategy = new ModifierStrategy(inColumnName, ModifierStrategy.MAX);
-        return lStatement.executeQuery(dbAdapter.createModifiedString(lStrategy, inKey, this));
+        return lStatement.executeQuery(this.dbAdapter.createModifiedString(lStrategy, inKey, this));
     }
 
     /** Returns a collection of calculated values according to the modifiers strategy passed.
@@ -176,7 +177,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     @Override
     public Collection<Object> getModified(final ModifierStrategy inStrategy, final KeyObject inKey) throws SQLException {
         final SingleValueQueryStatement lStatement = createSingleValueQueryStatement();
-        return lStatement.executeQuery2(dbAdapter.createModifiedString(inStrategy, inKey, this));
+        return lStatement.executeQuery2(this.dbAdapter.createModifiedString(inStrategy, inKey, this));
     }
 
     /** This method looks for all key columns of the table mapped to the DomainObject managed by this home and creates a
@@ -186,7 +187,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @return java.lang.String */
     @Override
     protected String createKeyCountColumnList() {
-        return dbAdapter.createKeyCountColumnList(this);
+        return this.dbAdapter.createKeyCountColumnList(this);
     }
 
     /** Creates the prepared select SQL string to fetch all domain objects with the specified key managed by this home.
@@ -195,7 +196,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @param inKey org.hip.kernel.bom.KeyObject */
     @Override
     public String createPreparedSelectString(final KeyObject inKey) {
-        return dbAdapter.createPreparedSelectString(inKey, this);
+        return this.dbAdapter.createPreparedSelectString(inKey, this);
     }
 
     /** Creates select string to fetch all domain objects.
@@ -204,7 +205,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @throws org.hip.kernel.bom.BOMException */
     @Override
     protected String createSelectAllString() throws BOMException {
-        return dbAdapter.createSelectAllString();
+        return this.dbAdapter.createSelectAllString();
     }
 
     /** Creates select SQL string to fetch all domain objects with the specified key managed by this home.
@@ -214,7 +215,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @throws org.hip.kernel.bom.BOMException */
     @Override
     protected String createSelectString(final KeyObject inKey) throws BOMException {
-        return dbAdapter.createSelectString(inKey, this);
+        return this.dbAdapter.createSelectString(inKey, this);
     }
 
     /** Creates the select string to fetch all domain objects matching the specified key ordered by the specified object.
@@ -225,7 +226,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @throws org.hip.kernel.bom.BOMException */
     @Override
     protected String createSelectString(final KeyObject inKey, final OrderObject inOrder) throws BOMException {
-        return dbAdapter.createSelectString(inKey, inOrder, this);
+        return this.dbAdapter.createSelectString(inKey, inOrder, this);
     }
 
     /** @return java.lang.String
@@ -236,7 +237,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     @Override
     protected String createSelectString(final KeyObject inKey, final OrderObject inOrder, final HavingObject inHaving)
             throws BOMException {
-        return dbAdapter.createSelectString(inKey, inOrder, inHaving, this);
+        return this.dbAdapter.createSelectString(inKey, inOrder, inHaving, this);
     }
 
     /** @param inKey org.hip.kernel.bom.KeyObject
@@ -247,7 +248,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     @Override
     protected String createSelectString(final KeyObject inKey, final OrderObject inOrder, final HavingObject inHaving,
             final GroupByObject inGroupBy) throws BOMException {
-        return dbAdapter.createSelectString(inKey, inOrder, inHaving, inGroupBy, this);
+        return this.dbAdapter.createSelectString(inKey, inOrder, inHaving, inGroupBy, this);
     }
 
     /** Creates the select string to fetch all domain objects ordered by the specified object.
@@ -257,7 +258,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @throws org.hip.kernel.bom.BOMException */
     @Override
     protected String createSelectString(final OrderObject inOrder) throws BOMException {
-        return dbAdapter.createSelectString(inOrder, this);
+        return this.dbAdapter.createSelectString(inOrder, this);
     }
 
     /** Creates the select string to fetch all domain objects matching the specified key limitied by the specified limit.
@@ -268,7 +269,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @throws BOMException */
     @Override
     protected String createSelectString(final KeyObject inKey, final LimitObject inLimit) throws BOMException {
-        return dbAdapter.createSelectString(inKey, inLimit, this);
+        return this.dbAdapter.createSelectString(inKey, inLimit, this);
     }
 
     /** Creates select SQL string to delete all domain objects with the specified key managed by this home.
@@ -276,7 +277,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @return java.lang.String
      * @param inKey org.hip.kernel.bom.KeyObject */
     protected String createDeleteString(final KeyObject inKey) {
-        return dbAdapter.createDeleteString(inKey, this);
+        return this.dbAdapter.createDeleteString(inKey, this);
     }
 
     /** Returns the SQL string to delete an entry.
@@ -370,10 +371,10 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @return ObjectDef */
     @Override
     public ObjectDef getObjectDef() {
-        if (objectDef == null) {
-            objectDef = createObjectDef();
+        if (this.objectDef == null) {
+            this.objectDef = createObjectDef();
         }
-        return objectDef;
+        return this.objectDef;
     }
 
     /** No hidden fields, therefore, an empty String is returned.
@@ -396,17 +397,17 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      *
      * @return org.hip.kernel.bom.DomainObject */
     protected DomainObject getTemporary() throws BOMException {
-        if (temporary == null) {
-            temporary = newInstance();
+        if (this.temporary == null) {
+            this.temporary = newInstance();
         }
-        return temporary;
+        return this.temporary;
     }
 
     private final DBAdapterSimple getDBAdapter() {
-        if (dbAdapter == null) {
-            dbAdapter = retrieveDBAdapterType().getSimpleDBAdapter(getObjectDef());
+        if (this.dbAdapter == null) {
+            this.dbAdapter = retrieveDBAdapterType().getSimpleDBAdapter(getObjectDef());
         }
-        return dbAdapter;
+        return this.dbAdapter;
     }
 
     /** Returns an empty DomainObject. An empty object is initialized but does not contain any values. The object goes
@@ -415,22 +416,21 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @return org.hip.kernel.bom.DomainObject */
     @Override
     public DomainObject newInstance() throws BOMException {
-
         try {
             // straightforward
-            final Iterator<GeneralDomainObject> lReleased = releasedObjects().iterator();
-            if (lReleased.hasNext()) {
-                final DomainObject outDomainObject = (DomainObject) lReleased.next();
-                lReleased.remove();
-                return outDomainObject;
-            }
-            else {
+            final Iterator<GeneralDomainObject> released = releasedObjects().iterator();
+            if (released.hasNext()) {
+                final DomainObject model = (DomainObject) released.next();
+                released.remove();
+                return model;
+            } else {
                 final Class<?> lClass = Class.forName(getObjectClassName());
-                return (DomainObject) lClass.newInstance();
+                return (DomainObject) lClass.getDeclaredConstructor().newInstance();
             }
         } catch (final ClassNotFoundException exc) {
             throw new BOMException("ClassNotFound " + exc.getMessage(), exc);
-        } catch (final InstantiationException | IllegalAccessException exc) {
+        } catch (final InstantiationException | IllegalAccessException | InvocationTargetException
+                | NoSuchMethodException | SecurityException exc) {
             throw new BOMException(exc.getMessage(), exc);
         }
     }
@@ -438,12 +438,12 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     /** Returns a DomainObject filled with the values of the inputed ResultSet
      *
      * @return org.hip.kernel.bom.GeneralDomainObject
-     * @param inResult java.sql.ResultSet */
+     * @param result java.sql.ResultSet */
     @Override
-    protected GeneralDomainObject newInstance(final ResultSet inResult) throws BOMException {
-        final DomainObjectImpl outObject = (DomainObjectImpl) this.newInstance();
-        outObject.loadFromResultSet(inResult);
-        return outObject;
+    protected GeneralDomainObject newInstance(final ResultSet result) throws BOMException {
+        final DomainObjectImpl model = (DomainObjectImpl) this.newInstance();
+        model.loadFromResultSet(result);
+        return model;
     }
 
     /** @return java.util.Hashtable */
@@ -456,20 +456,20 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
 
     @Override
     public Map<String, String> tableNames2() { // NOPMD
-        if (tableNameMap == null) {
-            tableNameMap = new Hashtable<String, String>(7);
+        if (this.tableNameMap == null) {
+            this.tableNameMap = new Hashtable<String, String>(7);
             try {
                 for (final PropertyDef lPropertyDef : getObjectDef().getPropertyDefs2()) {
                     final String lTableName = (String) lPropertyDef.getMappingDef().get("");
-                    if (!tableNameMap.containsKey(lTableName)) {
-                        tableNameMap.put(lTableName, lTableName);
+                    if (!this.tableNameMap.containsKey(lTableName)) {
+                        this.tableNameMap.put(lTableName, lTableName);
                     }
                 }
             } catch (final GettingException exc) {
                 DefaultExceptionWriter.printOut(this, exc, true);
             } // try-catch
         } // if
-        return tableNameMap;
+        return this.tableNameMap;
     }
 
     /** Returns the table names in a string which can be used to create a SQL select statement.
@@ -514,7 +514,6 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
             try {
                 lResult = this.select(inKey);
                 outDomainObject = (DomainObject) lResult.nextAsDomainObject();
-                lResult.close();
             } catch (final SQLException | BOMException exc) {
                 throw new BOMInvalidKeyException(exc.toString(), exc);
             }
@@ -545,7 +544,6 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
         final QueryStatement lStatement = this.createQueryStatement();
         lStatement.setSQLString(this.createDeleteString(inKey));
         lStatement.executeUpdate(inCommit);
-        lStatement.close();
     }
 
     /** Use this method to delete an entry from the table. (Contrary of insert.)
@@ -557,17 +555,17 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     }
 
     private void writeObject(final ObjectOutputStream out) throws IOException {
-        out.writeObject(objectDef);
-        out.writeObject(temporary);
-        out.writeObject(tableNameMap);
+        out.writeObject(this.objectDef);
+        out.writeObject(this.temporary);
+        out.writeObject(this.tableNameMap);
     }
 
     @SuppressWarnings("unchecked")
     private void readObject(final ObjectInputStream inStream) throws IOException, ClassNotFoundException {
-        objectDef = (ObjectDef) inStream.readObject();
-        temporary = (DomainObject) inStream.readObject();
-        tableNameMap = (HashMap<String, String>) inStream.readObject();
-        dbAdapter = getDBAdapter();
+        this.objectDef = (ObjectDef) inStream.readObject();
+        this.temporary = (DomainObject) inStream.readObject();
+        this.tableNameMap = (HashMap<String, String>) inStream.readObject();
+        this.dbAdapter = getDBAdapter();
     }
 
     /** Checks whether the database table structure corresponds to the domain object definition. The test compares the

@@ -1,8 +1,8 @@
 package org.hip.kernel.bom.model.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Iterator;
 
@@ -14,7 +14,7 @@ import org.hip.kernel.bom.model.PrimaryKeyDef;
 import org.hip.kernel.bom.model.PropertyDef;
 import org.hip.kernel.bom.model.impl.ObjectDefGenerator;
 import org.hip.kernel.sys.VSys;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author: Benno Luthiger */
 public class ObjectDefGeneratorTest {
@@ -51,7 +51,7 @@ public class ObjectDefGeneratorTest {
         final Iterator<String> iter1 = inObjectDef.getTableNames2().iterator();
         while (iter1.hasNext()) {
             final String lTableName = iter1.next();
-            assertEquals("testGenerate 5", "tblTestMember", lTableName);
+            assertEquals("tblTestMember", lTableName);
             System.out.println("\t\tMapping for table: " + lTableName);
             final Iterator<MappingDef> iter2 = inObjectDef.getMappingDefsForTable2(lTableName).iterator();
             while (iter2.hasNext()) {
@@ -73,7 +73,7 @@ public class ObjectDefGeneratorTest {
             final Iterator<String> iter = lPrimKeyDef.getKeyNames2().iterator();
             while (iter.hasNext()) {
                 final String lKey = iter.next();
-                assertEquals("testGenerate 4", "MemberID", lKey);
+                assertEquals("MemberID", lKey);
                 VSys.out.println("\t\t" + lKey);
             }
         } catch (final org.hip.kernel.bom.GettingException exc) {
@@ -110,9 +110,9 @@ public class ObjectDefGeneratorTest {
         try {
             final ObjectDef lObjectDef = ObjectDefGenerator.getSingleton().createObjectDef(XML_OBJECT_DEF);
 
-            assertEquals("testGenerate 1", "TestDomainObject", lObjectDef.get(ObjectDefDef.objectName));
-            assertEquals("testGenerate 2", "org.hip.kernel.bom.DomainObject", lObjectDef.get(ObjectDefDef.parent));
-            assertEquals("testGenerate 3", "1.0", lObjectDef.get(ObjectDefDef.version));
+            assertEquals("TestDomainObject", lObjectDef.get(ObjectDefDef.objectName));
+            assertEquals("org.hip.kernel.bom.DomainObject", lObjectDef.get(ObjectDefDef.parent));
+            assertEquals("1.0", lObjectDef.get(ObjectDefDef.version));
 
             outPrimary(lObjectDef);
             outPropertySet((PropertySet) lObjectDef.get(ObjectDefDef.propertyDefs));

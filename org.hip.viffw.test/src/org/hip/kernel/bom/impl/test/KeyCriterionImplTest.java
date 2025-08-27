@@ -1,12 +1,11 @@
 package org.hip.kernel.bom.impl.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import org.hip.kernel.bom.DomainObjectHome;
 import org.hip.kernel.bom.IGetValueStrategy;
@@ -21,42 +20,33 @@ import org.hip.kernel.bom.impl.KeyCriterionImpl;
 import org.hip.kernel.bom.impl.KeyObjectImpl;
 import org.hip.kernel.bom.impl.PreparedValueStrategy;
 import org.hip.kernel.exc.VException;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /** @author Luthiger Created: 14.10.2006 */
 public class KeyCriterionImplTest {
-    private static DataHouseKeeper data;
 
-    @BeforeClass
-    public static void init() {
-        data = DataHouseKeeper.getInstance();
-    }
-
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
-        data.deleteAllFromSimple();
+        DataHouseKeeper.INSTANCE.deleteAllFromSimple();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testRender() throws VException {
-        final DomainObjectHome lHome = data.getSimpleHome();
+        final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
 
         KeyCriterion lCriterion = new KeyCriterionImpl(Test2DomainObjectHomeImpl.KEY_FIRSTNAME, "Adam", "=",
                 BinaryBooleanOperator.AND, KeyCriterionImpl.COLUMN_MODIFIER_DFT);
-        assertEquals("render 1", "tblTest.SFIRSTNAME = 'Adam'", new String(lCriterion.render(lHome)));
+        assertEquals("tblTest.SFIRSTNAME = 'Adam'", new String(lCriterion.render(lHome)));
 
         lCriterion = new KeyCriterionImpl(createKey(), BinaryBooleanOperator.AND);
         assertEquals(
-                "render 2",
                 "(tblTest.SFIRSTNAME = 'Seconda' AND tblTest.BSEX = 0 AND tblTest.FAMOUNT = 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00'))",
                 new String(lCriterion.render(lHome)));
 
         lCriterion = new KeyCriterionImpl(createKey2(), BinaryBooleanOperator.AND);
         assertEquals(
-                "render 3",
                 "((tblTest.SFIRSTNAME LIKE 'Test%' OR tblTest.SFIRSTNAME LIKE 'test%') AND tblTest.FAMOUNT > 24 AND tblTest.DTMUTATION = TIMESTAMP('2002-02-01 10:00:00'))",
                 new String(lCriterion.render(lHome)));
 
@@ -65,8 +55,7 @@ public class KeyCriterionImplTest {
         final BetweenObjectImpl lBetween = new BetweenObjectImpl(lDate1, lDate2);
         lCriterion = new KeyCriterionImpl(Test2DomainObjectHomeImpl.KEY_MUTATION, lBetween, "",
                 BinaryBooleanOperator.AND, KeyCriterionImpl.COLUMN_MODIFIER_DFT);
-        assertEquals("render 4",
-                "tblTest.DTMUTATION BETWEEN DATE('1989-08-20') AND DATE('1999-04-24')",
+        assertEquals("tblTest.DTMUTATION BETWEEN DATE('1989-08-20') AND DATE('1999-04-24')",
                 new String(lCriterion.render(lHome)));
 
         @SuppressWarnings("rawtypes")
@@ -74,40 +63,36 @@ public class KeyCriterionImplTest {
                 new Integer(20) });
         lCriterion = new KeyCriterionImpl(Test2DomainObjectHomeImpl.KEY_AMOUNT, lIn, "", BinaryBooleanOperator.AND,
                 KeyCriterionImpl.COLUMN_MODIFIER_DFT);
-        assertEquals("render 5",
-                "tblTest.FAMOUNT IN (10, 13, 16, 20)",
+        assertEquals("tblTest.FAMOUNT IN (10, 13, 16, 20)",
                 new String(lCriterion.render(lHome)));
 
         final KeyObject lKey = new KeyObjectImpl();
         lKey.setValue(Test2DomainObjectHomeImpl.KEY_FIRSTNAME, "Adam", "=");
         lKey.setValue(Test2DomainObjectHomeImpl.KEY_CITY, "Sun City", "=", BinaryBooleanOperator.XOR);
         lCriterion = new KeyCriterionImpl(lKey, BinaryBooleanOperator.AND);
-        assertEquals("render 6",
-                "(tblTest.SFIRSTNAME = 'Adam' XOR tblTest.SCITY = 'Sun City')",
+        assertEquals("(tblTest.SFIRSTNAME = 'Adam' XOR tblTest.SCITY = 'Sun City')",
                 lCriterion.render(lHome).toString());
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void testRenderPrepared() throws VException {
-        final DomainObjectHome lHome = data.getSimpleHome();
+        final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
         final IGetValueStrategy lGetValueStrategy = new PreparedValueStrategy();
 
         KeyCriterion lCriterion = new KeyCriterionImpl(Test2DomainObjectHomeImpl.KEY_FIRSTNAME, "Adam", "=",
                 BinaryBooleanOperator.AND, KeyCriterionImpl.COLUMN_MODIFIER_DFT);
         lCriterion.setGetValueStrategy(lGetValueStrategy);
-        assertEquals("render 1", "tblTest.SFIRSTNAME = ?", new String(lCriterion.render(lHome)));
+        assertEquals("tblTest.SFIRSTNAME = ?", new String(lCriterion.render(lHome)));
 
         lCriterion = new KeyCriterionImpl(createKey(), BinaryBooleanOperator.AND);
         lCriterion.setGetValueStrategy(lGetValueStrategy);
-        assertEquals("render 2",
-                "(tblTest.SFIRSTNAME = ? AND tblTest.BSEX = ? AND tblTest.FAMOUNT = ? AND tblTest.DTMUTATION = ?)",
+        assertEquals("(tblTest.SFIRSTNAME = ? AND tblTest.BSEX = ? AND tblTest.FAMOUNT = ? AND tblTest.DTMUTATION = ?)",
                 new String(lCriterion.render(lHome)));
 
         lCriterion = new KeyCriterionImpl(createKey2(), BinaryBooleanOperator.AND);
         lCriterion.setGetValueStrategy(lGetValueStrategy);
         assertEquals(
-                "render 3",
                 "((tblTest.SFIRSTNAME LIKE ? OR tblTest.SFIRSTNAME LIKE ?) AND tblTest.FAMOUNT > ? AND tblTest.DTMUTATION = ?)",
                 new String(lCriterion.render(lHome)));
 
@@ -117,7 +102,7 @@ public class KeyCriterionImplTest {
         lCriterion = new KeyCriterionImpl(Test2DomainObjectHomeImpl.KEY_MUTATION, lBetween, "",
                 BinaryBooleanOperator.AND, KeyCriterionImpl.COLUMN_MODIFIER_DFT);
         lCriterion.setGetValueStrategy(lGetValueStrategy);
-        assertEquals("render 4",
+        assertEquals(
                 "tblTest.DTMUTATION BETWEEN ? AND ?",
                 new String(lCriterion.render(lHome)));
 
@@ -126,8 +111,7 @@ public class KeyCriterionImplTest {
         lCriterion = new KeyCriterionImpl(Test2DomainObjectHomeImpl.KEY_AMOUNT, lIn, "", BinaryBooleanOperator.AND,
                 KeyCriterionImpl.COLUMN_MODIFIER_DFT);
         lCriterion.setGetValueStrategy(lGetValueStrategy);
-        assertEquals("render 5",
-                "tblTest.FAMOUNT IN (?, ?, ?, ?)",
+        assertEquals("tblTest.FAMOUNT IN (?, ?, ?, ?)",
                 new String(lCriterion.render(lHome)));
 
         final KeyObject lKey2 = new KeyObjectImpl();
@@ -140,7 +124,6 @@ public class KeyCriterionImplTest {
         lCriterion.setCriteriaStackFactory(new CriteriaStackFactory(CriteriaStackFactory.StackType.FLAT_JOIN, ", "));
         lCriterion.setLevelReturnFormatter(KeyCriterionImpl.LEVEL_STRAIGHT);
         assertEquals(
-                "render 6",
                 "tblTest.SFIRSTNAME = ?, tblTest.BSEX = ?, tblTest.FAMOUNT = ?, tblTest.DTMUTATION = ?, tblTest.SCITY = ?, tblTest.SPLZ = ?",
                 new String(lCriterion.render(lHome)));
     }
@@ -148,14 +131,13 @@ public class KeyCriterionImplTest {
     @Test
     public void testRender2() throws VException {
         // LDAP style key rendering
-        final DomainObjectHome lHome = data.getSimpleHome();
+        final DomainObjectHome lHome = DataHouseKeeper.INSTANCE.getSimpleHome();
 
         final KeyCriterion lCriterion = new KeyCriterionImpl(createKeyLDAP(), BinaryBooleanOperator.AND);
         lCriterion.setCriteriaStackFactory(new CriteriaStackFactory(CriteriaStackFactory.StackType.LDAP));
         lCriterion.setCriteriumRenderer(new LDAPRenderStrategy());
         lCriterion.setLevelReturnFormatter(KeyCriterionImpl.LEVEL_STRAIGHT);
         assertEquals(
-                "render",
                 "&(|(tblTest.SFIRSTNAME='Test*')(tblTest.SFIRSTNAME='test*'))(tblTest.FAMOUNT>24)(tblTest.DTMUTATION=TIMESTAMP('2002-02-01 10:00:00'))",
                 new String(lCriterion.render(lHome)));
     }
@@ -166,7 +148,7 @@ public class KeyCriterionImplTest {
         outKey.setValue(Test2DomainObjectHomeImpl.KEY_SEX, new Integer(0));
         outKey.setValue(Test2DomainObjectHomeImpl.KEY_AMOUNT, new BigDecimal(24));
 
-        final Calendar lCalender = GregorianCalendar.getInstance();
+        final Calendar lCalender = Calendar.getInstance();
         lCalender.set(2002, 1, 1, 10, 0, 0);
         lCalender.getTime();
         outKey.setValue(Test2DomainObjectHomeImpl.KEY_MUTATION, new Timestamp(lCalender.getTimeInMillis()));
@@ -181,7 +163,7 @@ public class KeyCriterionImplTest {
         outKey.setValue(lKey);
         outKey.setValue(Test2DomainObjectHomeImpl.KEY_AMOUNT, new BigDecimal(24), ">");
 
-        final Calendar lCalender = GregorianCalendar.getInstance();
+        final Calendar lCalender = Calendar.getInstance();
         lCalender.set(2002, 1, 1, 10, 0, 0);
         lCalender.getTime();
         outKey.setValue(Test2DomainObjectHomeImpl.KEY_MUTATION, new Timestamp(lCalender.getTimeInMillis()));
@@ -196,7 +178,7 @@ public class KeyCriterionImplTest {
         outKey.setValue(lKey);
         outKey.setValue(Test2DomainObjectHomeImpl.KEY_AMOUNT, new BigDecimal(24), ">");
 
-        final Calendar lCalender = GregorianCalendar.getInstance();
+        final Calendar lCalender = Calendar.getInstance();
         lCalender.set(2002, 1, 1, 10, 0, 0);
         lCalender.getTime();
         outKey.setValue(Test2DomainObjectHomeImpl.KEY_MUTATION, new Timestamp(lCalender.getTimeInMillis()));
@@ -213,8 +195,8 @@ public class KeyCriterionImplTest {
 
         @Override
         public StringBuilder render2() {
-            final StringBuilder outSQL = new StringBuilder(operand1);
-            outSQL.append(comparison).append(operand2);
+            final StringBuilder outSQL = new StringBuilder(this.operand1);
+            outSQL.append(this.comparison).append(this.operand2);
             return outSQL;
         }
     }

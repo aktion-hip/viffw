@@ -47,7 +47,7 @@ import org.hip.kernel.exc.VException;
 public class LDAPQueryStatement implements QueryStatement, Serializable {
     private LDAPObjectHome home;
     private String filter;
-    private String baseDir = ""; // NOPMD by lbenno 
+    private String baseDir = ""; // NOPMD by lbenno
     private final SearchControls controls;
     private SortControl sort;
 
@@ -56,14 +56,9 @@ public class LDAPQueryStatement implements QueryStatement, Serializable {
      * @param inHome LDAPObjectHome
      * @param inBaseDir String */
     public LDAPQueryStatement(final LDAPObjectHome inHome, final String inBaseDir) {
-        home = inHome;
-        baseDir = inBaseDir;
-        controls = new SearchControls();
-    }
-
-    @Override
-    public void close() throws SQLException { // NOPMD by lbenno
-        // intentionally left empty
+        this.home = inHome;
+        this.baseDir = inBaseDir;
+        this.controls = new SearchControls();
     }
 
     @Override
@@ -72,9 +67,9 @@ public class LDAPQueryStatement implements QueryStatement, Serializable {
         try {
             if (getSQLString() != null) {
                 lContext = createContext();
-                lContext.setRequestControls(sort);
-                final Iterator<SearchResult> lResult = lContext.search(getSQLString(), controls);
-                return createSearchResult(home, lResult, lContext.getCount(), this);
+                lContext.setRequestControls(this.sort);
+                final Iterator<SearchResult> lResult = lContext.search(getSQLString(), this.controls);
+                return createSearchResult(this.home, lResult, lContext.getCount(), this);
             }
         } catch (final NamingException | VException exc) {
             throw new SQLException(exc.getMessage(), exc);
@@ -87,7 +82,7 @@ public class LDAPQueryStatement implements QueryStatement, Serializable {
                 }
             }
         }
-        return createSearchResult(home, null, -1, this);
+        return createSearchResult(this.home, null, -1, this);
     }
 
     /** Limits the number of results
@@ -95,7 +90,7 @@ public class LDAPQueryStatement implements QueryStatement, Serializable {
      * @param inLimit LimitObject */
     public void setLimit(final LimitObject inLimit) {
         final int lLimit = (Integer) inLimit.getArguments()[0];
-        controls.setCountLimit(lLimit);
+        this.controls.setCountLimit(lLimit);
     }
 
     /** Makes the results returned sorted
@@ -103,7 +98,7 @@ public class LDAPQueryStatement implements QueryStatement, Serializable {
      * @param inSortBy String[] list of attributes in ascending order.
      * @throws IOException */
     public void setOrder(final String... inSortBy) throws IOException {
-        sort = new SortControl(inSortBy, Control.NONCRITICAL);
+        this.sort = new SortControl(inSortBy, Control.NONCRITICAL);
     }
 
     private QueryResult createSearchResult(final LDAPObjectHome inHome, final Iterator<SearchResult> inResult,
@@ -112,15 +107,15 @@ public class LDAPQueryStatement implements QueryStatement, Serializable {
     }
 
     protected DirContextWrapper createContext() throws NamingException, VException { // NOPMD by lbenno
-        return LDAPContextManager.getInstance().getContext(baseDir, createControls());
+        return LDAPContextManager.getInstance().getContext(this.baseDir, createControls());
     }
 
     /** @return {@link Control} Array */
     protected Control[] createControls() {
-        if (sort == null) {
+        if (this.sort == null) {
             return null;
         }
-        return new Control[] { sort };
+        return new Control[] { this.sort };
     }
 
     @Override
@@ -142,20 +137,16 @@ public class LDAPQueryStatement implements QueryStatement, Serializable {
      * @see org.hip.kernel.bom.QueryStatement#getSQLString() */
     @Override
     public String getSQLString() {
-        return filter;
-    }
-
-    @Override
-    public boolean hasMoreResults() { // NOPMD by lbenno
-        return false;
+        return this.filter;
     }
 
     /** In the LDAP case, this method is used to set the search filter.
      *
      * @see org.hip.kernel.bom.QueryStatement#setSQLString(java.lang.String) */
     @Override
-    public void setSQLString(final String inFilter) {
-        filter = inFilter;
+    public QueryStatement setSQLString(final String inFilter) {
+        this.filter = inFilter;
+        return this;
     }
 
     /** Friendly method used for deserialization of <code>QueryResult</code>.
@@ -188,18 +179,13 @@ public class LDAPQueryStatement implements QueryStatement, Serializable {
     }
 
     private void writeObject(final ObjectOutputStream out) throws IOException {
-        out.writeObject(home);
-        out.writeObject(filter);
-        try {
-            close();
-        } catch (final SQLException exc) {
-            throw new IOException(exc.getMessage(), exc);
-        }
+        out.writeObject(this.home);
+        out.writeObject(this.filter);
     }
 
     private void readObject(final ObjectInputStream inStream) throws IOException, ClassNotFoundException {
-        home = (LDAPObjectHome) inStream.readObject();
-        filter = (String) inStream.readObject();
+        this.home = (LDAPObjectHome) inStream.readObject();
+        this.filter = (String) inStream.readObject();
     }
 
     @Override

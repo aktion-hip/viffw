@@ -1,6 +1,6 @@
 /**
  This package is part of the servlet framework used for the application VIF.
- Copyright (C) 2001, Benno Luthiger
+ Copyright (C) 2001-2025, Benno Luthiger
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -18,20 +18,15 @@
  */
 package org.hip.kernel.bom.impl; // NOPMD
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
-import org.hip.kernel.bom.AlternativeModel;
-import org.hip.kernel.bom.AlternativeModelFactory;
 import org.hip.kernel.bom.BOMException;
 import org.hip.kernel.bom.BOMNotFoundException;
 import org.hip.kernel.bom.DomainObjectCollection;
@@ -45,95 +40,72 @@ import org.hip.kernel.bom.QueryResult;
 import org.hip.kernel.bom.QueryStatement;
 import org.hip.kernel.exc.DefaultExceptionHandler;
 import org.hip.kernel.sys.VObject;
-import org.hip.kernel.util.Debug;
 
 /** This is the abstract implementation of the QueryResult interface.
  *
  * @author Benno Luthiger
  * @see org.hip.kernel.bom.QueryResult */
-@SuppressWarnings("serial")
-abstract public class AbstractQueryResult extends VObject implements QueryResult, Serializable {
+public abstract class AbstractQueryResult extends VObject implements QueryResult {
 
     // Instance variables
-    private ResultSet result;
-    private GeneralDomainObjectHome home;
-
-    private GeneralDomainObject current;
-    private GeneralDomainObject nextObj;
+    // private ResultSet result;
+    private final GeneralDomainObjectHome home;
 
     private QueryStatement statement;
     private Page currentPage;
-    private boolean isNew;
+
+    private final Data data;
+    private Cursor cursor;
 
     // class attributes
     private static XMLCharacterFilter cCharacterFilter;
 
     /** AbstractQueryResult default constructor.
      *
-     * @param inHome org.hip.kernel.bom.GeneralDomainObjectHome */
-    public AbstractQueryResult(final GeneralDomainObjectHome inHome) {
-        super();
-        home = inHome;
+     * @param home org.hip.kernel.bom.GeneralDomainObjectHome */
+    public AbstractQueryResult(final GeneralDomainObjectHome home) {
+        this.home = home;
+        this.data = new Data(Collections.emptyList(), null);
+        this.cursor = this.data.get(0);
     }
 
     /** AbstractQueryResult constructor. Initializes the instance variables and initializes the first DomainObject with
      * data from the ResultSet.
      *
-     * @param inHome org.hip.kernel.bom.GeneralDomainObjectHome
-     * @param inResult java.sql.ResultSet
-     * @param inStatement org.hip.kernel.bom.QueryStatement */
-    public AbstractQueryResult(final GeneralDomainObjectHome inHome, final ResultSet inResult,
-            final QueryStatement inStatement) {
-        super();
-
-        home = inHome;
-        result = inResult;
-        statement = inStatement;
-        isNew = true;
+     * @param home org.hip.kernel.bom.GeneralDomainObjectHome
+     * @param result java.sql.ResultSet
+     * @param statement org.hip.kernel.bom.QueryStatement */
+    public AbstractQueryResult(final GeneralDomainObjectHome home, final ResultSet result,
+            final QueryStatement statement) {
+        this.home = home;
+        this.statement = statement;
+        this.data = loadData(home, result);
+        this.cursor = this.data.get(0);
     }
 
-    /** @exception java.sql.SQLException */
-    @Override
-    public void close() throws SQLException {
-        if (result != null) {
-            result.close();
-        }
-        if (statement != null) {
-            statement.close();
-        }
-    }
-
-    /** Lazy initialization. */
-    private boolean chkFirst() {
-        if (nextObj == null && isNew) {
-            firstRead();
-            isNew = false;
-            return true;
-        }
-        return false;
-    }
-
-    /** Initializes the first DomainObject with data from the ResultSet. */
-    private void firstRead() {
+    private Data loadData(final GeneralDomainObjectHome home, final ResultSet result) {
         try {
-            if (result.next()) {
-                nextObj = ((AbstractDomainObjectHome) home).newInstance(result);
+            final List<GeneralDomainObject> objects = new ArrayList<>(result.getFetchSize());
+            while (result.next()) {
+                objects.add(((AbstractDomainObjectHome) home).newInstance(result));
             }
-        } catch (final BOMException | SQLException exc) {
+            return new Data(objects, result.getMetaData());
+        } catch (BOMException | SQLException exc) {
             DefaultExceptionHandler.instance().handle(exc);
         }
+        return new Data(Collections.emptyList(), null);
     }
 
     /** @return org.hip.kernel.bom.GeneralDomainObject */
     @Override
     public GeneralDomainObject getCurrent() {
-        return current;
+        return this.cursor.model();
     }
 
     /** @return org.hip.kernel.bom.Page */
     @Override
     public Page getCurrentPage() {
-        return currentPage;
+        return this.currentPage;
     }
 
     /** @return org.hip.kernel.bom.impl.XMLCharacterFilter */
@@ -152,35 +124,26 @@ abstract public class AbstractQueryResult extends VObject implements QueryResult
      * @exception org.hip.kernel.bom.BOMNotFoundException */
     @Override
     public KeyObject getKey() throws BOMNotFoundException {
-        if (current == null) {
+        if (this.cursor == null || !this.cursor.isValid()) {
             throw new BOMNotFoundException();
         }
         else {
-            return current.getKey();
+            return this.cursor.model().getKey();
         }
     }
 
     /** Returns the ResultSet MetaData.
      *
-     * @return java.sql.ResultSetMetaData
-     * @exception java.sql.SQLException */
-    protected ResultSetMetaData getMetaData() throws SQLException {
-        return (result != null) ? result.getMetaData() : null; // NOPMD by lbenno
-    }
-
-    /** Returns the internally hold ResultSet.
-     *
-     * @return java.sql.ResultSet */
-    protected ResultSet getResultSet() {
-        return result;
+     * @return java.sql.ResultSetMetaData */
+    protected ResultSetMetaData getMetaData() {
+        return this.data.metaData();
     }
 
     /** @return boolean <code>true</code> if the result set still has more elements, <code>false</code> if the cursor is
      *         at the end. */
     @Override
     public boolean hasMoreElements() {
-        chkFirst();
-        return nextObj != null;
+        return !this.data.objects.isEmpty() && this.cursor.isValid() && this.cursor.index() < this.data.objects.size();
     }
 
     /** Returns a new Instance of the DomainObject initialized with data from the QueryResult.
@@ -190,21 +153,9 @@ abstract public class AbstractQueryResult extends VObject implements QueryResult
      * @return instance of next domain object. Returns null if query result has no more elements. */
     @Override
     public GeneralDomainObject next() throws SQLException, BOMException {
-        chkFirst();
-        GeneralDomainObject outModel = null;
-        if (result != null) {
-            current = nextObj;
-            outModel = current;
-            if (result.next()) {
-                nextObj = ((AbstractDomainObjectHome) home).newInstance(result);
-            }
-            else {
-                nextObj = null; // NOPMD by lbenno
-                this.close();
-                result = null; // NOPMD by lbenno
-            }
-        }
-        return outModel;
+        final GeneralDomainObject current = this.cursor.model;
+        this.cursor = this.data.get(this.cursor.index() + 1);
+        return current;
     }
 
     /** @return org.hip.kernel.bom.GeneralDomainObject
@@ -251,7 +202,7 @@ abstract public class AbstractQueryResult extends VObject implements QueryResult
      * @exception org.hip.kernel.bom.BOMException */
     @Override
     public String nextAsXMLString(final String inSerializerName, final boolean inUseFilter) throws SQLException,
-            BOMException {
+    BOMException {
         return nextAsXMLString(inSerializerName, inUseFilter, null);
     }
 
@@ -268,15 +219,14 @@ abstract public class AbstractQueryResult extends VObject implements QueryResult
             throws SQLException, BOMException {
         try {
             final Class<?> lClass = Class.forName(inSerializerName);
-            final XMLSerializer lSerializer = (XMLSerializer) lClass.newInstance();
+            final XMLSerializer lSerializer = (XMLSerializer) lClass.getDeclaredConstructor().newInstance();
             if (inUseFilter) {
                 lSerializer.setFilter(getFilter());
             }
             lSerializer.setLocale(inLocale);
             return nextAsXMLString(lSerializer);
-        } catch (final ClassNotFoundException exc) {
-            throw new BOMException("ClassNotFound " + exc.getMessage(), exc);
-        } catch (final InstantiationException | IllegalAccessException exc) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException exc) {
             throw new BOMException(exc.getMessage(), exc);
         }
     }
@@ -352,7 +302,7 @@ abstract public class AbstractQueryResult extends VObject implements QueryResult
      * @exception org.hip.kernel.bom.BOMException */
     @Override
     public String nextnAsXMLString(final int inHowMany, final String inSerializerName) throws SQLException,
-            BOMException {
+    BOMException {
         return nextnAsXMLString(inHowMany, inSerializerName, true);
     }
 
@@ -408,98 +358,21 @@ abstract public class AbstractQueryResult extends VObject implements QueryResult
     /** @param inPage org.hip.kernel.bom.Page */
     @Override
     public void setCurrentPage(final Page inPage) {
-        currentPage = inPage;
+        this.currentPage = inPage;
     }
 
-    @Override
-    public String toString() { // NOPMD by lbenno
-        final String lMessage = "ResultSet=\"" + (getResultSet() == null ? "null" : getResultSet().toString()) + "\"";
-        return Debug.classMarkupString(this, lMessage);
-    }
+    // ===
 
-    /** Signals whether this query result loads into a Collection or not. Subclasses may override.
-     *
-     * @return boolean */
-    protected boolean isCollectionLoading() {
-        return false;
-    }
-
-    /** Loads the query result into a Collection, using the specified model factory. Returns an empty collection by
-     * default. Subclasses may override this method.
-     *
-     * @param inModelFactory AlternativeModelFactory
-     * @return Collection<AlternativeModel>
-     * @throws SQLException */
-    @Override
-    public Collection<AlternativeModel> load(final AlternativeModelFactory inModelFactory) throws SQLException {
-        final Collection<AlternativeModel> outSet = new ArrayList<AlternativeModel>();
-        if (!isCollectionLoading()) {
-            return outSet;
+    private static record Data(List<GeneralDomainObject> objects, ResultSetMetaData metaData) {
+        public Cursor get(final int index) {
+            return index < this.objects.size() ? new Cursor(this.objects.get(index), index) : new Cursor(null, -1);
         }
 
-        while (result.next()) {
-            outSet.add(inModelFactory.createModel(result));
-        }
-        this.close();
-        return outSet;
     }
 
-    @Override
-    public Collection<AlternativeModel> load(final AlternativeModelFactory inModelFactory, final int inMaxEntries) // NOPMD
-            throws SQLException {
-        final Collection<AlternativeModel> outSet = new ArrayList<AlternativeModel>();
-        if (!isCollectionLoading()) {
-            return outSet;
-        }
-
-        int i = 0; // NOPMD by lbenno
-        while (result.next() && i++ < inMaxEntries) { // NOPMD by lbenno
-            outSet.add(inModelFactory.createModel(result));
-        }
-        this.close();
-        return outSet;
-    }
-
-    private void writeObject(final ObjectOutputStream out) throws IOException {
-        chkFirst();
-        out.writeObject(home);
-        out.writeObject(current);
-        out.writeObject(nextObj);
-        out.writeObject(statement);
-        out.writeObject(currentPage);
-    }
-
-    private void readObject(final ObjectInputStream inStream) throws IOException, ClassNotFoundException {
-        home = (GeneralDomainObjectHome) inStream.readObject();
-        final GeneralDomainObject lCurrent = (GeneralDomainObject) inStream.readObject(); // NOPMD
-        nextObj = (GeneralDomainObject) inStream.readObject();
-        statement = (QueryStatement) inStream.readObject();
-        currentPage = (Page) inStream.readObject();
-
-        if (statement == null) {
-            return;
-        }
-
-        try {
-            // we retrieve the ResultSet backing this object using the statement
-            result = ((AbstractQueryStatement) statement).retrieveStatement();
-
-            // now we position the cursor on the correct place
-            if (lCurrent == null) {
-                firstRead();
-            }
-            else {
-                while (!lCurrent.equals(current)) {
-                    next();
-                    if (!hasMoreElements()) {
-                        return;
-                    }
-                }
-            }
-        } catch (final SQLException exc) {
-            throw new IOException(exc.getMessage(), exc);
-        } catch (final BOMException exc) {
-            throw new IOException(exc.getMessage(), exc);
+    private static record Cursor(GeneralDomainObject model, int index) {
+        public boolean isValid() {
+            return this.model != null;
         }
     }
 

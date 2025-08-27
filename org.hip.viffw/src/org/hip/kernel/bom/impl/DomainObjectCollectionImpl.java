@@ -95,9 +95,6 @@ public class DomainObjectCollectionImpl extends VObject implements DomainObjectC
                     // read next
                     lObject = inQueryResult.nextAsDomainObject();
                 } // while
-
-                // cleanup
-                inQueryResult.close();
             } catch (BOMException | SQLException exc) {
                 DefaultExceptionHandler.instance().handle(exc);
             }
@@ -109,11 +106,11 @@ public class DomainObjectCollectionImpl extends VObject implements DomainObjectC
      * @return java.util.Vector */
     private final List<GeneralDomainObject> getObjects() {
         synchronized (this) {
-            if (domainObjects == null) {
-                domainObjects = new ArrayList<GeneralDomainObject>();
+            if (this.domainObjects == null) {
+                this.domainObjects = new ArrayList<GeneralDomainObject>();
             }
         }
-        return domainObjects;
+        return this.domainObjects;
     }
 
     @Override

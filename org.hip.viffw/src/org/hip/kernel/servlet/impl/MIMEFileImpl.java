@@ -22,12 +22,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletOutputStream;
-
 import org.hip.kernel.servlet.Context;
 import org.hip.kernel.servlet.HtmlView;
 import org.hip.kernel.servlet.MIMEFile;
 import org.hip.kernel.servlet.RequestException;
+
+import jakarta.servlet.ServletOutputStream;
 
 /** Implementation of view returning a file with MIME-type other then html.
  *
@@ -62,17 +62,17 @@ public class MIMEFileImpl extends AbstractView implements MIMEFile {
      *
      * @return java.util.ArrayList */
     protected List<HtmlView> getViews() {
-        if (files == null) {
-            files = new ArrayList<HtmlView>(3);
+        if (this.files == null) {
+            this.files = new ArrayList<HtmlView>(3);
         }
 
-        return files;
+        return this.files;
     }
 
     /** Writes xml-transformed representation of all files in this page to the outputstream of the servlet.
      *
      * @see org.hip.kernel.servlet.HtmlView#renderToStream
-     * @param inStream javax.servlet.ServletOutputStream - Output stream of servlet response
+     * @param inStream {@link ServletOutputStream} - Output stream of servlet response
      * @param inSessionID java.lang.String
      * @throws org.hip.kernel.servlet.RequestException */
     @Override
@@ -90,7 +90,7 @@ public class MIMEFileImpl extends AbstractView implements MIMEFile {
     }
 
     @Override
-    public String getMIMEType() { // NOPMD by lbenno 
+    public String getMIMEType() { // NOPMD by lbenno
         return "application/download";
     }
 

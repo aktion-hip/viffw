@@ -1,6 +1,6 @@
 /**
 	This package is part of the application VIF.
-	Copyright (C) 2011-2014, Benno Luthiger
+	Copyright (C) 2011-2025, Benno Luthiger
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -22,10 +22,6 @@ package org.hip.kernel.dbaccess;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,8 +32,6 @@ import javax.sql.XADataSource;
 
 import org.hip.kernel.bom.impl.DBAdapterType;
 import org.hip.kernel.exc.VException;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,18 +44,18 @@ public enum DataSourceRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataSourceRegistry.class);
 
-    private final Map<String, FactoryProperties> factories = new ConcurrentHashMap<String, FactoryProperties>(); // NOPMD
+    private final Map<String, FactoryWrapper> factories = new ConcurrentHashMap<>();
     private DBAccessConfiguration activeConfiguration;
     private DataSourceFactory activeFactory = new NOOpFactory();
 
     /** Registers the specified factory to the registry.
      *
-     * @param inFactory {@link DataSourceFactory} */
-    public void register(final DataSourceFactory inFactory) {
+     * @param factory {@link DataSourceFactory} */
+    public void register(final DataSourceFactory factory) {
         try {
-            final FactoryProperties lParameters = new FactoryProperties(inFactory);
-            factories.put(lParameters.getFactoryID(), lParameters);
-            LOG.debug("Registered DB access \"{}\".", lParameters.getFactoryID());
+            final FactoryWrapper wrapper = new FactoryWrapper(factory);
+            this.factories.put(wrapper.getDriverName(), wrapper);
+            LOG.debug("Registered DB access \"{}\".", wrapper.getDriverName());
         } catch (final SQLException exc) {
             LOG.error("Error encountered while registering DB access!", exc);
         }
@@ -69,11 +63,11 @@ public enum DataSourceRegistry {
 
     /** Unregisters the specified factory from the registry.
      *
-     * @param inFactory {@link DataSourceFactory} */
-    public void unregister(final DataSourceFactory inFactory) {
-        for (final FactoryProperties lProperties : factories.values()) {
-            if (lProperties.getFactory().equals(inFactory)) {
-                factories.remove(lProperties.getFactoryID());
+     * @param factory {@link DataSourceFactory} */
+    public void unregister(final DataSourceFactory factory) {
+        for (final FactoryWrapper wrapper : this.factories.values()) {
+            if (wrapper.getFactory().equals(factory)) {
+                this.factories.remove(wrapper.getDriverName());
                 return;
             }
         }
@@ -81,35 +75,33 @@ public enum DataSourceRegistry {
 
     /** Returns the <code>DataSourceFactory</code> suitable to the specified properties.
      *
-     * @param inProperties {@link DBAccessConfiguration}
+     * @param properties {@link DBAccessConfiguration}
      * @return {@link DataSourceFactory}
      * @throws VException */
-    public DataSourceFactory getFactory(final DBAccessConfiguration inProperties) throws VException {
-        final FactoryProperties out = factories.get(inProperties.getDBSourceID());
-        if (out != null) {
-            return out.getFactory();
+    public DataSourceFactory getFactory(final DBAccessConfiguration properties) throws VException {
+        final FactoryWrapper factory = this.factories.get(properties.getDBSourceID());
+        if (factory != null) {
+            return factory.getFactory();
         }
-        LOG.error("Configuration problem: no data access bundle provided for \"{}\".", inProperties.getDBSourceID());
+        LOG.error("Configuration problem: no data access bundle provided for \"{}\".", properties.getDBSourceID());
         throw new VException(String.format("Configuration problem: no data access bundle provided for \"%s\".", // NOPMD
-                // by
-                // lbenno
-                inProperties.getDBSourceID()));
+                properties.getDBSourceID()));
     }
 
     /** Returns the <code>DataSource</code> suitable to the specified properties.
      *
-     * @param inProperties {@link DBAccessConfiguration}
+     * @param properties {@link DBAccessConfiguration}
      * @return {@link DataSource}
      * @throws SQLException
      * @throws VException */
-    public DataSource getDataSource(final DBAccessConfiguration inProperties) throws SQLException, VException {
-        final FactoryProperties lFactory = factories.get(inProperties.getDBSourceID());
-        if (lFactory != null) {
-            return lFactory.getFactory().createDataSource(inProperties.getProperties());
+    public DataSource getDataSource(final DBAccessConfiguration properties) throws SQLException, VException {
+        final FactoryWrapper factory = this.factories.get(properties.getDBSourceID());
+        if (factory != null) {
+            return factory.getFactory().createDataSource(properties.getProperties());
         }
-        LOG.error("Configuration problem: no data access bundle provided for \"{}\".", inProperties.getDBSourceID());
+        LOG.error("Configuration problem: no data access bundle provided for \"{}\".", properties.getDBSourceID());
         throw new VException(String.format("Configuration problem: no data access bundle provided for \"%s\".",
-                inProperties.getDBSourceID()));
+                properties.getDBSourceID()));
     }
 
     /** Returns the <code>ConnectionPoolDataSource</code> suitable to the specified properties.
@@ -120,67 +112,67 @@ public enum DataSourceRegistry {
      * @throws VException */
     public ConnectionPoolDataSource getConnectionPoolDataSource(final DBAccessConfiguration inProperties)
             throws SQLException, VException {
-        final FactoryProperties lFactory = factories.get(inProperties.getDBSourceID());
-        if (lFactory != null) {
-            return lFactory.getFactory().createConnectionPoolDataSource(inProperties.getProperties());
+        final FactoryWrapper factory = this.factories.get(inProperties.getDBSourceID());
+        if (factory != null) {
+            return factory.getFactory().createConnectionPoolDataSource(inProperties.getProperties());
         }
         LOG.error("Configuration problem: no data access bundle provided for \"{}\".", inProperties.getDBSourceID());
         throw new VException(String.format("Configuration problem: no data access bundle provided for \"%s\".",
                 inProperties.getDBSourceID()));
     }
 
-    /** Returns the list of <code>DBSourceParameter</code> objects describing the registered
-     * <code>DataSourceFactory</code> instances.
-     *
-     * @return Collection&lt;DBSourceParameter> */
-    public Collection<DBSourceParameter> getDBSourceParameters() {
-        final List<DBSourceParameter> out = new ArrayList<DataSourceRegistry.DBSourceParameter>();
-        for (final FactoryProperties lProperties : factories.values()) {
-            out.add(lProperties.getDBSourceParameter());
-        }
-        Collections.sort(out);
-        return out;
-    }
-
     /** Setter for the active <code>DBAccessConfiguration</code>. This setter should be called by the application's
      * preferences handler.
      *
-     * @param inActiveConfiguration {@link DBAccessConfiguration} */
-    public void setActiveConfiguration(final DBAccessConfiguration inActiveConfiguration) {
-        activeConfiguration = inActiveConfiguration;
+     * @param activeConfiguration {@link DBAccessConfiguration}
+     * @return <code>true</code> if the registry configured to return <code>DataSource</code> instances */
+    public boolean setActiveConfiguration(final DBAccessConfiguration activeConfiguration) {
+        this.activeConfiguration = activeConfiguration;
         synchronized (this) {
-            final FactoryProperties lFactory = factories.get(activeConfiguration.getDBSourceID());
-            if (lFactory != null) {
-                activeFactory = lFactory.getFactory();
+            final FactoryWrapper factory = this.factories.get(activeConfiguration.getDBSourceID());
+            if (factory == null) {
+                return false;
+            } else {
+                this.activeFactory = factory.getFactory();
+                return true;
             }
         }
+    }
+
+    /** Checks the initialization, i.e. the method <code>DataSourceRegistry.setActiveConfiguration()</code> has been
+     * called..
+     *
+     * @return boolean <code>true</code> if this instance is initialized (with <code>DBAccessConfiguration</code>) */
+    public boolean isInitialized() {
+        return this.activeConfiguration != null;
     }
 
     /** Shortcut method to set the active <code>DataSourceFactory</code> directly.
      *
-     * @param inFactory {@link DataSourceFactory} */
-    public void setFactory(final DataSourceFactory inFactory) {
-        activeFactory = inFactory;
+     * @param factory {@link DataSourceFactory} */
+    public void setFactory(final DataSourceFactory factory) {
+        this.activeFactory = factory;
     }
 
     private DataSourceFactory getFactory() throws VException {
-        if (activeConfiguration == null) {
-            throw new VException(String.format("Configuration problem: no DB access configuration provided"));
+        if (this.activeConfiguration == null) {
+            throw new VException("Configuration problem: no DB access configuration provided");
         }
 
-        if (NOOpFactory.class.equals(activeFactory.getClass())) {
-            if (activeConfiguration.getDBSourceID() == null) {
+        if (NOOpFactory.class.equals(this.activeFactory.getClass())) {
+            if (this.activeConfiguration.getDBSourceID() == null) {
                 throw new VException(String.format("Configuration problem: no data access bundle provided for \"%s\".",
-                        activeConfiguration.getDBSourceID()));
+                        this.activeConfiguration.getDBSourceID()));
             }
-            final FactoryProperties lFactory = factories.get(activeConfiguration.getDBSourceID());
-            if (lFactory == null) {
+            final String[] parts = this.activeConfiguration.getDBSourceID().split("/");
+            final FactoryWrapper factory = this.factories.get(parts[0]);
+            if (factory == null) {
                 throw new VException(String.format("Configuration problem: no data access bundle provided for \"%s\".",
-                        activeConfiguration.getDBSourceID()));
+                        this.activeConfiguration.getDBSourceID()));
             }
-            activeFactory = lFactory.getFactory();
+            this.activeFactory = factory.getFactory();
         }
-        return activeFactory;
+        return this.activeFactory;
     }
 
     /** Returns a pooled <code>Connection</code> based on the active <code>DBAccessConfiguration</code>.
@@ -189,7 +181,7 @@ public enum DataSourceRegistry {
      * @throws SQLException
      * @throws VException */
     public Connection getConnection() throws SQLException, VException {
-        return getFactory().createConnectionPoolDataSource(activeConfiguration.getProperties()).getPooledConnection()
+        return getFactory().createConnectionPoolDataSource(this.activeConfiguration.getProperties()).getPooledConnection()
                 .getConnection();
     }
 
@@ -207,10 +199,10 @@ public enum DataSourceRegistry {
      *
      * @return {@link DBAdapterType} */
     public DBAdapterType getAdapterType() {
-        if (activeConfiguration == null) {
+        if (this.activeConfiguration == null) {
             return DBAdapterType.DB_TYPE_MYSQL;
         }
-        return getAdapterType(activeConfiguration);
+        return getAdapterType(this.activeConfiguration);
     }
 
     /** Returns the DB adapter type matching the specified DB access configuration.
@@ -228,110 +220,43 @@ public enum DataSourceRegistry {
 
     // ---
 
-    /** Parameter object.
-     *
-     * @author Luthiger Created: 27.01.2012 */
-    public static class DBSourceParameter implements Comparable<DBSourceParameter> {
-        private final String factoryID;
-        private final String factoryName;
-
-        DBSourceParameter(final String inFactoryID, final String inFactoryName) {
-            factoryID = inFactoryID;
-            factoryName = inFactoryName;
-        }
-
-        /** @return String */
-        public String getFactoryID() {
-            return factoryID;
-        }
-
-        /** @return String */
-        public String getFactoryName() {
-            return factoryName;
-        }
-
-        @Override
-        public int compareTo(final DBSourceParameter inOther) { // NOPMD by lbenno
-            return getFactoryName().compareTo(inOther.getFactoryName());
-        }
-    }
-
-    /** Class holding the DB facroty properties. */
-    private static class FactoryProperties {
+    private static class FactoryWrapper {
+        private final String driverName;
         private final DataSourceFactory factory;
-        private transient final String driverClass;
-        private transient final String driverName;
-        private transient final String driverVersion;
 
-        FactoryProperties(final DataSourceFactory inFactory) throws SQLException {
-            factory = inFactory;
-            final ServiceReference<DataSourceFactory> lServiceReference = getServiceRef(inFactory);
-            driverClass = lServiceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS).toString();
-            driverName = (String) lServiceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME);
-            driverVersion = (String) lServiceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION);
+        protected FactoryWrapper(final DataSourceFactory factory) throws SQLException {
+            this.factory = factory;
+            this.driverName = factory.createDriver(new Properties()).getClass().getName();
         }
 
-        @SuppressWarnings("unchecked")
-        private ServiceReference<DataSourceFactory> getServiceRef(final DataSourceFactory inFactory)
-                throws SQLException {
-            final String lDriverName = inFactory.createDriver(null).getClass().getName();
-            final ServiceReference<?>[] lReferences = FrameworkUtil.getBundle(inFactory.getClass())
-                    .getRegisteredServices();
-            for (final ServiceReference<?> lServiceReference : lReferences) {
-                if (lDriverName.equals(lServiceReference.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS))) {
-                    return (ServiceReference<DataSourceFactory>) lServiceReference;
-                }
-            }
-            return null;
+        protected String getDriverName() {
+            return this.driverName;
         }
 
-        /** @return {@link DataSourceFactory} */
-        public DataSourceFactory getFactory() {
-            return factory;
-        }
-
-        /** @return String the factory id */
-        public String getFactoryID() {
-            final StringBuilder out = new StringBuilder(driverClass);
-            if (driverName != null) {
-                out.append('/').append(driverName);
-            }
-            if (driverVersion != null) {
-                out.append('/').append(driverVersion);
-            }
-            return new String(out);
-        }
-
-        /** @return {@link DBSourceParameter} */
-        public DBSourceParameter getDBSourceParameter() {
-            return new DBSourceParameter(getFactoryID(), toString());
-        }
-
-        @Override
-        public String toString() { // NOPMD by lbenno
-            return String.format("%s (%s)", driverName, driverVersion);
+        protected DataSourceFactory getFactory() {
+            return this.factory;
         }
     }
 
     /** No-operation instance of <code>DataSourceFactory</code> */
     private static class NOOpFactory implements DataSourceFactory {
         @Override
-        public DataSource createDataSource(final Properties inProps) throws SQLException { // NOPMD by lbenno
+        public DataSource createDataSource(final Properties props) throws SQLException { // NOPMD by lbenno
             return null;
         }
 
         @Override
-        public ConnectionPoolDataSource createConnectionPoolDataSource(final Properties inProps) throws SQLException { // NOPMD
+        public ConnectionPoolDataSource createConnectionPoolDataSource(final Properties props) throws SQLException { // NOPMD
             return null;
         }
 
         @Override
-        public XADataSource createXADataSource(final Properties inProps) throws SQLException { // NOPMD by lbenno
+        public XADataSource createXADataSource(final Properties props) throws SQLException { // NOPMD by lbenno
             return null;
         }
 
         @Override
-        public Driver createDriver(final Properties inProps) throws SQLException { // NOPMD by lbenno
+        public Driver createDriver(final Properties props) throws SQLException { // NOPMD by lbenno
             return null;
         }
     }

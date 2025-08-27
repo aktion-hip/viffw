@@ -1,6 +1,6 @@
 package org.hip.kernel.bom.impl.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -10,7 +10,7 @@ import java.io.ObjectOutputStream;
 import java.util.Iterator;
 
 import org.hip.kernel.sys.VSys;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** @author: Benno Luthiger */
 public class AbstractStatisticsHomeImplTest {
@@ -37,7 +37,7 @@ public class AbstractStatisticsHomeImplTest {
 
         int i = 0;
         for (final Iterator lTestObjects = lHome.getTestObjects(); lTestObjects.hasNext();) {
-            assertEquals("testObjects " + i, expected, lTestObjects.next());
+            assertEquals(expected, lTestObjects.next());
             i++;
         }
     }
@@ -64,7 +64,7 @@ public class AbstractStatisticsHomeImplTest {
 
         int i = 0;
         for (final Iterator lTestObjects = lRetrieved.getTestObjects(); lTestObjects.hasNext();) {
-            assertEquals("testObjects " + i, expected, lTestObjects.next());
+            assertEquals(expected, lTestObjects.next());
             i++;
         }
     }

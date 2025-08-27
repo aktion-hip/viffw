@@ -1,7 +1,7 @@
 package org.hip.kernel.bom.impl.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.SQLException;
 
@@ -12,57 +12,50 @@ import org.hip.kernel.bom.KeyObject;
 import org.hip.kernel.bom.impl.DomainObjectCacheImpl;
 import org.hip.kernel.bom.impl.KeyObjectImpl;
 import org.hip.kernel.exc.VException;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author: Benno Luthiger
  */
 public class DomainObjectCacheImplTest {
-	private static DataHouseKeeper data;
 
-	@BeforeClass
-	public static void init() {
-		data = DataHouseKeeper.getInstance();
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-		data.deleteAllFromSimple();
-		System.out.println("Deleted all entries in tblTest.");
-	}
-	
-	@Test
-	public void testDo() throws BOMException, SQLException, VException {
-		int lNumberBefore = data.getSimpleHome().getCount();
+    @AfterEach
+    public void tearDown() throws Exception {
+        DataHouseKeeper.INSTANCE.deleteAllFromSimple();
+        System.out.println("Deleted all entries in tblTest.");
+    }
 
-		String lName = "Dummy";
-		String lFirstname1 = "Fi";
-		String lFirstname2 = "Adam";
-		data.createTestEntry(lName, lFirstname1);
-		data.createTestEntry(lName, lFirstname2);
-		assertEquals("number after insert", lNumberBefore + 2, data.getSimpleHome().getCount());
-	
-		
-		KeyObject lKey = new KeyObjectImpl();
-		lKey.setValue("Name", lName);
-		lKey.setValue("Firstname", lFirstname1);
-		DomainObject lFound1 = data.getSimpleHome().findByKey(lKey);
-		KeyObject lID1 = lFound1.getKey();
-		
-		DomainObjectCache lCache = new DomainObjectCacheImpl();
-		lCache.put(lFound1);
-		
-		lKey = new KeyObjectImpl();
-		lKey.setValue("Name", lName);
-		lKey.setValue("Firstname", lFirstname2);
-		DomainObject lFound2 = data.getSimpleHome().findByKey(lKey);
-		KeyObject lID2 = lFound2.getKey();
-		lCache.put(lFound2);
+    @Test
+    public void testDo() throws BOMException, SQLException, VException {
+        final int lNumberBefore = DataHouseKeeper.INSTANCE.getSimpleHome().getCount();
 
-		assertTrue("Identity 1", lFound1 == lCache.get(lID1));
-		assertTrue("Identity 2", lFound2 == lCache.get(lID2));
-		assertTrue("Not equal", !lFound1.equals(lCache.get(lID2)));
-	}
+        final String lName = "Dummy";
+        final String lFirstname1 = "Fi";
+        final String lFirstname2 = "Adam";
+        DataHouseKeeper.INSTANCE.createTestEntry(lName, lFirstname1);
+        DataHouseKeeper.INSTANCE.createTestEntry(lName, lFirstname2);
+        assertEquals(lNumberBefore + 2, DataHouseKeeper.INSTANCE.getSimpleHome().getCount());
+
+
+        KeyObject lKey = new KeyObjectImpl();
+        lKey.setValue("Name", lName);
+        lKey.setValue("Firstname", lFirstname1);
+        final DomainObject lFound1 = DataHouseKeeper.INSTANCE.getSimpleHome().findByKey(lKey);
+        final KeyObject lID1 = lFound1.getKey();
+
+        final DomainObjectCache lCache = new DomainObjectCacheImpl();
+        lCache.put(lFound1);
+
+        lKey = new KeyObjectImpl();
+        lKey.setValue("Name", lName);
+        lKey.setValue("Firstname", lFirstname2);
+        final DomainObject lFound2 = DataHouseKeeper.INSTANCE.getSimpleHome().findByKey(lKey);
+        final KeyObject lID2 = lFound2.getKey();
+        lCache.put(lFound2);
+
+        assertTrue(lFound1 == lCache.get(lID1));
+        assertTrue(lFound2 == lCache.get(lID2));
+        assertTrue(!lFound1.equals(lCache.get(lID2)));
+    }
 }
