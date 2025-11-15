@@ -41,25 +41,24 @@ public class DBAccessConfiguration {
 
     /** Constructor.
      *
-     * @param inDBSourceID String <code>org.hip.vif.db.driver</code>, i.e. the ID of the <code>DataSourceFactory</code>
+     * @param dbSourceID String <code>org.hip.vif.db.driver</code>, i.e. the ID of the <code>DataSourceFactory</code>
      *            instance
-     * @param inServer String <code>org.hip.vif.db.server</code>
-     * @param inSchema String <code>org.hip.vif.db.schema</code>
-     * @param inUser String <code>org.hip.vif.db.userId</code>
-     * @param inPassword String <code>org.hip.vif.db.password</code> */
-    public DBAccessConfiguration(final String inDBSourceID, final String inServer, final String inSchema,
-            final String inUser, final String inPassword) {
-        this.dbSourceID = inDBSourceID;
-        this.server = inServer;
-        this.schema = inSchema;
-        this.user = inUser;
-        this.password = inPassword;
+     * @param server String <code>org.hip.vif.db.server</code>
+     * @param schema String <code>org.hip.vif.db.schema</code>
+     * @param user String <code>org.hip.vif.db.userId</code>
+     * @param password String <code>org.hip.vif.db.password</code> */
+    public DBAccessConfiguration(final String dbSourceID, final String server, final String schema,
+            final String user, final String password) {
+        this.dbSourceID = dbSourceID;
+        this.server = server;
+        this.schema = schema;
+        this.user = user;
+        this.password = password;
 
         this.state = State.NEW;
         if (this.dbSourceID != null && !this.dbSourceID.isEmpty()) {
             this.state = State.INITIALIZED;
-            if (this.server != null && !this.server.isEmpty() &&
-                    this.schema != null && !this.schema.isEmpty()) {
+            if (this.server != null && !this.server.isEmpty() && this.schema != null && !this.schema.isEmpty()) {
                 this.state = State.CONFIGURED;
             }
         }

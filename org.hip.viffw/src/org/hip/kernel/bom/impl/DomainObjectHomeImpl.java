@@ -1,6 +1,6 @@
 /**
  This package is part of the servlet framework used for the application VIF.
- Copyright (C) 2001-2014, Benno Luthiger
+ Copyright (C) 2001-2025, Benno Luthiger
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import org.hip.kernel.bom.BOMException;
 import org.hip.kernel.bom.BOMInvalidKeyException;
@@ -61,7 +62,6 @@ import org.hip.kernel.exc.DefaultExceptionWriter;
 import org.hip.kernel.exc.VException;
 import org.hip.kernel.sys.Assert;
 import org.hip.kernel.sys.VSys;
-import org.hip.kernel.util.ListJoiner;
 import org.xml.sax.SAXException;
 
 /** This class implements the DomainObjectHome interface.
@@ -69,7 +69,7 @@ import org.xml.sax.SAXException;
  * @author Benno Luthiger
  * @see org.hip.kernel.bom.DomainObjectHome */
 @SuppressWarnings("serial")
-abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome implements DomainObjectHome { // NOPMD
+public abstract class DomainObjectHomeImpl extends AbstractDomainObjectHome implements DomainObjectHome { // NOPMD
 
     // Instance variables
     private ObjectDef objectDef;
@@ -326,7 +326,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @param java.util.Vector<String> */
     @Override
     public Vector<String> createPreparedInserts() { // NOPMD
-        return new Vector<String>(createPreparedInserts2()); // NOPMD
+        return new Vector<>(createPreparedInserts2()); // NOPMD
     }
 
     @Override
@@ -339,7 +339,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      * @param java.util.Vector<String> */
     @Override
     public Vector<String> createPreparedUpdates() { // NOPMD
-        return new Vector<String>(createPreparedUpdates2()); // NOPMD
+        return new Vector<>(createPreparedUpdates2()); // NOPMD
     }
 
     @Override
@@ -362,7 +362,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      *
      * @return java.lang.String */
     @Override
-    abstract public String getObjectClassName();
+    public abstract String getObjectClassName();
 
     /** Returns the object definition for the class managed by this home.<br />
      * <b>Note:</b> be aware that changes to the <code>ObjectDef</code> instance returned may affect the behavior of
@@ -379,10 +379,10 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
 
     /** No hidden fields, therefore, an empty String is returned.
      *
-     * @param inPropertyName String
+     * @param propertyName String
      * @return String */
     @Override
-    public String getHidden(final String inPropertyName) { // NOPMD by lbenno
+    public String getHidden(final String propertyName) { // NOPMD by lbenno
         return "";
     }
 
@@ -449,7 +449,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     /** @return java.util.Hashtable */
     @Override
     public final synchronized Hashtable<String, String> tableNames() { // NOPMD by lbenno
-        final Hashtable<String, String> out = new Hashtable<String, String>(); // NOPMD by lbenno
+        final Hashtable<String, String> out = new Hashtable<>(); // NOPMD by lbenno
         out.putAll(tableNames2());
         return out;
     }
@@ -457,12 +457,12 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     @Override
     public Map<String, String> tableNames2() { // NOPMD
         if (this.tableNameMap == null) {
-            this.tableNameMap = new Hashtable<String, String>(7);
+            this.tableNameMap = new Hashtable<>(7);
             try {
-                for (final PropertyDef lPropertyDef : getObjectDef().getPropertyDefs2()) {
-                    final String lTableName = (String) lPropertyDef.getMappingDef().get("");
-                    if (!this.tableNameMap.containsKey(lTableName)) {
-                        this.tableNameMap.put(lTableName, lTableName);
+                for (final PropertyDef propertyDef : getObjectDef().getPropertyDefs2()) {
+                    final String tableName = (String) propertyDef.getMappingDef().get("");
+                    if (!this.tableNameMap.containsKey(tableName)) {
+                        this.tableNameMap.put(tableName, tableName);
                     }
                 }
             } catch (final GettingException exc) {
@@ -476,11 +476,7 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
      *
      * @return java.lang.String */
     protected String tableNameString() {
-        final ListJoiner lTableNames = new ListJoiner();
-        for (final String lTableName : tableNames().values()) {
-            lTableNames.addEntry(lTableName);
-        }
-        return lTableNames.joinSpaced(",");
+        return tableNames().values().stream().collect(Collectors.joining(", "));
     }
 
     /** This method can be implemented by concrete subclasses to create test objects.
@@ -571,24 +567,24 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     /** Checks whether the database table structure corresponds to the domain object definition. The test compares the
      * number of columns and the column names.
      *
-     * @param inSchemaPattern String table schema (may be <code>null</code>)
+     * @param schemaPattern String table schema (may be <code>null</code>)
      * @return boolean <code>true</code> if the table structure in the database corresponds to the structur according to
      *         the home's object definition.
      * @throws SQLException
      * @throws VException */
     @Override
-    public boolean checkStructure(final String inSchemaPattern) throws SQLException, VException {
-        final String lTableName = getTableName();
-        final Collection<String> lColumnNamesDef = getColumnNamesDef();
-        final Collection<String> lColumnNamesDB = getColumnNamesDB(inSchemaPattern, lTableName);
+    public boolean checkStructure(final String schemaPattern) throws SQLException, VException {
+        final String tableName = getTableName();
+        final Collection<String> columnNamesDef = getColumnNamesDef();
+        final Collection<String> columnNamesDB = getColumnNamesDB(schemaPattern, tableName);
 
         // compare
-        if (lColumnNamesDB.size() != lColumnNamesDef.size()) {
+        if (columnNamesDB.size() != columnNamesDef.size()) {
             return false;
         }
 
-        for (final String lColumnName : lColumnNamesDB) {
-            if (!lColumnNamesDef.contains(lColumnName)) {
+        for (final String columnName : columnNamesDB) {
+            if (!columnNamesDef.contains(columnName)) {
                 return false;
             }
         }
@@ -596,35 +592,35 @@ abstract public class DomainObjectHomeImpl extends AbstractDomainObjectHome impl
     }
 
     private String getTableName() {
-        return getObjectDef().getTableNames2().toArray(new String[1])[0].toString();
+        return getObjectDef().getTableNames2().toArray(new String[1])[0];
     }
 
     private Collection<String> getColumnNamesDef() {
-        final Collection<String> lColumnNamesDef = new ArrayList<String>();
-        for (final PropertyDef lPropertyDef : getObjectDef().getPropertyDefs2()) {
-            lColumnNamesDef.add(lPropertyDef.getMappingDef().getColumnName().toUpperCase());
+        final Collection<String> columnNamesDef = new ArrayList<>();
+        for (final PropertyDef propertyDef : getObjectDef().getPropertyDefs2()) {
+            columnNamesDef.add(propertyDef.getMappingDef().getColumnName().toUpperCase());
         }
-        return lColumnNamesDef;
+        return columnNamesDef;
     }
 
     /** Returns a collection of column names in the specified table.
      *
-     * @param inSchemaPattern String, may be null
-     * @param inTableName String, must not be null
+     * @param schemaPattern String, may be null
+     * @param tableName String, must not be null
      * @return Collection of column names in the specified table.
      * @throws SQLException
      * @throws VException */
-    private Collection<String> getColumnNamesDB(final String inSchemaPattern, final String inTableName)
+    private Collection<String> getColumnNamesDB(final String schemaPattern, final String tableName)
             throws SQLException, VException {
-        final Collection<String> outColumnNamesDB = new ArrayList<String>();
+        final Collection<String> columnNamesDB = new ArrayList<>();
 
-        try (Connection lConnection = DataSourceRegistry.INSTANCE.getConnection();
-                final ResultSet lData = lConnection.getMetaData().getColumns(null, inSchemaPattern,
-                        inTableName.toUpperCase(Locale.getDefault()), null)) {
-            while (lData.next()) {
-                outColumnNamesDB.add(lData.getString(4).toUpperCase());
+        try (Connection connection = DataSourceRegistry.INSTANCE.getConnection();
+                final ResultSet data = connection.getMetaData().getColumns(null, schemaPattern,
+                        tableName.toUpperCase(Locale.getDefault()), null)) {
+            while (data.next()) {
+                columnNamesDB.add(data.getString(4).toUpperCase());
             }
-            return outColumnNamesDB;
+            return columnNamesDB;
         }
     }
 

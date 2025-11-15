@@ -1,6 +1,6 @@
 /**
 	This package is part of the application VIF.
-	Copyright (C) 2011-2014, Benno Luthiger
+	Copyright (C) 2011-2025, Benno Luthiger
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import org.osgi.service.jdbc.DataSourceFactory;
 /** Service component for the <code>DataSourceFactory</code> services.<br />
  * This component registers the available data sources (i.e. JDBC drivers).
  *
- * @author Luthiger Created: 26.01.2012 */
+ * @author Luthiger */
 public class DataAccessComponent { // NOPMD by lbenno
 
     /** Binding method.

@@ -35,7 +35,7 @@ import org.hip.kernel.exc.DefaultExceptionHandler;
  *
  * @author Benno Luthiger */
 public class AlternativeQueryResult extends AbstractQueryResult {
-    private List<AlternativeModel> models = Collections.emptyList();
+    private List<AlternativeModel> models = new ArrayList<>();
 
     /** @param home GeneralDomainObjectHome
      * @param result ResultSet
@@ -67,7 +67,7 @@ public class AlternativeQueryResult extends AbstractQueryResult {
 
     /** @return List&lt;AlternativeModel> */
     public List<AlternativeModel> getAlternativeModels() {
-        return List.copyOf(this.models);
+        return new ArrayList<>(this.models);
     }
 
     /** @param max int the size of the list returned
